@@ -14,8 +14,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D2AAC07D0554694100DB518D"
-               BuildableName = "libTouchJSON.a"
-               BlueprintName = "TouchJSON"
+               BuildableName = "libTouchJSON-iphoneos.a"
+               BlueprintName = "TouchJSON-iphoneos"
                ReferencedContainer = "container:Vendor/TouchJSON/Support/TouchJSON-iOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

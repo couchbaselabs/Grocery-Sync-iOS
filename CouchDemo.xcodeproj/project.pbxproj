@@ -71,7 +71,8 @@
 		27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		27167F5B13C4FA57001CC5B6 /* Couchbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A739613BE918A0078870D /* Couchbase.framework */; };
 		27167F5D13C4FA57001CC5B6 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDA6DEA13217E2400D8538A /* libstdc++.dylib */; };
-		27BCDD1513C4FE86002A3FC3 /* libTouchJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27BCDD1413C4FE86002A3FC3 /* libTouchJSON.a */; };
+		27EEC98A13CA267A006491A5 /* libTouchJSON-iphoneos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EEC98913CA267A006491A5 /* libTouchJSON-iphoneos.a */; };
+		27EEC98C13CA267D006491A5 /* libTouchJSON-iphonesimulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27EEC98B13CA267D006491A5 /* libTouchJSON-iphonesimulator.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -81,8 +82,9 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		27167F6113C4FA57001CC5B6 /* CouchDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CouchDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		273A739613BE918A0078870D /* Couchbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Couchbase.framework; path = Frameworks/Couchbase.framework; sourceTree = SOURCE_ROOT; };
-		27BCDD1413C4FE86002A3FC3 /* libTouchJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTouchJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		27ED52D713C3944B00AB846D /* demo.couch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = demo.couch; sourceTree = "<group>"; };
+		27EEC98913CA267A006491A5 /* libTouchJSON-iphoneos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = "libTouchJSON-iphoneos.a"; path = "../Debug/libTouchJSON-iphoneos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		27EEC98B13CA267D006491A5 /* libTouchJSON-iphonesimulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = "libTouchJSON-iphonesimulator.a"; path = "../Debug/libTouchJSON-iphonesimulator.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28A0AAE50D9B0CCF005BE974 /* CouchDemo_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CouchDemo_Prefix.pch; path = Source/CouchDemo_Prefix.pch; sourceTree = "<group>"; };
 		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -202,7 +204,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27BCDD1513C4FE86002A3FC3 /* libTouchJSON.a in Frameworks */,
+				27EEC98A13CA267A006491A5 /* libTouchJSON-iphoneos.a in Frameworks */,
+				27EEC98C13CA267D006491A5 /* libTouchJSON-iphonesimulator.a in Frameworks */,
 				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
 				27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */,
@@ -217,7 +220,8 @@
 		037E114C13566540005FFC4F /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				27BCDD1413C4FE86002A3FC3 /* libTouchJSON.a */,
+				27EEC98913CA267A006491A5 /* libTouchJSON-iphoneos.a */,
+				27EEC98B13CA267D006491A5 /* libTouchJSON-iphonesimulator.a */,
 				BCDA6DEA13217E2400D8538A /* libstdc++.dylib */,
 			);
 			name = Libraries;
@@ -631,6 +635,7 @@
 				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Vendor/TouchJSON/Source\"/**";
 				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/../$(CONFIGURATION)";
 				PRODUCT_NAME = CouchDemo;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -645,6 +650,7 @@
 				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Vendor/TouchJSON/Source\"/**";
 				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/../$(CONFIGURATION)";
 				PRODUCT_NAME = CouchDemo;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
