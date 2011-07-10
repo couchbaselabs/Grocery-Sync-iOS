@@ -7,7 +7,7 @@ It isn't intended as a starting point for your own development; you could use it
 
 ## Getting Started
 
-These instructions assume you are familiar with how to make an iPhone app.
+These instructions assume you are familiar with how to make an iPhone app. Please follow them fully and in order the first time you build.
 
 If you have questions or get stuck or just want to say hi, please visit the [Mobile Couchbase group][4] on Google Groups.
 
@@ -35,10 +35,21 @@ Prerequisite: Xcode 4.0.2 or later with the SDK for iOS 4 or later. (It's possib
 
     open CouchDemo.xcworkspace
 
-### To build and run the included Demo App:
+### Build TouchJSON
 
-* Select the "CouchDemo" scheme and the appropriate destination (an iOS device or simulator) from the pop-up menu in the Xcode toolbar.
-* Click the Run button
+Due to incompatble build setups, you'll have to manually build both flavors of the dependent TouchJSON library before you can build the demo app the first time:
+
+1. Select the "TouchJSON-iphoneos" scheme and choose Product > Build.
+1. Select the "TouchJSON-simulator" scheme and choose Product > Build.
+
+You won't need to do this again unless you either clean your build or modify TouchJSON sources.
+
+### Build and run the demo app
+
+1. Select the "CouchDemo" scheme and the appropriate destination (an iOS device or simulator) from the pop-up menu in the Xcode toolbar.
+2. Click the Run button
+
+That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
 
 ## To add the framework to your existing Xcode project
 
