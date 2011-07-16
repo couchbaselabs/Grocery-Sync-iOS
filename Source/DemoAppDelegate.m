@@ -45,7 +45,7 @@
     NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"demo" ofType: @"couch"];
     NSAssert(dbPath, @"Couldn't find demo.couch");
 
-    Couchbase* cb = [[Couchbase alloc] init];
+    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
     cb.delegate = self;
     [cb installDefaultDatabase: dbPath];
 	if (![cb start]) {

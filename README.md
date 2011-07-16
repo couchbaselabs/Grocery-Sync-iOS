@@ -68,4 +68,4 @@ Copyright 2011, Couchbase, Inc.
 [2]: http://couchdb.apache.org
 [3]: https://github.com/couchbaselabs/iOS-Couchbase/blob/master/doc/using_mobile_couchbase.md
 [4]: https://groups.google.com/group/mobile-couchbase
-[5]: https://github.com/downloads/snej/iOS-Couchbase/Couchbase.framework.zip
+[5]: https://github.com/downloads/couchbaselabs/iOS-Couchbase/Couchbase.framework.zip
