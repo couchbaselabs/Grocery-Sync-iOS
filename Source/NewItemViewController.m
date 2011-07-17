@@ -25,6 +25,8 @@
 #import "RootViewController.h"
 #import "CURLOperation.h"
 #import <Couch/Couch.h>
+#import <Couch/RESTOperation.h>
+
 
 @implementation NewItemViewController
 @synthesize textView;
@@ -67,29 +69,24 @@
 
 -(void)done
 {
-	NSString *text = textView.text;
-	
-	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-                                , [[NSDate date] description], @"created_at"
-                                , nil];
-	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
-		NSLog(@"Wooohooo! %@", inParameter);
-		[delegate performSelector:@selector(newItemAdded)];
-	};
-	
-	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
-		NSLog(@"D'OH! %@", error);
-	};
-	CFUUIDRef uuid = CFUUIDCreate(nil);
+    CFUUIDRef uuid = CFUUIDCreate(nil);
     NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
     CFRelease(uuid);
 	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
-	DatabaseManager *sharedManager = [DatabaseManager sharedManager:[delegate getCouchbaseURL]];
-	CURLOperation *op = [sharedManager.database operationToCreateDocument:inDocument 
-															   identifier:docId
-														   successHandler:inSuccessHandler 
-														   failureHandler:inFailureHandler];
-	[op start];
+	NSString *text = textView.text;
+	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
+                                , [[NSDate date] description], @"created_at"
+                                , nil];
+    CouchDocument* doc = [[delegate getDatabase] documentWithID: docId];
+    RESTOperation* op = [doc putProperties:inDocument];
+    [op onCompletion: ^{
+        if (op.error) {
+            NSLog(@"error saving doc %@", [op.error description]);
+        }
+		NSLog(@"saved doc! %@", [op description]);
+		[delegate performSelector:@selector(newItemAdded)];
+	}];
+    [op start];
 }
 
 -(void)viewWillAppear:(BOOL)animated

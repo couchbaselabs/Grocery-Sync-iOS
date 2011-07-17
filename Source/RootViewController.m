@@ -36,8 +36,8 @@
 #pragma mark -
 #pragma mark View lifecycle
 
--(NSURL *)getCouchbaseURL {
-	return self.couchbaseURL;
+-(CouchDatabase *) getDatabase {
+	return self.database;
 }
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {

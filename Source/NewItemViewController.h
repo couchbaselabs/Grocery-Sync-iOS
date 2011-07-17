@@ -19,11 +19,13 @@
 //
 
 #import <UIKit/UIKit.h>
+@class CouchDocument;
 
 
 @interface NewItemViewController : UIViewController {
 	UITextView *textView;
 	id delegate;
+    CouchDocument* _document;
 }
 
 @property(nonatomic,retain)IBOutlet	UITextView *textView;

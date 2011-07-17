@@ -25,6 +25,8 @@
 	NSMutableArray *items;
 	UIBarButtonItem *syncItem;
 	UIBarButtonItem *activityButtonItem;
+    id database;
+
 }
 @property(nonatomic, retain)NSMutableArray *items;
 @property(nonatomic, retain)UIBarButtonItem *syncItem;
@@ -34,6 +36,6 @@
 
 -(void)loadItemsIntoView;
 -(void)couchbaseDidStart:(NSURL *)serverURL;
--(NSURL *)getCouchbaseURL;
+-(CouchDatabase *)getDatabase;
 
 @end
