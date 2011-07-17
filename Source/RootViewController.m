@@ -85,19 +85,17 @@
 {
 	self.syncItem = self.navigationItem.rightBarButtonItem;
 	[self.navigationItem setRightBarButtonItem: self.activityButtonItem animated:YES];
-	DatabaseManager *manager = [DatabaseManager sharedManager:self.couchbaseURL];
-	DatabaseManagerSuccessHandler successHandler = ^() {
-  	    //woot	
-		NSLog(@"success handler called!");
+    RESTOperation *pull = [database syncFromSource: @"http://jan.couchone.com/demo"];
+    [pull onCompletion:^() {
+		NSLog(@"pulled");
 		[self loadItemsIntoView];
-	};
-
-	DatabaseManagerErrorHandler errorHandler = ^(id error) {
-		// doh	
-	};
-	
-	[manager syncFrom:@"http://jan.couchone.com/demo" to:@"demo" onSuccess:successHandler onError:errorHandler];
-	[manager syncFrom:@"demo" to:@"http://jan.couchone.com/demo" onSuccess:^() {} onError:^(id error) {}];
+	}];
+    RESTOperation *push = [database syncToTarget: @"http://jan.couchone.com/demo"];
+    [push onCompletion:^() {
+		NSLog(@"pushed");
+	}];
+    [pull start];
+    [push start];
 }
 
 -(void)loadItemsIntoView
