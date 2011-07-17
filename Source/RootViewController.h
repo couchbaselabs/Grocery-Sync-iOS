@@ -19,6 +19,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Couch/Couch.h>
 
 @interface RootViewController : UITableViewController {
 	NSMutableArray *items;
@@ -29,6 +30,7 @@
 @property(nonatomic, retain)UIBarButtonItem *syncItem;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)NSURL *couchbaseURL;
+@property(nonatomic, retain)CouchDatabase *database;
 
 -(void)loadItemsIntoView;
 -(void)couchbaseDidStart:(NSURL *)serverURL;

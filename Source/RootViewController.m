@@ -24,12 +24,14 @@
 #import "CURLOperation.h"
 #import "NewItemViewController.h"
 #import "DatabaseManager.h"
+#import <Couch/Couch.h>
 
 @implementation RootViewController
 @synthesize items;
 @synthesize syncItem;
 @synthesize activityButtonItem;
 @synthesize couchbaseURL;
+@synthesize database;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -40,6 +42,11 @@
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
 	self.couchbaseURL = serverURL;
+    
+    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+    self.database = [[server databaseNamed: @"demo"] retain];
+    [server release];
+    
 	[self loadItemsIntoView];
 	NSLog(@"serverURL %@",serverURL);
 	self.syncItem = [[[UIBarButtonItem alloc] 

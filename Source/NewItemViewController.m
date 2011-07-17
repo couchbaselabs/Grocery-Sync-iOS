@@ -24,6 +24,7 @@
 #import "DatabaseManager.h"
 #import "RootViewController.h"
 #import "CURLOperation.h"
+#import <Couch/Couch.h>
 
 @implementation NewItemViewController
 @synthesize textView;
