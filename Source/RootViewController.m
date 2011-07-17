@@ -105,11 +105,15 @@
 	if(self.navigationItem.rightBarButtonItem != syncItem) {
 		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
 	}
+    [self refreshItems];
+    [self.tableView reloadData];
+}
+
+-(void) refreshItems {
     CouchQuery *allDocs = [database getAllDocuments];
     allDocs.descending = YES;
     self.items = allDocs.rows;
-    [self.tableView reloadData];
-}	
+}
 
 -(void)newItemAdded
 {
@@ -204,10 +208,14 @@
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
-		NSUInteger position = [indexPath indexAtPosition:1]; // indexPath is [0, idx]
-		[[DatabaseManager sharedManager:self.couchbaseURL] deleteDocument: [items objectAtIndex:position]];
-		[items removeObjectAtIndex: position];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        RESTOperation* op = [[[items rowAtIndex:indexPath.row] document] DELETE];
+        [op onCompletion: ^{
+            // TODO return to the smooth style of deletion
+            //		[items removeRowAtIndex: position];
+            [self refreshItems]; // BLOCKING
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }];
+        [op start];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.

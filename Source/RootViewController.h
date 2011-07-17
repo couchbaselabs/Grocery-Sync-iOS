@@ -34,6 +34,7 @@
 @property(nonatomic, retain)CouchDatabase *database;
 
 -(void)loadItemsIntoView;
+-(void)refreshItems;
 -(void)couchbaseDidStart:(NSURL *)serverURL;
 -(CouchDatabase *)getDatabase;
 
