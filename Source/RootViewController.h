@@ -22,13 +22,12 @@
 #import <Couch/Couch.h>
 
 @interface RootViewController : UITableViewController {
-	NSMutableArray *items;
+	CouchQueryEnumerator *items;
 	UIBarButtonItem *syncItem;
 	UIBarButtonItem *activityButtonItem;
     id database;
-
 }
-@property(nonatomic, retain)NSMutableArray *items;
+@property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *syncItem;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)NSURL *couchbaseURL;

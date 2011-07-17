@@ -105,22 +105,10 @@
 	if(self.navigationItem.rightBarButtonItem != syncItem) {
 		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
 	}
-
-	DatabaseManager *sharedManager = [DatabaseManager sharedManager:self.couchbaseURL];
-	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
-//		NSLog(@"RVC Wooohooo! %@: %@", [inParameter class], inParameter);
-		self.items = inParameter;
-		[self.tableView reloadData];
-	};
-	
-	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
-		NSLog(@"RVC D'OH! %@", error);
-	};
-	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:@"true", @"descending", @"true", @"include_docs", nil];
-	CURLOperation *op = [sharedManager.database operationToFetchAllDocumentsWithOptions:options 
-																	 withSuccessHandler:inSuccessHandler 
-																		 failureHandler:inFailureHandler];
-	[op start];
+    CouchQuery *allDocs = [database getAllDocuments];
+    allDocs.descending = YES;
+    self.items = allDocs.rows;
+    [self.tableView reloadData];
 }	
 
 -(void)newItemAdded
@@ -197,8 +185,8 @@
     }
     
 	// Configure the cell.
-	CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
-	cell.textLabel.text = [[doc valueForKey:@"content"] valueForKey:@"text"];
+	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+	cell.textLabel.text = [row.documentContents valueForKey:@"text"];
     return cell;
 }
 
