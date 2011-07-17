@@ -4,7 +4,4 @@
    <FileRef
       location = "group:CouchDemo.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:Vendor/TouchJSON/Support/TouchJSON-iOS.xcodeproj">
-   </FileRef>
 </Workspace>
