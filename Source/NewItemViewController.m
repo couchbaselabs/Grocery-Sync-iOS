@@ -69,10 +69,11 @@
     NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
     CFRelease(uuid);
 	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
+    [guid release];
 	NSString *text = textView.text;
 	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-                                , [[NSDate date] description], @"created_at"
-                                , nil];
+                            , [[NSDate date] description], @"created_at"
+                            , nil];
     CouchDocument* doc = [[delegate getDatabase] documentWithID: docId];
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{

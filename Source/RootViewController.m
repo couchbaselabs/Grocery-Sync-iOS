@@ -26,19 +26,16 @@
 @synthesize items;
 @synthesize syncItem;
 @synthesize activityButtonItem;
-@synthesize couchbaseURL;
 @synthesize database;
 
 #pragma mark -
 #pragma mark View lifecycle
 
 -(CouchDatabase *) getDatabase {
-	return self.database;
+	return database;
 }
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
-	self.couchbaseURL = serverURL;
-    
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
     self.database = [[server databaseNamed: @"demo"] retain];
     [server release];
@@ -266,6 +263,7 @@
 
 
 - (void)dealloc {
+    [database release];
     [super dealloc];
 }
 

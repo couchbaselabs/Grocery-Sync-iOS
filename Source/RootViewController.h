@@ -30,7 +30,6 @@
 @property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *syncItem;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
-@property(nonatomic, retain)NSURL *couchbaseURL;
 @property(nonatomic, retain)CouchDatabase *database;
 
 -(void)loadItemsIntoView;
