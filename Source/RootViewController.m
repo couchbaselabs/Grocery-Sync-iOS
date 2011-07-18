@@ -19,11 +19,7 @@
 //
 
 #import "RootViewController.h"
-#import "CCouchDBServer.h"
-#import "CCouchDBDatabase.h"
-#import "CURLOperation.h"
 #import "NewItemViewController.h"
-#import "DatabaseManager.h"
 #import <Couch/Couch.h>
 
 @implementation RootViewController
