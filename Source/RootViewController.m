@@ -78,12 +78,13 @@
 {
 	self.syncItem = self.navigationItem.rightBarButtonItem;
 	[self.navigationItem setRightBarButtonItem: self.activityButtonItem animated:YES];
-    RESTOperation *pull = [database syncFromSource: @"http://jan.couchone.com/demo"];
+    NSURL *remoteURL = [NSURL URLWithString:@"http://jan.couchone.com/demo"];
+    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: nil];
     [pull onCompletion:^() {
 		NSLog(@"pulled");
 		[self loadItemsIntoView];
 	}];
-    RESTOperation *push = [database syncToTarget: @"http://jan.couchone.com/demo"];
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: nil];
     [push onCompletion:^() {
 		NSLog(@"pushed");
 	}];
