@@ -71,7 +71,7 @@ static DatabaseManager *sharedManager;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-	NSLog(@"Sync Error: %@", error);
+	//NSLog(@"Sync Error: %@", error);
 	id callbacks = [connections objectForKey:[connection description]];
 	if(callbacks != nil) {
 		DatabaseManagerErrorHandler errorHandler = [callbacks valueForKey:@"error"];
@@ -108,6 +108,20 @@ static DatabaseManager *sharedManager;
 							  successHandler:inSuccessHandler
 							  failureHandler:inFailureHandler];
 	[op start];
+}
+
+-(void)updateDocument:(CCouchDBDocument *)inDocument
+{
+    CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
+		NSLog(@"Wooohooo! Updated %@", inParameter);
+	};
+    
+	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
+		NSLog(@"D'OH! Updated %@", error);
+	};
+
+    CURLOperation *op = [self.database operationToUpdateDocument:inDocument successHandler:inSuccessHandler failureHandler:inFailureHandler];
+    
 }
 
 -(void)dealloc

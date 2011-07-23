@@ -19,17 +19,27 @@
 //
 
 #import "RootViewController.h"
+#import "NewServerController.h"
 #import "CCouchDBServer.h"
 #import "CCouchDBDatabase.h"
-#import "CURLOperation.h"
 #import "NewItemViewController.h"
 #import "DatabaseManager.h"
+#import "CouchDBClientTypes.h"
+#import "CURLOperation.h"
+
+
+
+
 
 @implementation RootViewController
 @synthesize items;
+@synthesize checked;
 @synthesize syncItem;
 @synthesize activityButtonItem;
 @synthesize couchbaseURL;
+@synthesize delegate;
+
+//NSMutableArray * checked = [NSMutableArray arrayWithObjects: @"",nil ];
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -37,6 +47,8 @@
 -(NSURL *)getCouchbaseURL {
 	return self.couchbaseURL;
 }
+
+
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
 	self.couchbaseURL = serverURL;
@@ -50,23 +62,19 @@
 	self.navigationItem.rightBarButtonItem = self.syncItem;
 	self.navigationItem.leftBarButtonItem.enabled = YES;
 	self.navigationItem.rightBarButtonItem.enabled = YES;
+    
+    //_checkboxSelections =0;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+   
+    UIBarButtonItem* addItem = [[UIBarButtonItem alloc]
+                           initWithTitle:@"New Item" style:UIBarButtonItemStyleBordered target:self action:@selector(addItem)];
+    self.navigationItem.leftBarButtonItem = addItem;
+    [addItem release];
 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    //self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
-	// setup buttons
-	UIBarButtonItem *addButtonItem = [[[UIBarButtonItem alloc] 
-									   initWithBarButtonSystemItem:UIBarButtonSystemItemAdd 
-										   target:self 
-										   action:@selector(addItem) 
-									 ] autorelease];
-	addButtonItem.enabled = NO;
-	self.navigationItem.leftBarButtonItem = addButtonItem;
-
+    
 	UIActivityIndicatorView *activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
 	[activity startAnimating];
 	self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
@@ -78,19 +86,24 @@
 {
 	self.syncItem = self.navigationItem.rightBarButtonItem;
 	[self.navigationItem setRightBarButtonItem: self.activityButtonItem animated:YES];
+
 	DatabaseManager *manager = [DatabaseManager sharedManager:self.couchbaseURL];
 	DatabaseManagerSuccessHandler successHandler = ^() {
   	    //woot	
 		NSLog(@"success handler called!");
 		[self loadItemsIntoView];
 	};
-
+    
 	DatabaseManagerErrorHandler errorHandler = ^(id error) {
 		// doh	
 	};
-	
-	[manager syncFrom:@"http://jan.couchone.com/demo" to:@"demo" onSuccess:successHandler onError:errorHandler];
-	[manager syncFrom:@"demo" to:@"http://jan.couchone.com/demo" onSuccess:^() {} onError:^(id error) {}];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *name = [defaults objectForKey:@"servername"];
+
+    
+	[manager syncFrom:name to:@"demo" onSuccess:successHandler onError:errorHandler];
+    [manager syncFrom:@"demo" to:name onSuccess:^() {} onError:^(id error) {}];
 }
 
 -(void)loadItemsIntoView
@@ -98,11 +111,13 @@
 	if(self.navigationItem.rightBarButtonItem != syncItem) {
 		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
 	}
-
+    
 	DatabaseManager *sharedManager = [DatabaseManager sharedManager:self.couchbaseURL];
 	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
-//		NSLog(@"RVC Wooohooo! %@: %@", [inParameter class], inParameter);
+        //		NSLog(@"RVC Wooohooo! %@: %@", [inParameter class], inParameter);
 		self.items = inParameter;
+        NSLog(@"%@",self.items);
+        
 		[self.tableView reloadData];
 	};
 	
@@ -116,11 +131,41 @@
 	[op start];
 }	
 
+
+// Customize the appearance of table view cells.
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    static NSString *CellIdentifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell.textLabel.textColor = [UIColor whiteColor];
+    }
+	// Configure the cell.
+	CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
+    id check = [NSNumber numberWithInteger: 1];
+    
+    if ([[doc valueForKey:@"content"] valueForKey:@"check"] == check) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        NSLog(@"CHECK");
+    }
+    else{
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        NSLog(@"NONE");
+    }
+    cell.textLabel.text = [[doc valueForKey:@"content"] valueForKey:@"text"];
+
+    return cell;
+    
+}
+
 -(void)newItemAdded
 {
 	[self loadItemsIntoView];
 	[self dismissModalViewControllerAnimated:YES];
 }
+
 
 -(void)addItem
 {
@@ -132,36 +177,7 @@
 	[newItemVC release];
 	[newItemNC release];
 }
-									  
 
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
-
-/*
- // Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	// Return YES for supported orientations.
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
- */
 
 
 #pragma mark -
@@ -169,7 +185,7 @@
 
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 
@@ -177,30 +193,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.items count];
 }
-
-
-// Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
-    
-	// Configure the cell.
-	CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
-	cell.textLabel.text = [[doc valueForKey:@"content"] valueForKey:@"text"];
-    return cell;
-}
-
-
-// Override to support conditional editing of the table view.
-//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-//    // Return NO if you do not want the specified item to be editable.
-//    return YES;
-//}
 
 
 
@@ -219,38 +211,45 @@
     }   
 }
 
-
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-
 #pragma mark -
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    //arvind - toggle the indexpath.row bit, to have the ability to check / uncheck
+//	_checkboxSelections ^= (1 << indexPath.row);
+    CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
+   // NSLog([doc description]);
     
-	/*
-	 <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-	 [self.navigationController pushViewController:detailViewController animated:YES];
-	 [detailViewController release];
-	 */
-}
+    NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
+    [docContent addEntriesFromDictionary:[doc valueForKey:@"content"]];
+    id zero = [NSNumber numberWithInteger: 0];
+    id one = [NSNumber numberWithInteger: 1];
+    
+    if ([docContent valueForKey:@"check"] == one) {
+        [docContent setObject:zero forKey:@"check"];
+    }
+    else{
+        [docContent setObject:one forKey:@"check"];
+    
+    }
+    //create a document of the dictionary and replace the old document
+    [doc populateWithJSON:docContent];
+    
+    DatabaseManager *sharedManager = [DatabaseManager sharedManager:self.couchbaseURL];
+	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
+        [self loadItemsIntoView];
 
+	};
+	
+	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
+		NSLog(@"RVC D'OH! %@", error);
+	};
+
+    
+    CURLOperation *up = [sharedManager.database operationToUpdateDocument:doc successHandler:inSuccessHandler failureHandler:inFailureHandler];
+    
+    [up start];
+}
 
 #pragma mark -
 #pragma mark Memory management
@@ -269,6 +268,8 @@
 
 
 - (void)dealloc {
+    [items release];
+    [checked release];
     [super dealloc];
 }
 

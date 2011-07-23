@@ -40,5 +40,6 @@ typedef void (^DatabaseManagerErrorHandler)(id error);
 +(DatabaseManager *)sharedManager:(NSURL *)dbURL;
 -(void)syncFrom:(NSString *)from to:(NSString *)to onSuccess:(DatabaseManagerSuccessHandler)success onError:(DatabaseManagerErrorHandler) error;
 -(void)deleteDocument:(CCouchDBDocument *)inDocument;
+-(void)updateDocument:(CCouchDBDocument *)inDocument;
 -(id)init:(NSURL *)dbURL;
 @end

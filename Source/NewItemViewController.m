@@ -19,15 +19,27 @@
 //
 
 #import "NewItemViewController.h"
+#import "RootViewController.h"
+#import "CCouchDBServer.h"
 #import "CCouchDBDatabase.h"
 #import "CouchDBClientTypes.h"
 #import "DatabaseManager.h"
-#import "RootViewController.h"
+#import "CouchDBClientTypes.h"
 #import "CURLOperation.h"
+
+
 
 @implementation NewItemViewController
 @synthesize textView;
 @synthesize delegate;
+@synthesize couchbaseURL;
+@synthesize items;
+
+
+-(NSURL *)getCouchbaseURL {
+	return self.couchbaseURL;
+}
+
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 /*
@@ -67,15 +79,17 @@
 -(void)done
 {
 	NSString *text = textView.text;
+                    
+    int new = 0;
 	
 	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
                                 , [[NSDate date] description], @"created_at"
-                                , nil];
+                                , [NSNumber numberWithInt:new],@"check", nil];
 	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
 		NSLog(@"Wooohooo! %@", inParameter);
 		[delegate performSelector:@selector(newItemAdded)];
 	};
-	
+        
 	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
 		NSLog(@"D'OH! %@", error);
 	};
@@ -88,8 +102,14 @@
 															   identifier:docId
 														   successHandler:inSuccessHandler 
 														   failureHandler:inFailureHandler];
+    
+    
+    
 	[op start];
 }
+
+
+
 
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -120,6 +140,7 @@
 
 
 - (void)dealloc {
+    [items release];
     [super dealloc];
 }
 
