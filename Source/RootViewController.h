@@ -19,7 +19,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Couch/Couch.h>
+#import <CouchCocoa/CouchCocoa.h>
 
 @interface RootViewController : UITableViewController {
 	CouchQueryEnumerator *items;

@@ -20,7 +20,7 @@
 
 #import "RootViewController.h"
 #import "NewItemViewController.h"
-#import <Couch/Couch.h>
+#import <CouchCocoa/CouchCocoa.h>
 
 @implementation RootViewController
 @synthesize items;
@@ -180,13 +180,12 @@
     
 	// Configure the cell.
 	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
-    if ([row.documentContents valueForKey:@"check"] == [NSNumber numberWithInteger: 1]) {
+    if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithInteger: 1]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
-    else{
+    } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
-    }
-	cell.textLabel.text = [row.documentContents valueForKey:@"text"];
+    };
+	cell.textLabel.text = [row.documentProperties valueForKey:@"text"];
     return cell;
 }
 
@@ -225,7 +224,7 @@
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
     CouchDocument *doc = [row document];
     NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
-    [docContent addEntriesFromDictionary:row.documentContents];
+    [docContent addEntriesFromDictionary:row.documentProperties];
     id zero = [NSNumber numberWithInteger: 0];
     id one = [NSNumber numberWithInteger: 1];
     

@@ -20,8 +20,8 @@
 
 #import "NewItemViewController.h"
 #import "RootViewController.h"
-#import <Couch/Couch.h>
-#import <Couch/RESTOperation.h>
+#import <CouchCocoa/CouchCocoa.h>
+//#import <CouchCocoa/RESTOperation.h>
 
 
 
