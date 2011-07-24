@@ -69,10 +69,11 @@
     [addItem release];
 
     
-	self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
-	self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
-	self.activityButtonItem.enabled = NO;
-	self.navigationItem.rightBarButtonItem = activityButtonItem;
+    self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
+    [self.activity startAnimating];
+    self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
+    self.activityButtonItem.enabled = NO;
+    self.navigationItem.rightBarButtonItem = activityButtonItem;
 }
 
 -(void)setupSync
