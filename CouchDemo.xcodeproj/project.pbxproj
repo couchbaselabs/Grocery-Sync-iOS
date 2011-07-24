@@ -25,6 +25,7 @@
 		27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		27167F5B13C4FA57001CC5B6 /* Couchbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273A739613BE918A0078870D /* Couchbase.framework */; };
 		27167F5D13C4FA57001CC5B6 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDA6DEA13217E2400D8538A /* libstdc++.dylib */; };
+		797D25A013DCE0080065CB95 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 797D259F13DCE0080065CB95 /* Settings.bundle */; };
 		79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,7 @@
 		3D4792DE12A1A86400581D10 /* NewItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewItemViewController.m; sourceTree = "<group>"; };
 		3D4792DF12A1A86400581D10 /* NewItemViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewItemViewController.xib; sourceTree = "<group>"; };
 		3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		797D259F13DCE0080065CB95 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchCocoa.framework; path = Frameworks/CouchCocoa.framework; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* CouchDemo-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CouchDemo-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		BCDA6DEA13217E2400D8538A /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/gcc/arm-apple-darwin10/4.0.1/libstdc++.dylib"; sourceTree = SDKROOT; };
@@ -131,6 +133,7 @@
 				8D1107310486CEB800E47090 /* CouchDemo-Info.plist */,
 				3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */,
 				27ED52D713C3944B00AB846D /* grocery-sync.couch */,
+				797D259F13DCE0080065CB95 /* Settings.bundle */,
 				BCDA6E88132191AA00D8538A /* Default.png */,
 				BCDA6E89132191AA00D8538A /* Default@2x.png */,
 				BCDA6E8A132191AA00D8538A /* Icon.png */,
@@ -217,6 +220,7 @@
 				27167F2013C4FA57001CC5B6 /* Icon.png in Resources */,
 				27167F2113C4FA57001CC5B6 /* Icon@2x.png in Resources */,
 				27167F2213C4FA57001CC5B6 /* grocery-sync.couch in Resources */,
+				797D25A013DCE0080065CB95 /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
