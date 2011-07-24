@@ -246,6 +246,7 @@
         [self loadItemsIntoView];
     }];
     [op start];
+    [docContent release];
 }
 
 #pragma mark -
