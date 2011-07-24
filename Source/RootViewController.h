@@ -19,29 +19,22 @@
 //
 
 #import <UIKit/UIKit.h>
-@class Server;
+#import <Couch/Couch.h>
 
 @interface RootViewController : UITableViewController {
-	NSMutableArray *items;
-    NSMutableArray *checked;
+	CouchQueryEnumerator *items;
 	UIBarButtonItem *syncItem;
 	UIBarButtonItem *activityButtonItem;
-    NSString *servername;
-    
-    NSInteger   _checkboxSelections;
+    id database;
 }
-@property(nonatomic, retain)NSMutableArray *items;
-@property(nonatomic, retain) NSMutableArray *checked;
+@property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *syncItem;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
-@property(nonatomic, retain)NSURL *couchbaseURL;
-@property(assign) id delegate;
-
-
+@property(nonatomic, retain)CouchDatabase *database;
 
 -(void)loadItemsIntoView;
+-(void)refreshItems;
 -(void)couchbaseDidStart:(NSURL *)serverURL;
--(NSURL *)getCouchbaseURL;
-- (void)addIndex:(NSUInteger)index;
+-(CouchDatabase *)getDatabase;
 
 @end

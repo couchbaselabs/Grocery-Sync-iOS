@@ -20,38 +20,29 @@
 
 #import "RootViewController.h"
 #import "NewServerController.h"
-#import "CCouchDBServer.h"
-#import "CCouchDBDatabase.h"
 #import "NewItemViewController.h"
-#import "DatabaseManager.h"
-#import "CouchDBClientTypes.h"
-#import "CURLOperation.h"
-
-
-
-
+#import <Couch/Couch.h>
 
 @implementation RootViewController
 @synthesize items;
-@synthesize checked;
 @synthesize syncItem;
 @synthesize activityButtonItem;
-@synthesize couchbaseURL;
-@synthesize delegate;
-
-//NSMutableArray * checked = [NSMutableArray arrayWithObjects: @"",nil ];
+@synthesize database;
 
 #pragma mark -
 #pragma mark View lifecycle
 
--(NSURL *)getCouchbaseURL {
-	return self.couchbaseURL;
+-(CouchDatabase *) getDatabase {
+	return database;
 }
 
 
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
-	self.couchbaseURL = serverURL;
+    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+    self.database = [[server databaseNamed: @"demo"] retain];
+    [server release];
+    
 	[self loadItemsIntoView];
 	NSLog(@"serverURL %@",serverURL);
 	self.syncItem = [[[UIBarButtonItem alloc] 
@@ -86,24 +77,20 @@
 {
 	self.syncItem = self.navigationItem.rightBarButtonItem;
 	[self.navigationItem setRightBarButtonItem: self.activityButtonItem animated:YES];
-
-	DatabaseManager *manager = [DatabaseManager sharedManager:self.couchbaseURL];
-	DatabaseManagerSuccessHandler successHandler = ^() {
-  	    //woot	
-		NSLog(@"success handler called!");
-		[self loadItemsIntoView];
-	};
-    
-	DatabaseManagerErrorHandler errorHandler = ^(id error) {
-		// doh	
-	};
-    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *name = [defaults objectForKey:@"servername"];
-
-    
-	[manager syncFrom:name to:@"demo" onSuccess:successHandler onError:errorHandler];
-    [manager syncFrom:@"demo" to:name onSuccess:^() {} onError:^(id error) {}];
+    NSURL *remoteURL = [NSURL URLWithString:name];
+    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: nil];
+    [pull onCompletion:^() {
+		NSLog(@"pulled");
+		[self loadItemsIntoView];
+	}];
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: nil];
+    [push onCompletion:^() {
+		NSLog(@"pushed");
+	}];
+    [pull start];
+    [push start];
 }
 
 -(void)loadItemsIntoView
@@ -111,25 +98,15 @@
 	if(self.navigationItem.rightBarButtonItem != syncItem) {
 		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
 	}
-    
-	DatabaseManager *sharedManager = [DatabaseManager sharedManager:self.couchbaseURL];
-	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
-        //		NSLog(@"RVC Wooohooo! %@: %@", [inParameter class], inParameter);
-		self.items = inParameter;
-        NSLog(@"%@",self.items);
-        
-		[self.tableView reloadData];
-	};
-	
-	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
-		NSLog(@"RVC D'OH! %@", error);
-	};
-	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:@"true", @"descending", @"true", @"include_docs", nil];
-	CURLOperation *op = [sharedManager.database operationToFetchAllDocumentsWithOptions:options 
-																	 withSuccessHandler:inSuccessHandler 
-																		 failureHandler:inFailureHandler];
-	[op start];
-}	
+    [self refreshItems];
+    [self.tableView reloadData];
+}
+
+-(void) refreshItems {
+    CouchQuery *allDocs = [database getAllDocuments];
+    allDocs.descending = YES;
+    self.items = allDocs.rows;
+}
 
 
 // Customize the appearance of table view cells.
@@ -195,16 +172,44 @@
 }
 
 
+// Customize the appearance of table view cells.
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    static NSString *CellIdentifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+    }
+    
+	// Configure the cell.
+	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+	cell.textLabel.text = [row.documentContents valueForKey:@"text"];
+    return cell;
+}
+
+
+// Override to support conditional editing of the table view.
+//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+//    // Return NO if you do not want the specified item to be editable.
+//    return YES;
+//}
+
+
 
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
-		NSUInteger position = [indexPath indexAtPosition:1]; // indexPath is [0, idx]
-		[[DatabaseManager sharedManager:self.couchbaseURL] deleteDocument: [items objectAtIndex:position]];
-		[items removeObjectAtIndex: position];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        RESTOperation* op = [[[items rowAtIndex:indexPath.row] document] DELETE];
+        [op onCompletion: ^{
+            [self refreshItems]; // BLOCKING
+            // TODO return to the smooth style of deletion (eg animate the delete before the server responds...)
+            //		[items removeRowAtIndex: position];
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }];
+        [op start];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
@@ -215,11 +220,8 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    //arvind - toggle the indexpath.row bit, to have the ability to check / uncheck
-//	_checkboxSelections ^= (1 << indexPath.row);
-    CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
-   // NSLog([doc description]);
-    
+    CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+	
     NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
     [docContent addEntriesFromDictionary:[doc valueForKey:@"content"]];
     id zero = [NSNumber numberWithInteger: 0];
@@ -269,7 +271,7 @@
 
 - (void)dealloc {
     [items release];
-    [checked release];
+    [database release];
     [super dealloc];
 }
 

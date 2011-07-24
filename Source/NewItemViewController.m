@@ -20,12 +20,9 @@
 
 #import "NewItemViewController.h"
 #import "RootViewController.h"
-#import "CCouchDBServer.h"
-#import "CCouchDBDatabase.h"
-#import "CouchDBClientTypes.h"
-#import "DatabaseManager.h"
-#import "CouchDBClientTypes.h"
-#import "CURLOperation.h"
+#import <Couch/Couch.h>
+#import <Couch/RESTOperation.h>
+
 
 
 
@@ -78,34 +75,26 @@
 
 -(void)done
 {
-	NSString *text = textView.text;
-                    
-    int new = 0;
-	
-	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-                                , [[NSDate date] description], @"created_at"
-                                , [NSNumber numberWithInt:new],@"check", nil];
-	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
-		NSLog(@"Wooohooo! %@", inParameter);
-		[delegate performSelector:@selector(newItemAdded)];
-	};
-        
-	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
-		NSLog(@"D'OH! %@", error);
-	};
-	CFUUIDRef uuid = CFUUIDCreate(nil);
+    CFUUIDRef uuid = CFUUIDCreate(nil);
     NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
     CFRelease(uuid);
 	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
-	DatabaseManager *sharedManager = [DatabaseManager sharedManager:[delegate getCouchbaseURL]];
-	CURLOperation *op = [sharedManager.database operationToCreateDocument:inDocument 
-															   identifier:docId
-														   successHandler:inSuccessHandler 
-														   failureHandler:inFailureHandler];
-    
-    
-    
-	[op start];
+    [guid release];
+	NSString *text = textView.text;
+	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
+                            , [NSNumber numberWithInt:0],@"check" //todo use boolean
+                            , [[NSDate date] description], @"created_at"
+                            , nil];
+    CouchDocument* doc = [[delegate getDatabase] documentWithID: docId];
+    RESTOperation* op = [doc putProperties:inDocument];
+    [op onCompletion: ^{
+        if (op.error) {
+            NSLog(@"error saving doc %@", [op.error description]);
+        }
+		NSLog(@"saved doc! %@", [op description]);
+		[delegate performSelector:@selector(newItemAdded)];
+	}];
+    [op start];
 }
 
 
