@@ -38,9 +38,15 @@
 
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
-    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+//    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+    CouchServer *server = [[CouchServer alloc] init]; //local makes app testing easier
     self.database = [[server databaseNamed: @"demo"] retain];
+    self.database.tracksChanges = YES;
+
     [server release];
+    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(databaseChanged:)
+                                                 name: kCouchDatabaseChangeNotification 
+                                               object: database];
     
 	[self loadItemsIntoView];
 	NSLog(@"serverURL %@",serverURL);
@@ -52,6 +58,12 @@
 	self.navigationItem.rightBarButtonItem = self.syncItem;
 	self.navigationItem.leftBarButtonItem.enabled = YES;
 	self.navigationItem.rightBarButtonItem.enabled = YES;
+}
+
+- (void) databaseChanged: (NSNotification*)n {
+    // Wait to redraw the table, else there is a race condition where if the
+    // DemoItem gets notified after I do, it won't have updated timeSinceExternallyChanged yet.
+    [self performSelector: @selector(loadItemsDueToChanges) withObject: nil afterDelay:0.0];
 }
 
 - (void)viewDidLoad {
@@ -90,8 +102,16 @@
     [push start];
 }
 
--(void)loadItemsIntoView
-{
+-(void)loadItemsDueToChanges {
+    NSLog(@"loadItemsDueToChanges");
+	if(self.navigationItem.rightBarButtonItem != syncItem) {
+		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
+	}
+    [self refreshItems];
+    [self.tableView reloadData];
+}
+
+-(void)loadItemsIntoView {
 	if(self.navigationItem.rightBarButtonItem != syncItem) {
 		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
 	}
@@ -108,15 +128,13 @@
 
 
 
--(void)newItemAdded
-{
+-(void)newItemAdded {
 	[self loadItemsIntoView];
 	[self dismissModalViewControllerAnimated:YES];
 }
 
 
--(void)addItem
-{
+-(void)addItem {
     NewItemViewController *newItemVC = [[NewItemViewController alloc] initWithNibName:@"NewItemViewController" bundle:nil];
     newItemVC.delegate = self;
     UINavigationController *newItemNC = [[UINavigationController alloc] initWithRootViewController:newItemVC];
