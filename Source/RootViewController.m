@@ -19,7 +19,6 @@
 //
 
 #import "RootViewController.h"
-#import "NewServerController.h"
 #import "NewItemViewController.h"
 #import <Couch/Couch.h>
 
@@ -53,8 +52,6 @@
 	self.navigationItem.rightBarButtonItem = self.syncItem;
 	self.navigationItem.leftBarButtonItem.enabled = YES;
 	self.navigationItem.rightBarButtonItem.enabled = YES;
-    
-    //_checkboxSelections =0;
 }
 
 - (void)viewDidLoad {
@@ -80,12 +77,12 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *name = [defaults objectForKey:@"servername"];
     NSURL *remoteURL = [NSURL URLWithString:name];
-    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: nil];
+    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: 0];
     [pull onCompletion:^() {
 		NSLog(@"pulled");
 		[self loadItemsIntoView];
 	}];
-    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: nil];
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: 0];
     [push onCompletion:^() {
 		NSLog(@"pushed");
 	}];
@@ -109,33 +106,7 @@
 }
 
 
-// Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
-	// Configure the cell.
-	CCouchDBDocument *doc = [self.items objectAtIndex:indexPath.row];
-    id check = [NSNumber numberWithInteger: 1];
-    
-    if ([[doc valueForKey:@"content"] valueForKey:@"check"] == check) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        NSLog(@"CHECK");
-    }
-    else{
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        NSLog(@"NONE");
-    }
-    cell.textLabel.text = [[doc valueForKey:@"content"] valueForKey:@"text"];
 
-    return cell;
-    
-}
 
 -(void)newItemAdded
 {
@@ -146,15 +117,40 @@
 
 -(void)addItem
 {
-	// TBD
-	NewItemViewController *newItemVC = [[NewItemViewController alloc] initWithNibName:@"NewItemViewController" bundle:nil];
-	newItemVC.delegate = self;
-	UINavigationController *newItemNC = [[UINavigationController alloc] initWithRootViewController:newItemVC];
-	[self presentModalViewController:newItemNC animated:YES];
-	[newItemVC release];
-	[newItemNC release];
+    NewItemViewController *newItemVC = [[NewItemViewController alloc] initWithNibName:@"NewItemViewController" bundle:nil];
+    newItemVC.delegate = self;
+    UINavigationController *newItemNC = [[UINavigationController alloc] initWithRootViewController:newItemVC];
+    [self presentModalViewController:newItemNC animated:YES];
+    [newItemVC release];
+    [newItemNC release];
 }
 
+// - (BOOL)textFieldShouldReturn:(UITextField *)textField { 
+//     //[textField resignFirstResponder];  
+//     CFUUIDRef uuid = CFUUIDCreate(nil);
+//     NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
+//     CFRelease(uuid);
+//     NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
+//     [guid release];
+//     
+//     NSString *text = textField.text;
+//      
+//  NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
+//                                 , [[NSDate date] description], @"created_at"
+//                                 , [NSNumber numberWithInt:0],@"check", nil];
+//     CouchDocument* doc = [database documentWithID: docId];
+//     RESTOperation* op = [doc putProperties:inDocument];
+//     [op onCompletion: ^{
+//         if (op.error) {
+//             NSLog(@"error saving doc %@", [op.error description]);
+//         }
+//         NSLog(@"saved doc! %@", [op description]);
+//         [self newItemAdded];
+//     }];
+//     [op start];
+//       
+//     return YES; 
+// }
 
 
 #pragma mark -
@@ -162,7 +158,7 @@
 
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 1;
 }
 
 
@@ -184,6 +180,12 @@
     
 	// Configure the cell.
 	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+    if ([row.documentContents valueForKey:@"check"] == [NSNumber numberWithInteger: 1]) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+    else{
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
 	cell.textLabel.text = [row.documentContents valueForKey:@"text"];
     return cell;
 }
@@ -221,9 +223,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
-	
+    CouchDocument *doc = [row document];
     NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
-    [docContent addEntriesFromDictionary:[doc valueForKey:@"content"]];
+    [docContent addEntriesFromDictionary:row.documentContents];
     id zero = [NSNumber numberWithInteger: 0];
     id one = [NSNumber numberWithInteger: 1];
     
@@ -235,22 +237,15 @@
     
     }
     //create a document of the dictionary and replace the old document
-    [doc populateWithJSON:docContent];
-    
-    DatabaseManager *sharedManager = [DatabaseManager sharedManager:self.couchbaseURL];
-	CouchDBSuccessHandler inSuccessHandler = ^(id inParameter) {
+    RESTOperation* op = [doc putProperties:docContent];
+    [op onCompletion: ^{
+        if (op.error) {
+            NSLog(@"error updating doc %@", [op.error description]);
+        }
+        NSLog(@"updated doc! %@", [op description]);
         [self loadItemsIntoView];
-
-	};
-	
-	CouchDBFailureHandler inFailureHandler = ^(NSError *error) {
-		NSLog(@"RVC D'OH! %@", error);
-	};
-
-    
-    CURLOperation *up = [sharedManager.database operationToUpdateDocument:doc successHandler:inSuccessHandler failureHandler:inFailureHandler];
-    
-    [up start];
+    }];
+    [op start];
 }
 
 #pragma mark -
