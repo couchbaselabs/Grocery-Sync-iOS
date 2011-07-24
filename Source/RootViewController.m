@@ -38,8 +38,9 @@
 
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
-//    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-    CouchServer *server = [[CouchServer alloc] init]; //local makes app testing easier
+    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+    // uncomment the next line to run with Couchbase Single on your local workstation
+//    CouchServer *server = [[CouchServer alloc] init]; in simulator
     self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
 
@@ -77,15 +78,15 @@
 -(void)setupSync
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *servername = [defaults objectForKey:@"servername"];
-    NSURL *remoteURL = [NSURL URLWithString:servername];
+    NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
+    NSURL *remoteURL = [NSURL URLWithString:syncpoint];
     RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
     [pull onCompletion:^() {
-        NSLog(@"continous sync triggered from %@", servername);
+        NSLog(@"continous sync triggered from %@", syncpoint);
 	}];
     RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
     [push onCompletion:^() {
-        NSLog(@"continous sync triggered to %@", servername);
+        NSLog(@"continous sync triggered to %@", syncpoint);
 	}];
 }
 

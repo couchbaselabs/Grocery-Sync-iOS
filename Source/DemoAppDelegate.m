@@ -57,7 +57,7 @@
     // Add the navigation controller's view to the window and display.
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:@"http://couchbase.iriscouch.com/grocery-sync" forKey:@"servername"];
+    NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:@"http://couchbase.iriscouch.com/grocery-sync" forKey:@"syncpoint"];
     [defaults registerDefaults:appdefaults];
     [defaults synchronize];
 
