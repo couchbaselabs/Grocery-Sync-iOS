@@ -42,7 +42,16 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
-	[Couchbase startCouchbase:self]; // pass optional URL or port
+    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"demo" ofType: @"couch"];
+    NSAssert(dbPath, @"Couldn't find demo.couch");
+
+    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
+    cb.delegate = self;
+    [cb installDefaultDatabase: dbPath];
+    if (![cb start]) {
+        NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
+        exit(1);    // Panic!
+    }
 
     // Override point for customization after application launch.
     // Add the navigation controller's view to the window and display.
@@ -51,7 +60,7 @@
     NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:@"http://subarvind.iriscouch.com/demo" forKey:@"servername"];
     [defaults registerDefaults:appdefaults];
     [defaults synchronize];
-    
+
 	[window addSubview:navigationController.view];
 	[window makeKeyAndVisible];
     return YES;
