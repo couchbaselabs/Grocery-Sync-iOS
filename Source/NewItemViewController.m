@@ -29,13 +29,7 @@
 @implementation NewItemViewController
 @synthesize textView;
 @synthesize delegate;
-@synthesize couchbaseURL;
-@synthesize items;
 
-
--(NSURL *)getCouchbaseURL {
-	return self.couchbaseURL;
-}
 
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -129,7 +123,6 @@
 
 
 - (void)dealloc {
-    [items release];
     [super dealloc];
 }
 
