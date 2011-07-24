@@ -42,8 +42,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"demo" ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find demo.couch");
+    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
+    NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
 
     CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
     cb.delegate = self;
@@ -57,7 +57,7 @@
     // Add the navigation controller's view to the window and display.
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:@"http://subarvind.iriscouch.com/demo" forKey:@"servername"];
+    NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:@"http://couchbase.iriscouch.com/grocery-sync" forKey:@"servername"];
     [defaults registerDefaults:appdefaults];
     [defaults synchronize];
 

@@ -23,16 +23,17 @@
 
 @interface RootViewController : UITableViewController {
 	CouchQueryEnumerator *items;
-	UIBarButtonItem *syncItem;
 	UIBarButtonItem *activityButtonItem;
+    UIActivityIndicatorView *activity;
     id database;
 }
 @property(nonatomic, retain)CouchQueryEnumerator *items;
-@property(nonatomic, retain)UIBarButtonItem *syncItem;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
+@property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
 
 -(void)loadItemsIntoView;
+-(void)setupSync;
 -(void)refreshItems;
 -(void)couchbaseDidStart:(NSURL *)serverURL;
 -(CouchDatabase *)getDatabase;

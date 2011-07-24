@@ -24,8 +24,8 @@
 
 @implementation RootViewController
 @synthesize items;
-@synthesize syncItem;
 @synthesize activityButtonItem;
+@synthesize activity;
 @synthesize database;
 
 #pragma mark -
@@ -40,7 +40,7 @@
 -(void)couchbaseDidStart:(NSURL *)serverURL {
 //    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
     CouchServer *server = [[CouchServer alloc] init]; //local makes app testing easier
-    self.database = [[server databaseNamed: @"demo"] retain];
+    self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
 
     [server release];
@@ -48,16 +48,9 @@
                                                  name: kCouchDatabaseChangeNotification 
                                                object: database];
     
-	[self loadItemsIntoView];
-	NSLog(@"serverURL %@",serverURL);
-	self.syncItem = [[[UIBarButtonItem alloc] 
-					  initWithTitle:@"Sync" style:UIBarButtonItemStyleBordered
-					  target:self 
-					  action:@selector(sync) 
-					  ] autorelease];
-	self.navigationItem.rightBarButtonItem = self.syncItem;
-	self.navigationItem.leftBarButtonItem.enabled = YES;
-	self.navigationItem.rightBarButtonItem.enabled = YES;
+    [self loadItemsIntoView];
+    [self setupSync];
+    self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
 - (void) databaseChanged: (NSNotification*)n {
@@ -75,54 +68,44 @@
     [addItem release];
 
     
-	UIActivityIndicatorView *activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
-	[activity startAnimating];
+	self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
 	self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
 	self.activityButtonItem.enabled = NO;
 	self.navigationItem.rightBarButtonItem = activityButtonItem;
 }
 
--(void)sync
+-(void)setupSync
 {
-	self.syncItem = self.navigationItem.rightBarButtonItem;
-	[self.navigationItem setRightBarButtonItem: self.activityButtonItem animated:YES];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *name = [defaults objectForKey:@"servername"];
-    NSURL *remoteURL = [NSURL URLWithString:name];
-    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: 0];
+    NSString *servername = [defaults objectForKey:@"servername"];
+    NSURL *remoteURL = [NSURL URLWithString:servername];
+    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
     [pull onCompletion:^() {
-		NSLog(@"pulled");
-		[self loadItemsIntoView];
+        NSLog(@"continous sync triggered from %@", servername);
 	}];
-    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: 0];
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
     [push onCompletion:^() {
-		NSLog(@"pushed");
+        NSLog(@"continous sync triggered to %@", servername);
 	}];
-    [pull start];
-    [push start];
 }
 
 -(void)loadItemsDueToChanges {
     NSLog(@"loadItemsDueToChanges");
-	if(self.navigationItem.rightBarButtonItem != syncItem) {
-		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
-	}
     [self refreshItems];
     [self.tableView reloadData];
 }
 
 -(void)loadItemsIntoView {
-	if(self.navigationItem.rightBarButtonItem != syncItem) {
-		[self.navigationItem setRightBarButtonItem: syncItem animated:YES];
-	}
     [self refreshItems];
     [self.tableView reloadData];
 }
 
 -(void) refreshItems {
+    [self.activity startAnimating];
     CouchQuery *allDocs = [database getAllDocuments];
     allDocs.descending = YES;
     self.items = allDocs.rows;
+    [self.activity stopAnimating];
 }
 
 
@@ -142,33 +125,6 @@
     [newItemVC release];
     [newItemNC release];
 }
-
-// - (BOOL)textFieldShouldReturn:(UITextField *)textField { 
-//     //[textField resignFirstResponder];  
-//     CFUUIDRef uuid = CFUUIDCreate(nil);
-//     NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
-//     CFRelease(uuid);
-//     NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
-//     [guid release];
-//     
-//     NSString *text = textField.text;
-//      
-//  NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-//                                 , [[NSDate date] description], @"created_at"
-//                                 , [NSNumber numberWithInt:0],@"check", nil];
-//     CouchDocument* doc = [database documentWithID: docId];
-//     RESTOperation* op = [doc putProperties:inDocument];
-//     [op onCompletion: ^{
-//         if (op.error) {
-//             NSLog(@"error saving doc %@", [op.error description]);
-//         }
-//         NSLog(@"saved doc! %@", [op description]);
-//         [self newItemAdded];
-//     }];
-//     [op start];
-//       
-//     return YES; 
-// }
 
 
 #pragma mark -
