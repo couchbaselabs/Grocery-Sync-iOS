@@ -169,8 +169,6 @@
     
 	// Configure the cell.
 	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
-    NSLog(@"value of check %@", [[row.documentProperties valueForKey:@"check"] description]);
-
     if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithBool:YES]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
