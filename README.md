@@ -2,6 +2,8 @@
 
 This is a simple demo app showing how to use the [Couchbase Mobile][1] framework to run [Apache CouchDB][2] on iOS. The app just presents a simple editable list of textual items, which are stored persistently in a local database, and shared in realtime via a syncpoint in the cloud.
 
+**Keep in mind that the default is to share the globally shared grocery list.** To use a private grocery list, the user must create a password protected database and then direct Grocery Sync at it via the Settings application. URLs are specified in the form `http://username:password@myhost.iriscouch.com/grocery-sync`
+
 So this dude is at the grocery store picking up produce and checking it off on his phone. He's all proud looking when he is about to check off the last item on the list, but then... suddenly new items start appearing. Cut to his wife at home with the kids and she's adding items.
 
 Okra? Ok. Coconut milk. But I already got regular milk! He checks them off as he goes. Cut to his wife who sees them marked done, she gets a big grin and starts adding cookies and ice cream and paper towels or whatever.
