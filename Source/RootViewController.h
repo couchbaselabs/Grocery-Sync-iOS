@@ -20,8 +20,9 @@
 
 #import <UIKit/UIKit.h>
 #import <CouchCocoa/CouchCocoa.h>
+#import <Couchbase/CouchbaseEmbeddedServer.h>
 
-@interface RootViewController : UITableViewController {
+@interface RootViewController : UITableViewController <CouchbaseDelegate>{
 	CouchQueryEnumerator *items;
 	UIBarButtonItem *activityButtonItem;
     UIActivityIndicatorView *activity;
@@ -35,7 +36,6 @@
 -(void)loadItemsIntoView;
 -(void)setupSync;
 -(void)refreshItems;
--(void)couchbaseDidStart:(NSURL *)serverURL;
 -(CouchDatabase *)getDatabase;
 
 @end

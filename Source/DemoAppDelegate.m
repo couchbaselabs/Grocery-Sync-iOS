@@ -27,32 +27,10 @@
 @synthesize window;
 @synthesize navigationController;
 
--(void)couchbaseDidStart:(NSURL *)serverURL {
-	NSLog(@"CouchDB is Ready, go!");
-	
-	// Tell RootViewController to stop spinning
-	UIViewController* vc = self.navigationController.visibleViewController;
-	if ([vc respondsToSelector:@selector(couchbaseDidStart:)]) {
-		[self.navigationController.visibleViewController performSelector:@selector(couchbaseDidStart:) withObject:serverURL];
-	}
-}
-
 #pragma mark -
 #pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
-
-    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
-    cb.delegate = self;
-    [cb installDefaultDatabase: dbPath];
-    if (![cb start]) {
-        NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
-        exit(1);    // Panic!
-    }
-
     // Override point for customization after application launch.
     // Add the navigation controller's view to the window and display.
 

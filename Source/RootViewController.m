@@ -21,6 +21,7 @@
 #import "RootViewController.h"
 #import "NewItemViewController.h"
 #import <CouchCocoa/CouchCocoa.h>
+#import <Couchbase/CouchbaseEmbeddedServer.h>
 
 @implementation RootViewController
 @synthesize items;
@@ -63,6 +64,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
    
+    // start the Couchbase Server
+    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
+    NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
+
+    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
+    cb.delegate = self;
+    [cb installDefaultDatabase: dbPath];
+    if (![cb start]) {
+        NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
+        exit(1);    // Panic!
+    }
+
     UIBarButtonItem* addItem = [[UIBarButtonItem alloc]
                            initWithTitle:@"New Item" style:UIBarButtonItemStyleBordered target:self action:@selector(addItem)];
     self.navigationItem.leftBarButtonItem = addItem;
