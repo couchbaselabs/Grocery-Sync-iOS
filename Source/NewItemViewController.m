@@ -76,7 +76,7 @@
     [guid release];
 	NSString *text = textView.text;
 	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-                            , [NSNumber numberWithInt:0],@"check" //todo use boolean
+                            , [NSNumber numberWithBool:NO], @"check"
                             , [[NSDate date] description], @"created_at"
                             , nil];
     CouchDocument* doc = [[delegate getDatabase] documentWithID: docId];

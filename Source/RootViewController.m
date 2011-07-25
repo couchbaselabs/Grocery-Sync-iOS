@@ -41,7 +41,7 @@
 -(void)couchbaseDidStart:(NSURL *)serverURL {
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
     // uncomment the next line to run with Couchbase Single on your local workstation
-//    CouchServer *server = [[CouchServer alloc] init]; in simulator
+//    CouchServer *server = [[CouchServer alloc] init];
     self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
 
@@ -169,7 +169,9 @@
     
 	// Configure the cell.
 	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
-    if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithInteger: 1]) {
+    NSLog(@"value of check %@", [[row.documentProperties valueForKey:@"check"] description]);
+
+    if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithBool:YES]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -214,14 +216,14 @@
     CouchDocument *doc = [row document];
     NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
     [docContent addEntriesFromDictionary:row.documentProperties];
-    id zero = [NSNumber numberWithInteger: 0];
-    id one = [NSNumber numberWithInteger: 1];
+    id jsonFalse = [NSNumber numberWithBool:NO];
+    id jsonTrue = [NSNumber numberWithBool:YES];
     
-    if ([docContent valueForKey:@"check"] == one) {
-        [docContent setObject:zero forKey:@"check"];
+    if ([docContent valueForKey:@"check"] == jsonTrue) {
+        [docContent setObject:jsonFalse forKey:@"check"];
     }
     else{
-        [docContent setObject:one forKey:@"check"];
+        [docContent setObject:jsonTrue forKey:@"check"];
     
     }
     //create a document of the dictionary and replace the old document
