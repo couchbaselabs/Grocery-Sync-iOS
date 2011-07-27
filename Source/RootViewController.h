@@ -19,19 +19,19 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <CouchCocoa/CouchCocoa.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
+@class CouchDatabase, CouchQueryEnumerator;
+
 
 @interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,CouchbaseDelegate>{
 	CouchQueryEnumerator *items;
 	UIBarButtonItem *activityButtonItem;
     UIActivityIndicatorView *activity;
-    id database;
+    CouchDatabase *database;
 
     UITableView *tableView;
     IBOutlet UITextField *addItemTextField;
     IBOutlet UIImageView *addItemBackground;
-    CouchDocument* _document;
 }
 @property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
@@ -43,6 +43,5 @@
 -(void)loadItemsIntoView;
 -(void)setupSync;
 -(void)refreshItems;
--(CouchDatabase *)getDatabase;
 
 @end

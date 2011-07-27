@@ -22,8 +22,6 @@
 		797D25A013DCE0080065CB95 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 797D259F13DCE0080065CB95 /* Settings.bundle */; };
 		79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */; };
 		CBD32A2613E0293300CF15A9 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A1913E0293300CF15A9 /* background.png */; };
-		CBD32A2813E0293300CF15A9 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A1B13E0293300CF15A9 /* icon.png */; };
-		CBD32A2913E0293300CF15A9 /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A1C13E0293300CF15A9 /* icon@2x.png */; };
 		CBD32A2B13E0293300CF15A9 /* list_area___border.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A1E13E0293300CF15A9 /* list_area___border.png */; };
 		CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */; };
 		CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */; };
@@ -61,8 +59,6 @@
 		8D1107310486CEB800E47090 /* CouchDemo-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CouchDemo-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		BCDA6DEA13217E2400D8538A /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/gcc/arm-apple-darwin10/4.0.1/libstdc++.dylib"; sourceTree = SDKROOT; };
 		CBD32A1913E0293300CF15A9 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
-		CBD32A1B13E0293300CF15A9 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		CBD32A1C13E0293300CF15A9 /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		CBD32A1E13E0293300CF15A9 /* list_area___border.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___border.png"; sourceTree = "<group>"; };
 		CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___checked.png"; sourceTree = "<group>"; };
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
@@ -185,8 +181,6 @@
 				CBD32A4313E0622C00CF15A9 /* top.png */,
 				CBD32A4013E061D300CF15A9 /* middle.png */,
 				CBD32A1913E0293300CF15A9 /* background.png */,
-				CBD32A1B13E0293300CF15A9 /* icon.png */,
-				CBD32A1C13E0293300CF15A9 /* icon@2x.png */,
 				CBD32A1E13E0293300CF15A9 /* list_area___border.png */,
 				CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */,
 				CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */,
@@ -259,8 +253,6 @@
 				CBD6E07D13E01711001EFA8C /* icon@2x.png in Resources */,
 				CBD6E08413E01ECB001EFA8C /* Default.png in Resources */,
 				CBD32A2613E0293300CF15A9 /* background.png in Resources */,
-				CBD32A2813E0293300CF15A9 /* icon.png in Resources */,
-				CBD32A2913E0293300CF15A9 /* icon@2x.png in Resources */,
 				CBD32A2B13E0293300CF15A9 /* list_area___border.png in Resources */,
 				CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */,
 				CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */,

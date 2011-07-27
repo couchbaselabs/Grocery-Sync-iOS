@@ -20,33 +20,36 @@
 
 #import "RootViewController.h"
 #import <CouchCocoa/CouchCocoa.h>
+#import <CouchCocoa/RESTBody.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
+
 @implementation RootViewController
+
+
 @synthesize items;
 @synthesize activityButtonItem;
 @synthesize activity;
 @synthesize database;
 @synthesize tableView;
 
+
 #pragma mark -
 #pragma mark View lifecycle
 
--(CouchDatabase *) getDatabase {
-	return database;
-}
-
-
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
+#if 1    // Change to "0" to run with Couchbase Single on your local workstation (simulator only)
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-    // uncomment the next line to run with Couchbase Single on your local workstation
-//    CouchServer *server = [[CouchServer alloc] init];
+#else
+    CouchServer *server = [[CouchServer alloc] init];
+#endif
     self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
-
     [server release];
-    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(databaseChanged:)
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(loadItemsDueToChanges:)
                                                  name: kCouchDatabaseChangeNotification 
                                                object: database];
     
@@ -55,11 +58,6 @@
     self.navigationItem.leftBarButtonItem.enabled = YES;
 }
 
-- (void) databaseChanged: (NSNotification*)n {
-    // Wait to redraw the table, else there is a race condition where if the
-    // DemoItem gets notified after I do, it won't have updated timeSinceExternallyChanged yet.
-    [self performSelector: @selector(loadItemsDueToChanges) withObject: nil afterDelay:0.0];
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -85,36 +83,57 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]];
 }
 
+
+- (void)dealloc {
+    [items release];
+    [database release];
+    [super dealloc];
+}
+
+
 -(void)setupSync
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
     NSURL *remoteURL = [NSURL URLWithString:syncpoint];
-    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
+    
+    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL
+                                                  options: kCouchReplicationContinuous];
     [pull onCompletion:^() {
-        NSLog(@"continous sync triggered from %@", syncpoint);
+        if (pull.isSuccessful)
+            NSLog(@"continous sync triggered from %@", syncpoint);
+        else
+            NSLog(@"continuous sync failed from %@: %@", syncpoint, pull.error);
 	}];
-    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL options: kCouchReplicationContinuous];
+    
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL 
+                                                options: kCouchReplicationContinuous];
     [push onCompletion:^() {
-        NSLog(@"continous sync triggered to %@", syncpoint);
+        if (push.isSuccessful)
+            NSLog(@"continous sync triggered to %@", syncpoint);
+        else
+            NSLog(@"continuous sync failed to %@: %@", syncpoint, push.error);
 	}];
 }
 
--(void)loadItemsDueToChanges {
+
+-(void)loadItemsDueToChanges:(NSNotification*)notification {
     NSLog(@"loadItemsDueToChanges");
     [self refreshItems];
     [self.tableView reloadData];
 }
+
 
 -(void)loadItemsIntoView {
     [self refreshItems];
     [self.tableView reloadData];
 }
 
+
 -(void) refreshItems {
     [self.activity startAnimating];
     CouchQuery *allDocs = [database getAllDocuments];
-    allDocs.descending = YES;
+    allDocs.descending = YES;   // Sort by descending ID, which will imply descending create time
     self.items = allDocs.rows;
     [self.activity stopAnimating];
 }
@@ -125,14 +144,9 @@
 }
 
 
-
 #pragma mark -
 #pragma mark Table view data source
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    return 52;
-//}
 
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -153,9 +167,11 @@
     
     cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem" owner:self options:nil];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem"
+                                                                 owner:self options:nil];
         cell = [topLevelObjects objectAtIndex:0];
 
+        // Customize the appearance of the cell, to show the top/bottom table borders:
         if (indexPath.row == 0) {
             UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
             [backgroundImage setImage:[UIImage imageNamed:@"top.png"]];
@@ -164,27 +180,29 @@
             UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
             [backgroundImage setImage:[UIImage imageNamed:@"bottom.png"]];
 
-            UIImageView *line_doted = (UIImageView*)[cell viewWithTag:4];
-            [line_doted setAlpha:0];
+            UIImageView *line_dotted = (UIImageView*)[cell viewWithTag:4];
+            [line_dotted setAlpha:0];
         }
     }
     
-    // Configure the cell.
+    // Update the cell's checkbox and text from the query row:
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
     UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
 
-    if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithBool:YES]) {
+    if ([[row.documentProperties valueForKey:@"check"] boolValue]) {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
         [checkBoxImageView setFrame:CGRectMake(13, 10, 32, 29)];
     } else {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___unchecked"]];
         [checkBoxImageView setFrame:CGRectMake(13, 14, 24, 25)];
     };
-    UILabel *labelWIthText = (UILabel*)[cell viewWithTag:2];
-    labelWIthText.text = [row.documentProperties valueForKey:@"text"];
+    
+    UILabel *labelWithText = (UILabel*)[cell viewWithTag:2];
+    labelWithText.text = [row.documentProperties valueForKey:@"text"];
 
     return cell;
 }
+
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -202,45 +220,36 @@
     }   
 }
 
+
 #pragma mark -
 #pragma mark Table view delegate
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
     CouchDocument *doc = [row document];
-    NSMutableDictionary *docContent = [[NSMutableDictionary alloc] init];//[doc valueForKey:@"content"];
-    [docContent addEntriesFromDictionary:row.documentProperties];
-    id jsonFalse = [NSNumber numberWithBool:NO];
-    id jsonTrue = [NSNumber numberWithBool:YES];
     
-    if ([docContent valueForKey:@"check"] == jsonTrue) {
-        [docContent setObject:jsonFalse forKey:@"check"];
-    }
-    else{
-        [docContent setObject:jsonTrue forKey:@"check"];
-    
-    }
-    //create a document of the dictionary and replace the old document
+    // Toggle the document's 'checked' property:
+    NSMutableDictionary *docContent = [[row.documentProperties mutableCopy] autorelease];
+    BOOL wasChecked = [[docContent valueForKey:@"check"] boolValue];
+    [docContent setObject:[NSNumber numberWithBool:!wasChecked] forKey:@"check"];
+
+    // Save changes, asynchronously:
     RESTOperation* op = [doc putProperties:docContent];
     [op onCompletion: ^{
-        if (op.error) {
+        if (op.error)
             NSLog(@"error updating doc %@", [op.error description]);
-        }
-        NSLog(@"updated doc! %@", [op description]);
+        else
+            NSLog(@"updated doc! %@", [op description]);
         [self loadItemsIntoView];
     }];
     [op start];
-    [docContent release];
 }
 
-- (void)dealloc {
-    [items release];
-    [database release];
-    [super dealloc];
-}
 
 #pragma mark -
 #pragma mark UITextField delegate
+
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -250,47 +259,49 @@
 	return YES;
 }
 
+
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
     [addItemBackground setImage:[UIImage imageNamed:@"textfield___active.png"]];
 }
 
+
 -(void)textFieldDidEndEditing:(UITextField *)textField
 {
-    if ([addItemTextField.text length] == 0) {
+    // Get the name of the item from the text field:
+	NSString *text = addItemTextField.text;
+    if (text.length == 0) {
         return;
     }
+    [addItemTextField setText:nil];
 
-    CFUUIDRef uuid = CFUUIDCreate(nil);
-    NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
-
+    // Construct a unique document ID that will sort chronologically:
+    CFUUIDRef uuid = CFUUIDCreate(NULL);
+    NSString *guid = (NSString*)CFUUIDCreateString(NULL, uuid);
     CFRelease(uuid);
-
 	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
-
     [guid release];
 
-	NSString *text = addItemTextField.text;
 
-	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
-                                , [NSNumber numberWithBool:NO], @"check"
-                                , [[NSDate date] description], @"created_at"
-                                , nil];
+    // Create the new document's properties:
+	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:
+                                text, @"text",
+                                [NSNumber numberWithBool:NO], @"check",
+                                [RESTBody JSONObjectWithDate: [NSDate date]], @"created_at",
+                                nil];
 
-    CouchDocument* doc = [[self getDatabase] documentWithID: docId];
+    // Save the document, asynchronously:
+    CouchDocument* doc = [database documentWithID: docId];
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
-        if (op.error) {
+        if (op.error)
             NSLog(@"error saving doc %@", [op.error description]);
-        }
-		NSLog(@"saved doc! %@", [op description]);
-		[self performSelector:@selector(newItemAdded)];
+        else
+            NSLog(@"saved doc! %@", [op description]);
+		[self newItemAdded];
 	}];
     [op start];
-
-    [addItemTextField setText:nil];
 }
 
 
 @end
-
