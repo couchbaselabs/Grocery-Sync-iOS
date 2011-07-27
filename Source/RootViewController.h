@@ -22,16 +22,23 @@
 #import <CouchCocoa/CouchCocoa.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
-@interface RootViewController : UITableViewController <CouchbaseDelegate>{
+@interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,CouchbaseDelegate>{
 	CouchQueryEnumerator *items;
 	UIBarButtonItem *activityButtonItem;
     UIActivityIndicatorView *activity;
     id database;
+
+    UITableView *tableView;
+    IBOutlet UITextField *addItemTextField;
+    IBOutlet UIImageView *addItemBackground;
+    CouchDocument* _document;
 }
 @property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
+
+@property(nonatomic, retain) IBOutlet UITableView *tableView;
 
 -(void)loadItemsIntoView;
 -(void)setupSync;

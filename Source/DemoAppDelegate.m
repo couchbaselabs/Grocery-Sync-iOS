@@ -21,7 +21,6 @@
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
 
-
 @implementation DemoAppDelegate
 
 @synthesize window;
@@ -41,7 +40,19 @@
 
 	[window addSubview:navigationController.view];
 	[window makeKeyAndVisible];
+
+    splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20, 320, 460)];
+	splashView.image = [UIImage imageNamed:@"Default.png"];
+	[self.window addSubview:splashView];
+	[self performSelector:@selector(removeSplash) withObject:nil afterDelay:2];
+
     return YES;
+}
+
+-(void)removeSplash;
+{
+	[splashView removeFromSuperview];
+	[splashView release];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

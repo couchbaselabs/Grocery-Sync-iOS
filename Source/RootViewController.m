@@ -19,7 +19,6 @@
 //
 
 #import "RootViewController.h"
-#import "NewItemViewController.h"
 #import <CouchCocoa/CouchCocoa.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
@@ -28,6 +27,7 @@
 @synthesize activityButtonItem;
 @synthesize activity;
 @synthesize database;
+@synthesize tableView;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -75,18 +75,14 @@
         NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
         exit(1);    // Panic!
     }
-
-    UIBarButtonItem* addItem = [[UIBarButtonItem alloc]
-                           initWithTitle:@"New Item" style:UIBarButtonItemStyleBordered target:self action:@selector(addItem)];
-    self.navigationItem.leftBarButtonItem = addItem;
-    [addItem release];
-
     
     self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
     self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
     self.activityButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = activityButtonItem;
+
+    [self.tableView setBackgroundColor:[UIColor clearColor]];
 }
 
 -(void)setupSync
@@ -124,32 +120,24 @@
 }
 
 
-
-
 -(void)newItemAdded {
 	[self loadItemsIntoView];
-	[self dismissModalViewControllerAnimated:YES];
 }
 
-
--(void)addItem {
-    NewItemViewController *newItemVC = [[NewItemViewController alloc] initWithNibName:@"NewItemViewController" bundle:nil];
-    newItemVC.delegate = self;
-    UINavigationController *newItemNC = [[UINavigationController alloc] initWithRootViewController:newItemVC];
-    [self presentModalViewController:newItemNC animated:YES];
-    [newItemVC release];
-    [newItemNC release];
-}
 
 
 #pragma mark -
 #pragma mark Table view data source
 
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return 52;
+//}
+
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
-
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -161,33 +149,43 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell;
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem" owner:self options:nil];
+        cell = [topLevelObjects objectAtIndex:0];
+
+        if (indexPath.row == 0) {
+            UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
+            [backgroundImage setImage:[UIImage imageNamed:@"top.png"]];
+        }
+        if (indexPath.row == [self.items count]-1) {
+            UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
+            [backgroundImage setImage:[UIImage imageNamed:@"bottom.png"]];
+
+            UIImageView *line_doted = (UIImageView*)[cell viewWithTag:4];
+            [line_doted setAlpha:0];
+        }
     }
     
-	// Configure the cell.
-	CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+    // Configure the cell.
+    CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+    UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
+
     if ([row.documentProperties valueForKey:@"check"] == [NSNumber numberWithBool:YES]) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
+        [checkBoxImageView setFrame:CGRectMake(13, 10, 32, 29)];
     } else {
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___unchecked"]];
+        [checkBoxImageView setFrame:CGRectMake(13, 14, 24, 25)];
     };
-	cell.textLabel.text = [row.documentProperties valueForKey:@"text"];
+    UILabel *labelWIthText = (UILabel*)[cell viewWithTag:2];
+    labelWIthText.text = [row.documentProperties valueForKey:@"text"];
+
     return cell;
 }
 
-
-// Override to support conditional editing of the table view.
-//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-//    // Return NO if you do not want the specified item to be editable.
-//    return YES;
-//}
-
-
-
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
@@ -195,9 +193,7 @@
         RESTOperation* op = [[[items rowAtIndex:indexPath.row] document] DELETE];
         [op onCompletion: ^{
             [self refreshItems]; // BLOCKING
-            // TODO return to the smooth style of deletion (eg animate the delete before the server responds...)
-            //		[items removeRowAtIndex: position];
-            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         }];
         [op start];
     }   
@@ -237,26 +233,62 @@
     [docContent release];
 }
 
-#pragma mark -
-#pragma mark Memory management
-
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Relinquish ownership any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-    // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
-    // For example: self.myOutlet = nil;
-}
-
-
 - (void)dealloc {
     [items release];
     [database release];
     [super dealloc];
+}
+
+#pragma mark -
+#pragma mark UITextField delegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+	[textField resignFirstResponder];
+    [addItemBackground setImage:[UIImage imageNamed:@"textfield___inactive.png"]];
+
+	return YES;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [addItemBackground setImage:[UIImage imageNamed:@"textfield___active.png"]];
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if ([addItemTextField.text length] == 0) {
+        return;
+    }
+
+    CFUUIDRef uuid = CFUUIDCreate(nil);
+    NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
+
+    CFRelease(uuid);
+
+	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
+
+    [guid release];
+
+	NSString *text = addItemTextField.text;
+
+	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
+                                , [NSNumber numberWithBool:NO], @"check"
+                                , [[NSDate date] description], @"created_at"
+                                , nil];
+
+    CouchDocument* doc = [[self getDatabase] documentWithID: docId];
+    RESTOperation* op = [doc putProperties:inDocument];
+    [op onCompletion: ^{
+        if (op.error) {
+            NSLog(@"error saving doc %@", [op.error description]);
+        }
+		NSLog(@"saved doc! %@", [op description]);
+		[self performSelector:@selector(newItemAdded)];
+	}];
+    [op start];
+
+    [addItemTextField setText:nil];
 }
 
 
