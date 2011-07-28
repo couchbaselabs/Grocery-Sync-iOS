@@ -20,29 +20,23 @@
 
 #import <UIKit/UIKit.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
-@class CouchDatabase, CouchQueryEnumerator;
+@class CouchDatabase, CouchQuery;
 
 
-@interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,CouchbaseDelegate>{
-	CouchQueryEnumerator *items;
+@interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,
+                                                  UITextFieldDelegate,CouchbaseDelegate>
+{
+    CouchDatabase *database;
+    CouchQuery* query;
+	NSMutableArray *items;
+    
 	UIBarButtonItem *activityButtonItem;
     UIActivityIndicatorView *activity;
-    CouchDatabase *database;
-
     UITableView *tableView;
     IBOutlet UITextField *addItemTextField;
     IBOutlet UIImageView *addItemBackground;
 }
 
-@property(nonatomic, retain)CouchQueryEnumerator *items;
-@property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
-@property(nonatomic, retain)UIActivityIndicatorView *activity;
-@property(nonatomic, retain)CouchDatabase *database;
-
 @property(nonatomic, retain) IBOutlet UITableView *tableView;
-
--(void)loadItemsIntoView;
--(void)setupSync;
--(void)refreshItems;
 
 @end

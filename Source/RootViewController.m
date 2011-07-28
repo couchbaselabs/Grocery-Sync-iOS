@@ -24,6 +24,17 @@
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
 
+@interface RootViewController ()
+@property(nonatomic, retain)NSMutableArray *items;
+@property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
+@property(nonatomic, retain)UIActivityIndicatorView *activity;
+@property(nonatomic, retain)CouchDatabase *database;
+@property(nonatomic, retain)CouchQuery *query;
+-(BOOL)loadItemsIntoView;
+-(void)setupSync;
+@end
+
+
 @implementation RootViewController
 
 
@@ -31,6 +42,7 @@
 @synthesize activityButtonItem;
 @synthesize activity;
 @synthesize database;
+@synthesize query;
 @synthesize tableView;
 
 
@@ -39,6 +51,10 @@
 
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
+    if (serverURL == nil) {
+        NSLog(@"Couldn't start Couchbase!");
+        abort();
+    }
 #if 1    // Change to "0" to run with Couchbase Single on your local workstation (simulator only)
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
 #else
@@ -47,6 +63,9 @@
     self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
     [server release];
+
+    self.query = [database getAllDocuments];
+    self.query.descending = YES;  // Sort by descending ID, which will imply descending create time
 
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(loadItemsDueToChanges:)
@@ -92,6 +111,7 @@
 
 - (void)dealloc {
     [items release];
+    [query release];
     [database release];
     [super dealloc];
 }
@@ -123,25 +143,33 @@
 }
 
 
+-(BOOL)loadItemsIntoView {
+    /*  This method updates the 'items' array with the latest results from the local server.
+        As an optimization, it sets the 'prefetch' property of the query the first time it runs,
+        so that the result set will have the document contents contained in it; this way the
+        table-drawing code won't end up loading each document in a separate GET as it draws the
+        rows.
+        A further optimization is to call -rowsIfChanged, which will return nil if the results
+        haven't changed since the last time -rowsIfChanged (or -rows) was called. In that case
+        we can skip redrawing the table. */
+    NSLog(@"RefreshItems...");
+    [self.activity startAnimating];
+    query.prefetch = NO;
+    CouchQueryEnumerator* updatedRows = query.rowsIfChanged;
+    [self.activity stopAnimating];
+    if (!updatedRows)
+        return NO;      // Result set didn't change
+    
+    self.items = [[updatedRows.allObjects mutableCopy] autorelease];
+    NSLog(@"    ...items changed: %u rows!", items.count);
+    [self.tableView reloadData];
+    return YES;
+}
+
+
 -(void)loadItemsDueToChanges:(NSNotification*)notification {
     NSLog(@"loadItemsDueToChanges");
-    [self refreshItems];
-    [self.tableView reloadData];
-}
-
-
--(void)loadItemsIntoView {
-    [self refreshItems];
-    [self.tableView reloadData];
-}
-
-
--(void) refreshItems {
-    [self.activity startAnimating];
-    CouchQuery *allDocs = [database getAllDocuments];
-    allDocs.descending = YES;   // Sort by descending ID, which will imply descending create time
-    self.items = allDocs.rows;
-    [self.activity stopAnimating];
+    [self loadItemsIntoView];
 }
 
 
@@ -213,13 +241,15 @@
     }
 
     // Configure the cell.
-    CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
+    NSDictionary* properties = row.document.properties;
+    
     UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
 
     UILabel *labelWIthText = (UILabel*)[cell viewWithTag:2];
-    labelWIthText.text = [row.documentProperties valueForKey:@"text"];
+    labelWIthText.text = [properties valueForKey:@"text"];
 
-    if ([[row.documentProperties valueForKey:@"check"] boolValue]) {
+    if ([[properties valueForKey:@"check"] boolValue]) {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
         [checkBoxImageView setFrame:CGRectMake(14, 9, 32, 29)];
         labelWIthText.textColor = [UIColor grayColor];
@@ -236,15 +266,23 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source.
-        RESTOperation* op = [[[items rowAtIndex:indexPath.row] document] DELETE];
+        // Delete the document from the database, asynchronously.
+        RESTOperation* op = [[[items objectAtIndex:indexPath.row] document] DELETE];
         [op onCompletion: ^{
-            [self refreshItems]; // BLOCKING
-            // TODO return to the smooth style of deletion (eg animate the delete before the server responds...)
-            //		[items removeRowAtIndex: position];
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            // If the delete failed, undo the table row deletion by reloading from the db:
+            if (!op.isSuccessful) {
+                NSLog(@"Item deletion failed! %@", op.error);
+                [self loadItemsIntoView];
+            }
         }];
         [op start];
+        
+        // Delete the row from the table data source.
+        [items removeObjectAtIndex:indexPath.row];
+        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                              withRowAnimation:UITableViewRowAnimationFade];
+        [query cacheResponse:nil];  // The query's row set is now out of date
+        
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
@@ -256,11 +294,11 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
+    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
     CouchDocument *doc = [row document];
 
     // Toggle the document's 'checked' property:
-    NSMutableDictionary *docContent = [[row.documentProperties mutableCopy] autorelease];
+    NSMutableDictionary *docContent = [[doc.properties mutableCopy] autorelease];
     BOOL wasChecked = [[docContent valueForKey:@"check"] boolValue];
     [docContent setObject:[NSNumber numberWithBool:!wasChecked] forKey:@"check"];
 
