@@ -177,38 +177,32 @@
 
     cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem" owner:self options:nil];
+        // Create a new cell:
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem"
+                                                                 owner:self options:nil];
         cell = [topLevelObjects objectAtIndex:0];
         UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
         UIImageView *listBorder = (UIImageView*)[cell viewWithTag:4];
 
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        {
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___middle~ipad.png"]];
             [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
             [listBorder setFrame:CGRectMake(listBorder.frame.origin.x, listBorder.frame.origin.y, 678, 2)];
         }
 
         if (indexPath.row == 0) {
-
-            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-            {
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top.png"]];
-            }
-            else
-            {
+            } else {
                 [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top~ipad.png"]];
                 [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
             }
         }
         if (indexPath.row == [self.items count]-1) {
             UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-            {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom.png"]];
-            }
-            else
-            {
+            } else {
                 [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom~ipad.png"]];
                 [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
             }
@@ -251,8 +245,7 @@
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         }];
         [op start];
-    }
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
 }
@@ -326,7 +319,7 @@
                                 , nil];
 
     // Save the document, asynchronously:
-    CouchDocument* doc = [[self getDatabase] documentWithID: docId];
+    CouchDocument* doc = [database documentWithID: docId];
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
         if (op.error)
