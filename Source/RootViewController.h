@@ -33,6 +33,7 @@
     IBOutlet UITextField *addItemTextField;
     IBOutlet UIImageView *addItemBackground;
 }
+
 @property(nonatomic, retain)CouchQueryEnumerator *items;
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)UIActivityIndicatorView *activity;

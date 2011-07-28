@@ -21,8 +21,8 @@
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
 
-
 #define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
+
 
 @implementation DemoAppDelegate
 
@@ -32,7 +32,7 @@
 
 
 // Override point for customization after application launch.
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Register the default value of the pref for the remote database URL to sync with:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:kDefaultSyncDbURL
@@ -45,13 +45,22 @@
 	[window makeKeyAndVisible];
 
     // Show the splash screen for 2 seconds:
-    splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20, 320, 460)];
-	splashView.image = [UIImage imageNamed:@"Default.png"];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20, 320, 460)];
+        splashView.image = [UIImage imageNamed:@"Default.png"];
+    }
+    else
+    {
+        splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20, 768, 1004)];
+        splashView.image = [UIImage imageNamed:@"Default~ipad.png"];
+    }
+
 	[self.window addSubview:splashView];
 	[self performSelector:@selector(removeSplash) withObject:nil afterDelay:2];
 
     return YES;
 }
+
 
 -(void)removeSplash;
 {
@@ -64,7 +73,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	// CouchDB seems to get stuck when in background. exit() so we get relaunched freshly.
     // (Setting the UIApplicationExitsOnSuspend key in the Info.plist accomplishes the same goal.)
-	
+
 	exit(0);
 }
 

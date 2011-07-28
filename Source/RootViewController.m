@@ -47,12 +47,12 @@
     self.database = [[server databaseNamed: @"grocery-sync"] retain];
     self.database.tracksChanges = YES;
     [server release];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(loadItemsDueToChanges:)
-                                                 name: kCouchDatabaseChangeNotification 
+                                                 name: kCouchDatabaseChangeNotification
                                                object: database];
-    
+
     [self loadItemsIntoView];
     [self setupSync];
     self.navigationItem.leftBarButtonItem.enabled = YES;
@@ -61,7 +61,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
+
     // start the Couchbase Server
     NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
     NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
@@ -73,14 +73,20 @@
         NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
         exit(1);    // Panic!
     }
-    
+
     self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
     self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
     self.activityButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = activityButtonItem;
 
+    [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
+        [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
+    }
 }
 
 
@@ -96,7 +102,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
     NSURL *remoteURL = [NSURL URLWithString:syncpoint];
-    
+
     RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL
                                                   options: kCouchReplicationContinuous];
     [pull onCompletion:^() {
@@ -105,8 +111,8 @@
         else
             NSLog(@"continuous sync failed from %@: %@", syncpoint, pull.error);
 	}];
-    
-    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL 
+
+    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL
                                                 options: kCouchReplicationContinuous];
     [push onCompletion:^() {
         if (push.isSuccessful)
@@ -148,12 +154,16 @@
 #pragma mark Table view data source
 
 
-// Customize the number of sections in the table view.
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-// Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.items count];
 }
@@ -161,63 +171,90 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell;
-    
+
     cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem"
-                                                                 owner:self options:nil];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem" owner:self options:nil];
         cell = [topLevelObjects objectAtIndex:0];
+        UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
+        UIImageView *listBorder = (UIImageView*)[cell viewWithTag:4];
 
-        // Customize the appearance of the cell, to show the top/bottom table borders:
+        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        {
+            [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___middle~ipad.png"]];
+            [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
+            [listBorder setFrame:CGRectMake(listBorder.frame.origin.x, listBorder.frame.origin.y, 678, 2)];
+        }
+
         if (indexPath.row == 0) {
-            UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-            [backgroundImage setImage:[UIImage imageNamed:@"top.png"]];
+
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+            {
+                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top.png"]];
+            }
+            else
+            {
+                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top~ipad.png"]];
+                [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
+            }
         }
         if (indexPath.row == [self.items count]-1) {
             UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-            [backgroundImage setImage:[UIImage imageNamed:@"bottom.png"]];
-
-            UIImageView *line_dotted = (UIImageView*)[cell viewWithTag:4];
-            [line_dotted setAlpha:0];
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+            {
+                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom.png"]];
+            }
+            else
+            {
+                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom~ipad.png"]];
+                [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
+            }
+            UIImageView *line_doted = (UIImageView*)[cell viewWithTag:4];
+            [line_doted setAlpha:0];
         }
+
     }
-    
-    // Update the cell's checkbox and text from the query row:
+
+    // Configure the cell.
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
     UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
 
+    UILabel *labelWIthText = (UILabel*)[cell viewWithTag:2];
+    labelWIthText.text = [row.documentProperties valueForKey:@"text"];
+
     if ([[row.documentProperties valueForKey:@"check"] boolValue]) {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
-        [checkBoxImageView setFrame:CGRectMake(13, 10, 32, 29)];
+        [checkBoxImageView setFrame:CGRectMake(14, 9, 32, 29)];
+        labelWIthText.textColor = [UIColor grayColor];
     } else {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___unchecked"]];
-        [checkBoxImageView setFrame:CGRectMake(13, 14, 24, 25)];
+        [checkBoxImageView setFrame:CGRectMake(14, 13, 24, 25)];
+        labelWIthText.textColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     };
-    
-    UILabel *labelWithText = (UILabel*)[cell viewWithTag:2];
-    labelWithText.text = [row.documentProperties valueForKey:@"text"];
 
     return cell;
 }
 
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
         RESTOperation* op = [[[items rowAtIndex:indexPath.row] document] DELETE];
         [op onCompletion: ^{
             [self refreshItems]; // BLOCKING
+            // TODO return to the smooth style of deletion (eg animate the delete before the server responds...)
+            //		[items removeRowAtIndex: position];
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         }];
         [op start];
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
+    }
 }
 
 
@@ -228,7 +265,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     CouchQueryRow *row = [self.items rowAtIndex:indexPath.row];
     CouchDocument *doc = [row document];
-    
+
     // Toggle the document's 'checked' property:
     NSMutableDictionary *docContent = [[row.documentProperties mutableCopy] autorelease];
     BOOL wasChecked = [[docContent valueForKey:@"check"] boolValue];
@@ -276,22 +313,20 @@
     [addItemTextField setText:nil];
 
     // Construct a unique document ID that will sort chronologically:
-    CFUUIDRef uuid = CFUUIDCreate(NULL);
-    NSString *guid = (NSString*)CFUUIDCreateString(NULL, uuid);
+    CFUUIDRef uuid = CFUUIDCreate(nil);
+    NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
     CFRelease(uuid);
 	NSString *docId = [NSString stringWithFormat:@"%f-%@", CFAbsoluteTimeGetCurrent(), guid];
     [guid release];
 
-
     // Create the new document's properties:
-	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:
-                                text, @"text",
-                                [NSNumber numberWithBool:NO], @"check",
-                                [RESTBody JSONObjectWithDate: [NSDate date]], @"created_at",
-                                nil];
+	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text"
+                                , [NSNumber numberWithBool:NO], @"check"
+                                , [[NSDate date] description], @"created_at"
+                                , nil];
 
     // Save the document, asynchronously:
-    CouchDocument* doc = [database documentWithID: docId];
+    CouchDocument* doc = [[self getDatabase] documentWithID: docId];
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
         if (op.error)

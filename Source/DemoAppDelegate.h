@@ -24,9 +24,7 @@
 @interface DemoAppDelegate : NSObject <UIApplicationDelegate> {
     
     UIWindow *window;
-	
     UINavigationController *navigationController;
-
     UIImageView *splashView;
 }
 

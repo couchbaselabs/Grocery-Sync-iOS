@@ -37,7 +37,7 @@
 			</object>
 			<object class="IBUITableViewCell" id="128873267">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
+				<int key="NSvFlags">294</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUIView" id="953311881">
@@ -47,8 +47,8 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIImageView" id="1807550">
 								<reference key="NSNextResponder" ref="953311881"/>
-								<int key="NSvFlags">256</int>
-								<string key="NSFrame">{{0, -2}, {300, 54}}</string>
+								<int key="NSvFlags">288</int>
+								<string key="NSFrameSize">{300, 52}</string>
 								<reference key="NSSuperview" ref="953311881"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="577588190"/>
@@ -60,13 +60,13 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">middle.png</string>
+									<string key="NSResourceName">list_area___background___middle.png</string>
 								</object>
 							</object>
 							<object class="IBUILabel" id="859736865">
 								<reference key="NSNextResponder" ref="953311881"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{67, 6}, {221, 40}}</string>
+								<int key="NSvFlags">290</int>
+								<string key="NSFrame">{{67, 6}, {222, 40}}</string>
 								<reference key="NSSuperview" ref="953311881"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="729784825"/>
@@ -82,7 +82,7 @@
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
 								</object>
 								<nil key="IBUIHighlightedColor"/>
-								<object class="NSColor" key="IBUIShadowColor" id="461139797">
+								<object class="NSColor" key="IBUIShadowColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MSAxIDEAA</bytes>
 								</object>
@@ -122,7 +122,7 @@
 							<object class="IBUIImageView" id="729784825">
 								<reference key="NSNextResponder" ref="953311881"/>
 								<int key="NSvFlags">256</int>
-								<string key="NSFrame">{{3, 49}, {295, 2}}</string>
+								<string key="NSFrame">{{2, 49}, {294, 2}}</string>
 								<reference key="NSSuperview" ref="953311881"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -138,11 +138,11 @@
 								</object>
 							</object>
 						</object>
-						<string key="NSFrame">{{1, 0}, {298, 52}}</string>
+						<string key="NSFrame">{{1, 0}, {299, 50}}</string>
 						<reference key="NSSuperview" ref="128873267"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1807550"/>
-						<object class="NSColor" key="IBUIBackgroundColor">
+						<object class="NSColor" key="IBUIBackgroundColor" id="246360856">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
@@ -153,12 +153,13 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</object>
-				<string key="NSFrameSize">{300, 53}</string>
+				<string key="NSFrameSize">{301, 51}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="953311881"/>
-				<reference key="IBUIBackgroundColor" ref="461139797"/>
+				<reference key="IBUIBackgroundColor" ref="246360856"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<int key="IBUISelectionStyle">0</int>
 				<reference key="IBUIContentView" ref="953311881"/>
 				<object class="IBUIFontDescription" key="IBUIFontDescription">
 					<int key="type">1</int>
@@ -285,15 +286,15 @@
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSArray" key="dict.sortedKeys">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>list_area___background___middle.png</string>
 				<string>list_area___border.png</string>
 				<string>list_area___checkbox___unchecked.png</string>
-				<string>middle.png</string>
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>{306, 54}</string>
 				<string>{295, 2}</string>
 				<string>{24, 25}</string>
-				<string>{306, 54}</string>
 			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">894</string>
