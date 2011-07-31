@@ -19,17 +19,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Couchbase/CouchbaseEmbeddedServer.h>
+@class CouchDatabase, RootViewController;
 
 
-@interface DemoAppDelegate : NSObject <UIApplicationDelegate> {
+@interface DemoAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate, 
+                                       CouchbaseDelegate> {
     
     UIWindow *window;
     UINavigationController *navigationController;
     UIImageView *splashView;
+
+    CouchDatabase *database;
 }
+
+@property(nonatomic, retain)CouchDatabase *database;
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+
+- (void)showAlert: (NSString*)message error: (NSError*)error fatal: (BOOL)fatal;
 
 @end
 

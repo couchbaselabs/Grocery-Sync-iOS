@@ -19,12 +19,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Couchbase/CouchbaseEmbeddedServer.h>
 @class CouchDatabase, CouchQuery;
 
 
 @interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,
-                                                  UITextFieldDelegate,CouchbaseDelegate>
+                                                  UITextFieldDelegate>
 {
     CouchDatabase *database;
     CouchQuery* query;
@@ -38,5 +37,7 @@
 }
 
 @property(nonatomic, retain) IBOutlet UITableView *tableView;
+
+-(void)useDatabase:(CouchDatabase*)theDatabase;
 
 @end

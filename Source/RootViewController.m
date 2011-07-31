@@ -19,8 +19,8 @@
 //
 
 #import "RootViewController.h"
+#import "DemoAppDelegate.h"
 #import <CouchCocoa/CouchCocoa.h>
-#import <CouchCocoa/RESTBody.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
 
@@ -50,23 +50,13 @@
 #pragma mark View lifecycle
 
 
--(void)couchbaseDidStart:(NSURL *)serverURL {
-    if (serverURL == nil) {
-        NSLog(@"Couldn't start Couchbase!");
-        abort();
-    }
-#if 1    // Change to "0" to run with Couchbase Single on your local workstation (simulator only)
-    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-#else
-    CouchServer *server = [[CouchServer alloc] init];
-#endif
-    self.database = [[server databaseNamed: @"grocery-sync"] retain];
-    self.database.tracksChanges = YES;
-    [server release];
-
+-(void)useDatabase:(CouchDatabase*)theDatabase {
+    self.database = theDatabase;
+    database.tracksChanges = YES;
     self.query = [database getAllDocuments];
     self.query.descending = YES;  // Sort by descending ID, which will imply descending create time
 
+    // Detect when external changes are made to the database (i.e. pulled from the server):
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(loadItemsDueToChanges:)
                                                  name: kCouchDatabaseChangeNotification
@@ -81,19 +71,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // start the Couchbase Server
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
-
-    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
-    cb.delegate = self;
-    [cb installDefaultDatabase: dbPath];
-    if (![cb start]) {
-        NSLog(@"OMG: Couchbase couldn't start! Exiting! Error = %@", cb.error);
-        exit(1);    // Panic!
-    }
-
-    self.activity = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
+    self.activity = [[[UIActivityIndicatorView alloc] 
+                     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
     self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
     self.activityButtonItem.enabled = NO;
@@ -101,7 +80,7 @@
 
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
-    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
         [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
@@ -117,8 +96,14 @@
 }
 
 
--(void)setupSync
-{
+- (void)showErrorAlert: (NSString*)message forOperation: (RESTOperation*)op {
+    NSLog(@"%@: op=%@, error=%@", message, op, op.error);
+    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate] 
+        showAlert: message error: op.error fatal: NO];
+}
+
+
+-(void)setupSync {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
     NSURL *remoteURL = [NSURL URLWithString:syncpoint];
@@ -129,7 +114,8 @@
         if (pull.isSuccessful)
             NSLog(@"continous sync triggered from %@", syncpoint);
         else
-            NSLog(@"continuous sync failed from %@: %@", syncpoint, pull.error);
+            [self showErrorAlert: @"Unable to sync with the server. You may still work offline."
+                  forOperation: pull];
 	}];
 
     RESTOperation *push = [database pushToDatabaseAtURL: remoteURL
@@ -138,7 +124,8 @@
         if (push.isSuccessful)
             NSLog(@"continous sync triggered to %@", syncpoint);
         else
-            NSLog(@"continuous sync failed to %@: %@", syncpoint, push.error);
+            [self showErrorAlert: @"Unable to sync with the server. You may still work offline." 
+                  forOperation: pull];
 	}];
 }
 
@@ -152,7 +139,7 @@
         A further optimization is to call -rowsIfChanged, which will return nil if the results
         haven't changed since the last time -rowsIfChanged (or -rows) was called. In that case
         we can skip redrawing the table. */
-    NSLog(@"RefreshItems...");
+    NSLog(@"loadItemsIntoView...");
     [self.activity startAnimating];
     query.prefetch = NO;
     CouchQueryEnumerator* updatedRows = query.rowsIfChanged;
@@ -170,11 +157,6 @@
 -(void)loadItemsDueToChanges:(NSNotification*)notification {
     NSLog(@"loadItemsDueToChanges");
     [self loadItemsIntoView];
-}
-
-
--(void)newItemAdded {
-	[self loadItemsIntoView];
 }
 
 
@@ -197,81 +179,79 @@
 }
 
 
+- (void) loadImageNamed: (NSString*)imageName intoView: (UIImageView*)view {
+    UIImage* image = [UIImage imageNamed: imageName];
+    NSAssert(image!=nil, @"Missing image %@", imageName);
+    [view setImage:image];
+    CGRect frame = view.frame;
+    frame.size = image.size;
+    view.frame = frame;
+}
+
+
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell;
-
-    cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Reuse or create a cell:
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier: @"Cell"];
     if (cell == nil) {
-        // Create a new cell:
         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem"
                                                                  owner:self options:nil];
         cell = [topLevelObjects objectAtIndex:0];
-        UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-        UIImageView *listBorder = (UIImageView*)[cell viewWithTag:4];
-
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___middle~ipad.png"]];
-            [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
-            [listBorder setFrame:CGRectMake(listBorder.frame.origin.x, listBorder.frame.origin.y, 678, 2)];
-        }
-
-        if (indexPath.row == 0) {
-            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top.png"]];
-            } else {
-                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___top~ipad.png"]];
-                [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
-            }
-        }
-        if (indexPath.row == [self.items count]-1) {
-            UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom.png"]];
-            } else {
-                [backgroundImage setImage:[UIImage imageNamed:@"list_area___background___bottom~ipad.png"]];
-                [backgroundImage setFrame:CGRectMake(backgroundImage.frame.origin.x, backgroundImage.frame.origin.y, 681, 53)];
-            }
-            UIImageView *line_doted = (UIImageView*)[cell viewWithTag:4];
-            [line_doted setAlpha:0];
-        }
-
+        [self loadImageNamed: @"list_area___border" intoView: (UIImageView*)[cell viewWithTag:4]];
     }
 
-    // Configure the cell.
-    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
+    UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
+    UILabel *labelWithText = (UILabel*)[cell viewWithTag:2];
+    UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
+    UIImageView *listBorder = (UIImageView*)[cell viewWithTag:4];
+
+    // Show a top or bottom border as appropriate:
+    NSInteger rowNumber = indexPath.row;
+    NSString* backgroundImageName;
+    BOOL showSeparator = YES;
+    if (rowNumber == 0) {
+        backgroundImageName = @"list_area___background___top";
+    } else if (rowNumber < [self.items count]-1) {
+        backgroundImageName = @"list_area___background___middle";
+    } else {
+        backgroundImageName = @"list_area___background___bottom";
+        showSeparator = NO;
+    }
+    [self loadImageNamed: backgroundImageName intoView: backgroundImage];
+    [listBorder setHidden: !showSeparator];
+
+    // Configure the cell contents:
+    CouchQueryRow *row = [self.items objectAtIndex:rowNumber];
     NSDictionary* properties = row.document.properties;
     
-    UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
-
-    UILabel *labelWIthText = (UILabel*)[cell viewWithTag:2];
-    labelWIthText.text = [properties valueForKey:@"text"];
+    labelWithText.text = [properties valueForKey:@"text"];
 
     if ([[properties valueForKey:@"check"] boolValue]) {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
         [checkBoxImageView setFrame:CGRectMake(14, 9, 32, 29)];
-        labelWIthText.textColor = [UIColor grayColor];
+        labelWithText.textColor = [UIColor grayColor];
     } else {
         [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___unchecked"]];
         [checkBoxImageView setFrame:CGRectMake(14, 13, 24, 25)];
-        labelWIthText.textColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
-    };
+        labelWithText.textColor = [UIColor blackColor];
+    }
 
     return cell;
 }
 
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView
+    commitEditingStyle:(UITableViewCellEditingStyle)editingStyle 
+     forRowAtIndexPath:(NSIndexPath *)indexPath {
 
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the document from the database, asynchronously.
         RESTOperation* op = [[[items objectAtIndex:indexPath.row] document] DELETE];
         [op onCompletion: ^{
-            // If the delete failed, undo the table row deletion by reloading from the db:
             if (!op.isSuccessful) {
-                NSLog(@"Item deletion failed! %@", op.error);
+                // If the delete failed, undo the table row deletion by reloading from the db:
+                [self showErrorAlert: @"Failed to delete item" forOperation: op];
                 [self loadItemsIntoView];
             }
         }];
@@ -282,9 +262,6 @@
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                               withRowAnimation:UITableViewRowAnimationFade];
         [query cacheResponse:nil];  // The query's row set is now out of date
-        
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
 }
 
@@ -306,7 +283,7 @@
     RESTOperation* op = [doc putProperties:docContent];
     [op onCompletion: ^{
         if (op.error)
-            NSLog(@"error updating doc %@", [op.error description]);
+            [self showErrorAlert: @"Failed to update item" forOperation: op];
         else
             NSLog(@"updated doc! %@", [op description]);
         [self loadItemsIntoView];
@@ -319,8 +296,7 @@
 #pragma mark UITextField delegate
 
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
     [addItemBackground setImage:[UIImage imageNamed:@"textfield___inactive.png"]];
 
@@ -328,14 +304,12 @@
 }
 
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
     [addItemBackground setImage:[UIImage imageNamed:@"textfield___active.png"]];
 }
 
 
--(void)textFieldDidEndEditing:(UITextField *)textField
-{
+-(void)textFieldDidEndEditing:(UITextField *)textField {
     // Get the name of the item from the text field:
 	NSString *text = addItemTextField.text;
     if (text.length == 0) {
@@ -361,10 +335,10 @@
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
         if (op.error)
-            NSLog(@"error saving doc %@", [op.error description]);
+            [self showErrorAlert: @"Failed to save new item" forOperation: op];
         else
             NSLog(@"saved doc! %@", [op description]);
-		[self newItemAdded];
+		[self loadItemsIntoView];
 	}];
     [op start];
 }
