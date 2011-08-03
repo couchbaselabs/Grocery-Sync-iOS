@@ -22,7 +22,19 @@
 #import "RootViewController.h"
 #import <CouchCocoa/CouchCocoa.h>
 
+// The name of the database the app will use.
+#define kDatabaseName @"grocery-sync"
+
+// The default remote database URL to sync with, if the user hasn't set a different one as a pref.
 #define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
+
+// Set this to 1 to install a pre-built database from a ".couch" resource file on first run.
+#define INSTALL_CANNED_DATABASE 0
+
+// Define this to use a server at a specific URL, instead of the embedded Couchbase Mobile.
+// This can be useful for debugging, since you can use the admin console (futon) to inspect
+// or modify the database contents.
+//#define USE_REMOTE_SERVER @"http://localhost:5984/"
 
 
 @interface DemoAppDelegate ()
@@ -32,6 +44,9 @@
 
 
 @implementation DemoAppDelegate
+
+
+static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 
 
 @synthesize window;
@@ -55,34 +70,48 @@
     [self showSplash];
 
     // Start the Couchbase Server
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: @"grocery-sync" ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find grocery-sync.couch");
-    
-    CouchbaseEmbeddedServer* cb = [[CouchbaseEmbeddedServer alloc] init];
-    cb.delegate = self;
-    [cb installDefaultDatabase: dbPath];
-    if (![cb start]) {
-        [self showAlert: @"Couldn't start Couchbase." error: cb.error fatal: YES];
+#ifdef USE_REMOTE_SERVER
+    [self performSelector: @selector(couchbaseDidStart:)
+               withObject: [NSURL URLWithString: USE_REMOTE_SERVER]
+               afterDelay: 0.0];
+#else
+    gCouchbaseEmbeddedServer = [[CouchbaseEmbeddedServer alloc] init];
+    gCouchbaseEmbeddedServer.delegate = self;
+#if INSTALL_CANNED_DATABASE
+    NSString* dbPath = [[NSBundle mainBundle] pathForResource: kDatabaseName ofType: @"couch"];
+    NSAssert(dbPath, @"Couldn't find "kDatabaseName".couch");
+    [gCouchbaseEmbeddedServer installDefaultDatabase: dbPath];
+#endif
+    if (![gCouchbaseEmbeddedServer start]) {
+        [self showAlert: @"Couldn't start Couchbase."
+                  error: gCouchbaseEmbeddedServer.error 
+                  fatal: YES];
     }
+#endif
 
     return YES;
 }
 
 
 -(void)couchbaseDidStart:(NSURL *)serverURL {
+    NSLog(@"CouchDemo: couchbaseDidStart: <%@>", serverURL);
     if (serverURL == nil) {
-        [self showAlert: @"Couldn't start Couchbase." error: nil fatal: YES];
+        [self showAlert: @"Couldn't start Couchbase." 
+                  error: gCouchbaseEmbeddedServer.error
+                  fatal: YES];
         return;
     }
 
-#if 1    // Change to "0" to run with Couchbase Single on your local workstation (simulator only)
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-#else
-    CouchServer *server = [[CouchServer alloc] init];
-#endif
-    self.database = [server databaseNamed: @"grocery-sync"];
+    self.database = [server databaseNamed: kDatabaseName];
     [server release];
-
+    
+#if !INSTALL_CANNED_DATABASE
+    // Create the database on the first run of the app.
+    if (![[self.database GET] wait])
+        [[self.database create] wait];
+#endif
+    
     // Tell the RootViewController:
     RootViewController* root = (RootViewController*)navigationController.topViewController;
     [root useDatabase: database];

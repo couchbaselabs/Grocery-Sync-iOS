@@ -165,64 +165,36 @@
 }
 
 
-- (void) loadImageNamed: (NSString*)imageName intoView: (UIImageView*)view {
-    UIImage* image = [UIImage imageNamed: imageName];
-    NSAssert(image!=nil, @"Missing image %@", imageName);
-    [view setImage:image];
-    CGRect frame = view.frame;
-    frame.size = image.size;
-    view.frame = frame;
-}
-
-
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Reuse or create a cell:
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier: @"Cell"];
     if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ListItem"
-                                                                 owner:self options:nil];
-        cell = [topLevelObjects objectAtIndex:0];
-        [self loadImageNamed: @"list_area___border" intoView: (UIImageView*)[cell viewWithTag:4]];
+        cell = [[[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
+                                       reuseIdentifier: @"Cell"] autorelease];
+        cell.textLabel.font = [UIFont fontWithName: @"Helvetica" size:18.0];
+        cell.textLabel.backgroundColor = [UIColor clearColor];
+        
+        static UIColor* kBGColor;
+        if (!kBGColor)
+            kBGColor = [[UIColor colorWithPatternImage: [UIImage imageNamed:@"item_background"]] 
+                            retain];
+        cell.backgroundColor = kBGColor;
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
     }
-
-    UIImageView *backgroundImage = (UIImageView*)[cell viewWithTag:1];
-    UILabel *labelWithText = (UILabel*)[cell viewWithTag:2];
-    UIImageView *checkBoxImageView = (UIImageView*)[cell viewWithTag:3];
-    UIImageView *listBorder = (UIImageView*)[cell viewWithTag:4];
-
-    // Show a top or bottom border as appropriate:
-    NSInteger rowNumber = indexPath.row;
-    NSString* backgroundImageName;
-    BOOL showSeparator = YES;
-    if (rowNumber == 0) {
-        backgroundImageName = @"list_area___background___top";
-    } else if (rowNumber < [self.items count]-1) {
-        backgroundImageName = @"list_area___background___middle";
-    } else {
-        backgroundImageName = @"list_area___background___bottom";
-        showSeparator = NO;
-    }
-    [self loadImageNamed: backgroundImageName intoView: backgroundImage];
-    [listBorder setHidden: !showSeparator];
 
     // Configure the cell contents:
-    CouchQueryRow *row = [self.items objectAtIndex:rowNumber];
+    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
     NSDictionary* properties = row.document.properties;
+    BOOL checked = [[properties valueForKey:@"check"] boolValue];
     
+    UILabel *labelWithText = cell.textLabel;
     labelWithText.text = [properties valueForKey:@"text"];
+    labelWithText.textColor = checked ? [UIColor grayColor] : [UIColor blackColor];
 
-    if ([[properties valueForKey:@"check"] boolValue]) {
-        [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___checked"]];
-        [checkBoxImageView setFrame:CGRectMake(14, 9, 32, 29)];
-        labelWithText.textColor = [UIColor grayColor];
-    } else {
-        [checkBoxImageView setImage:[UIImage imageNamed:@"list_area___checkbox___unchecked"]];
-        [checkBoxImageView setFrame:CGRectMake(14, 13, 24, 25)];
-        labelWithText.textColor = [UIColor blackColor];
-    }
-
+    [cell.imageView setImage:[UIImage imageNamed:
+            (checked ? @"list_area___checkbox___checked" : @"list_area___checkbox___unchecked")]];
     return cell;
 }
 
@@ -236,7 +208,7 @@
         RESTOperation* op = [[[items objectAtIndex:indexPath.row] document] DELETE];
         [op onCompletion: ^{
             if (!op.isSuccessful) {
-                // If the delete failed, undo the table row deletion by reloading from the db:
+                // If the delete failed, undo the table row deletion by reloading from the query:
                 [self showErrorAlert: @"Failed to delete item" forOperation: op];
                 [self loadItemsIntoView];
             }
@@ -247,7 +219,6 @@
         [items removeObjectAtIndex:indexPath.row];
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                               withRowAnimation:UITableViewRowAnimationFade];
-        [query cacheResponse:nil];  // The query's row set is now out of date
     }
 }
 
@@ -272,7 +243,8 @@
             [self showErrorAlert: @"Failed to update item" forOperation: op];
         else
             NSLog(@"updated doc! %@", [op description]);
-        [self loadItemsIntoView];
+        // Re-run the query:
+		[self.query start];
     }];
     [op start];
 }
@@ -324,7 +296,8 @@
             [self showErrorAlert: @"Failed to save new item" forOperation: op];
         else
             NSLog(@"saved doc! %@", [op description]);
-		[self loadItemsIntoView];
+        // Re-run the query:
+		[self.query start];
 	}];
     [op start];
 }
