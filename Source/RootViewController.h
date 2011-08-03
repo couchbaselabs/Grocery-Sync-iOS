@@ -19,14 +19,14 @@
 //
 
 #import <UIKit/UIKit.h>
-@class CouchDatabase, CouchQuery;
+@class CouchDatabase, CouchLiveQuery;
 
 
 @interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,
                                                   UITextFieldDelegate>
 {
     CouchDatabase *database;
-    CouchQuery* query;
+    CouchLiveQuery* query;
 	NSMutableArray *items;
     
 	UIBarButtonItem *activityButtonItem;

@@ -29,8 +29,8 @@
 @property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
-@property(nonatomic, retain)CouchQuery *query;
--(BOOL)loadItemsIntoView;
+@property(nonatomic, retain)CouchLiveQuery *query;
+-(void)loadItemsIntoView;
 -(void)setupSync;
 @end
 
@@ -52,15 +52,11 @@
 
 -(void)useDatabase:(CouchDatabase*)theDatabase {
     self.database = theDatabase;
-    database.tracksChanges = YES;
-    self.query = [database getAllDocuments];
-    self.query.descending = YES;  // Sort by descending ID, which will imply descending create time
+    self.query = [[database getAllDocuments] asLiveQuery];
+    query.descending = YES;  // Sort by descending ID, which will imply descending create time
 
-    // Detect when external changes are made to the database (i.e. pulled from the server):
-    [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(loadItemsDueToChanges:)
-                                                 name: kCouchDatabaseChangeNotification
-                                               object: database];
+    // Detect when the query results change:
+    [query addObserver: self forKeyPath: @"rows" options: 0 context: NULL];
 
     [self loadItemsIntoView];
     [self setupSync];
@@ -89,6 +85,7 @@
 
 
 - (void)dealloc {
+    [query removeObserver: self forKeyPath: @"rows"];
     [items release];
     [query release];
     [database release];
@@ -130,33 +127,22 @@
 }
 
 
--(BOOL)loadItemsIntoView {
-    /*  This method updates the 'items' array with the latest results from the local server.
-        As an optimization, it sets the 'prefetch' property of the query the first time it runs,
-        so that the result set will have the document contents contained in it; this way the
-        table-drawing code won't end up loading each document in a separate GET as it draws the
-        rows.
-        A further optimization is to call -rowsIfChanged, which will return nil if the results
-        haven't changed since the last time -rowsIfChanged (or -rows) was called. In that case
-        we can skip redrawing the table. */
-    NSLog(@"loadItemsIntoView...");
-    [self.activity startAnimating];
-    query.prefetch = NO;
-    CouchQueryEnumerator* updatedRows = query.rowsIfChanged;
-    [self.activity stopAnimating];
-    if (!updatedRows)
-        return NO;      // Result set didn't change
-    
-    self.items = [[updatedRows.allObjects mutableCopy] autorelease];
-    NSLog(@"    ...items changed: %u rows!", items.count);
-    [self.tableView reloadData];
-    return YES;
+-(void)loadItemsIntoView {
+    CouchQueryEnumerator* updatedRows = query.rows;
+    if (updatedRows) {
+        self.items = [[updatedRows.allObjects mutableCopy] autorelease];
+        NSLog(@"loadItemsIntoView: %u rows!", items.count);
+        [self.tableView reloadData];
+        [self.activity stopAnimating];
+    }
 }
 
 
--(void)loadItemsDueToChanges:(NSNotification*)notification {
-    NSLog(@"loadItemsDueToChanges");
-    [self loadItemsIntoView];
+- (void)observeValueForKeyPath: (NSString*)keyPath ofObject: (id)object
+                        change: (NSDictionary*)change context: (void*)context 
+{
+    if (object == query)
+        [self loadItemsIntoView];
 }
 
 
