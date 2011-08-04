@@ -19,17 +19,14 @@
 //
 
 #import <UIKit/UIKit.h>
-@class CouchDatabase, CouchLiveQuery;
+#import <CouchCocoa/CouchUITableSource.h>
+@class CouchDatabase;
 
 
-@interface RootViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,
-                                                  UITextFieldDelegate>
+@interface RootViewController : UIViewController <CouchUITableDelegate, UITextFieldDelegate>
 {
     CouchDatabase *database;
-    CouchLiveQuery* query;
-	NSMutableArray *items;
     
-	UIBarButtonItem *activityButtonItem;
     UIActivityIndicatorView *activity;
     UITableView *tableView;
     IBOutlet UITextField *addItemTextField;
@@ -37,6 +34,7 @@
 }
 
 @property(nonatomic, retain) IBOutlet UITableView *tableView;
+@property(nonatomic, retain) IBOutlet CouchUITableSource* dataSource;
 
 -(void)useDatabase:(CouchDatabase*)theDatabase;
 

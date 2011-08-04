@@ -20,29 +20,23 @@
 
 #import "RootViewController.h"
 #import "DemoAppDelegate.h"
+
 #import <CouchCocoa/CouchCocoa.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
 
 @interface RootViewController ()
-@property(nonatomic, retain)NSMutableArray *items;
-@property(nonatomic, retain)UIBarButtonItem *activityButtonItem;
 @property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
-@property(nonatomic, retain)CouchLiveQuery *query;
--(void)loadItemsIntoView;
--(void)setupSync;
 @end
 
 
 @implementation RootViewController
 
 
-@synthesize items;
-@synthesize activityButtonItem;
+@synthesize dataSource;
 @synthesize activity;
 @synthesize database;
-@synthesize query;
 @synthesize tableView;
 
 
@@ -50,30 +44,18 @@
 #pragma mark View lifecycle
 
 
--(void)useDatabase:(CouchDatabase*)theDatabase {
-    self.database = theDatabase;
-    self.query = [[database getAllDocuments] asLiveQuery];
-    query.descending = YES;  // Sort by descending ID, which will imply descending create time
-
-    // Detect when the query results change:
-    [query addObserver: self forKeyPath: @"rows" options: 0 context: NULL];
-
-    [self loadItemsIntoView];
-    [self setupSync];
-    self.navigationItem.leftBarButtonItem.enabled = YES;
-}
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    [CouchUITableSource class];     // Prevents class from being dead-stripped by linker
 
     self.activity = [[[UIActivityIndicatorView alloc] 
                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
-    self.activityButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:activity] autorelease];
-    self.activityButtonItem.enabled = NO;
-    self.navigationItem.rightBarButtonItem = activityButtonItem;
-
+    UIBarButtonItem* activityButtonItem = [[UIBarButtonItem alloc] initWithCustomView:activity];
+    activityButtonItem.enabled = NO;
+    self.navigationItem.rightBarButtonItem = [activityButtonItem autorelease];
+    
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
@@ -85,9 +67,6 @@
 
 
 - (void)dealloc {
-    [query removeObserver: self forKeyPath: @"rows"];
-    [items release];
-    [query release];
     [database release];
     [super dealloc];
 }
@@ -100,7 +79,14 @@
 }
 
 
--(void)setupSync {
+-(void)useDatabase:(CouchDatabase*)theDatabase {
+    self.database = theDatabase;
+    CouchLiveQuery* query = [[database getAllDocuments] asLiveQuery];
+    query.descending = YES;  // Sort by descending ID, which will imply descending create time
+    self.dataSource.query = query;
+    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+
+    // Set up synchronization to/from a remote database:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
     NSURL *remoteURL = [NSURL URLWithString:syncpoint];
@@ -127,65 +113,35 @@
 }
 
 
--(void)loadItemsIntoView {
-    CouchQueryEnumerator* updatedRows = query.rows;
-    if (updatedRows) {
-        self.items = [[updatedRows.allObjects mutableCopy] autorelease];
-        NSLog(@"loadItemsIntoView: %u rows!", items.count);
-        [self.tableView reloadData];
-        [self.activity stopAnimating];
-    }
-}
-
-
-- (void)observeValueForKeyPath: (NSString*)keyPath ofObject: (id)object
-                        change: (NSDictionary*)change context: (void*)context 
-{
-    if (object == query)
-        [self loadItemsIntoView];
-}
-
-
 #pragma mark -
-#pragma mark Table view data source
+#pragma mark Couch table source delegate
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)couchTableSource:(CouchUITableSource*)source
+     willUpdateFromQuery:(CouchLiveQuery*)query
 {
-    return 50;
-}
-
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.items count];
+    // Turn off the activity indicator as soon as we get results on the initial load.
+    [self.activity stopAnimating];
 }
 
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Reuse or create a cell:
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier: @"Cell"];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
-                                       reuseIdentifier: @"Cell"] autorelease];
-        cell.textLabel.font = [UIFont fontWithName: @"Helvetica" size:18.0];
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        
-        static UIColor* kBGColor;
-        if (!kBGColor)
-            kBGColor = [[UIColor colorWithPatternImage: [UIImage imageNamed:@"item_background"]] 
-                            retain];
-        cell.backgroundColor = kBGColor;
-        cell.selectionStyle = UITableViewCellSelectionStyleGray;
-    }
+- (void)couchTableSource:(CouchUITableSource*)source
+             willUseCell:(UITableViewCell*)cell
+                  forRow:(CouchQueryRow*)row
+{
+    // Set the cell background and font:
+    static UIColor* kBGColor;
+    if (!kBGColor)
+        kBGColor = [[UIColor colorWithPatternImage: [UIImage imageNamed:@"item_background"]] 
+                        retain];
+    cell.backgroundColor = kBGColor;
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
 
+    cell.textLabel.font = [UIFont fontWithName: @"Helvetica" size:18.0];
+    cell.textLabel.backgroundColor = [UIColor clearColor];
+    
     // Configure the cell contents:
-    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
     NSDictionary* properties = row.document.properties;
     BOOL checked = [[properties valueForKey:@"check"] boolValue];
     
@@ -195,31 +151,6 @@
 
     [cell.imageView setImage:[UIImage imageNamed:
             (checked ? @"list_area___checkbox___checked" : @"list_area___checkbox___unchecked")]];
-    return cell;
-}
-
-
-- (void)tableView:(UITableView *)tableView
-    commitEditingStyle:(UITableViewCellEditingStyle)editingStyle 
-     forRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the document from the database, asynchronously.
-        RESTOperation* op = [[[items objectAtIndex:indexPath.row] document] DELETE];
-        [op onCompletion: ^{
-            if (!op.isSuccessful) {
-                // If the delete failed, undo the table row deletion by reloading from the query:
-                [self showErrorAlert: @"Failed to delete item" forOperation: op];
-                [self loadItemsIntoView];
-            }
-        }];
-        [op start];
-        
-        // Delete the row from the table data source.
-        [items removeObjectAtIndex:indexPath.row];
-        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                              withRowAnimation:UITableViewRowAnimationFade];
-    }
 }
 
 
@@ -227,8 +158,13 @@
 #pragma mark Table view delegate
 
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 50;
+}
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    CouchQueryRow *row = [self.items objectAtIndex:indexPath.row];
+    CouchQueryRow *row = [self.dataSource rowAtIndex:indexPath.row];
     CouchDocument *doc = [row document];
 
     // Toggle the document's 'checked' property:
@@ -241,12 +177,22 @@
     [op onCompletion: ^{
         if (op.error)
             [self showErrorAlert: @"Failed to update item" forOperation: op];
-        else
-            NSLog(@"updated doc! %@", [op description]);
         // Re-run the query:
-		[self.query start];
+		[self.dataSource.query start];
     }];
     [op start];
+}
+
+
+#pragma mark
+#pragma mark Editing:
+
+
+- (void)couchTableSource:(CouchUITableSource*)source
+         operationFailed:(RESTOperation*)op
+{
+    NSString* message = op.isDELETE ? @"Couldn't delete item" : @"Operation failed";
+    [self showErrorAlert: message forOperation: op];
 }
 
 
@@ -293,11 +239,9 @@
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
         if (op.error)
-            [self showErrorAlert: @"Failed to save new item" forOperation: op];
-        else
-            NSLog(@"saved doc! %@", [op description]);
+            [self showErrorAlert: @"Couldn't save the new item" forOperation: op];
         // Re-run the query:
-		[self.query start];
+		[self.dataSource.query start];
 	}];
     [op start];
 }
