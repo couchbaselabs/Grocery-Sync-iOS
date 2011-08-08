@@ -22,6 +22,7 @@
 #import "DemoAppDelegate.h"
 
 #import <CouchCocoa/CouchCocoa.h>
+#import <CouchCocoa/RESTBody.h>
 #import <Couchbase/CouchbaseEmbeddedServer.h>
 
 
@@ -49,6 +50,12 @@
 
     [CouchUITableSource class];     // Prevents class from being dead-stripped by linker
 
+    UIBarButtonItem* purgeButton = [[UIBarButtonItem alloc] initWithTitle: @"Purge"
+                                                            style:UIBarButtonItemStylePlain
+                                                           target: self 
+                                                           action: @selector(purgeDeletedItems:)];
+    self.navigationItem.leftBarButtonItem = [purgeButton autorelease];
+    
     self.activity = [[[UIActivityIndicatorView alloc] 
                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
@@ -186,6 +193,42 @@
 
 #pragma mark
 #pragma mark Editing:
+
+
+- (NSArray*)checkedDocuments {
+    // If there were a whole lot of documents, this would be more efficient with a custom query.
+    NSMutableArray* checked = [NSMutableArray array];
+    for (CouchQueryRow* row in self.dataSource.rows) {
+        CouchDocument* doc = row.document;
+        if ([[doc.properties valueForKey:@"check"] boolValue])
+            [checked addObject: doc];
+    }
+    return checked;
+}
+
+
+- (IBAction) purgeDeletedItems:(id)sender {
+    NSUInteger numChecked = self.checkedDocuments.count;
+    if (numChecked == 0)
+        return;
+    NSString* message = [NSString stringWithFormat: @"Are you sure you want to remove the %u"
+                                                     " checked-off item%@?",
+                                                     numChecked, (numChecked==1 ? @"" : @"s")];
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Remove Completed Items?"
+                                                    message: message
+                                                   delegate: self
+                                          cancelButtonTitle: @"Cancel"
+                                          otherButtonTitles: @"Remove", nil];
+    [alert show];
+    [alert release];
+}
+
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0)
+        return;
+    [dataSource deleteDocuments: self.checkedDocuments];
+}
 
 
 - (void)couchTableSource:(CouchUITableSource*)source

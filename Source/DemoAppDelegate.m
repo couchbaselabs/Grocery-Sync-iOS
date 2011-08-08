@@ -101,6 +101,10 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
                   fatal: YES];
         return;
     }
+    
+#if DEBUG
+    gRESTLogLevel = kRESTLogRequestURLs;
+#endif
 
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
     self.database = [server databaseNamed: kDatabaseName];
