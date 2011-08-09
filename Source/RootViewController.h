@@ -26,6 +26,7 @@
 @interface RootViewController : UIViewController <CouchUITableDelegate, UITextFieldDelegate>
 {
     CouchDatabase *database;
+    NSURL* remoteSyncURL;
     
     UIActivityIndicatorView *activity;
     UITableView *tableView;
@@ -37,5 +38,8 @@
 @property(nonatomic, retain) IBOutlet CouchUITableSource* dataSource;
 
 -(void)useDatabase:(CouchDatabase*)theDatabase;
+
+- (IBAction)configureSync:(id)sender;
+- (IBAction) deleteCheckedItems:(id)sender;
 
 @end

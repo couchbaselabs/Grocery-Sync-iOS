@@ -26,7 +26,7 @@
 #define kDatabaseName @"grocery-sync"
 
 // The default remote database URL to sync with, if the user hasn't set a different one as a pref.
-#define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
+//#define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
 
 // Set this to 1 to install a pre-built database from a ".couch" resource file on first run.
 #define INSTALL_CANNED_DATABASE 0
@@ -56,13 +56,15 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 
 // Override point for customization after application launch.
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+#ifdef kDefaultSyncDbURL
     // Register the default value of the pref for the remote database URL to sync with:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSDictionary *appdefaults = [NSDictionary dictionaryWithObject:kDefaultSyncDbURL
                                                             forKey:@"syncpoint"];
     [defaults registerDefaults:appdefaults];
     [defaults synchronize];
-
+#endif
+    
     // Add the navigation controller's view to the window and display.
 	[window addSubview:navigationController.view];
 	[window makeKeyAndVisible];
@@ -157,7 +159,7 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
     if (error) {
         message = [NSString stringWithFormat: @"%@\n\n%@", message, error.localizedFailureReason];
     }
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Fatal Error"
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle: (fatal ? @"Fatal Error" : @"Error")
                                                     message: message
                                                    delegate: (fatal ? self : nil)
                                           cancelButtonTitle: (fatal ? @"Quit" : @"Sorry")

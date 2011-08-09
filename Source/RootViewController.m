@@ -19,6 +19,7 @@
 //
 
 #import "RootViewController.h"
+#import "ConfigViewController.h"
 #import "DemoAppDelegate.h"
 
 #import <CouchCocoa/CouchCocoa.h>
@@ -29,6 +30,8 @@
 @interface RootViewController ()
 @property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
+@property(nonatomic, retain)NSURL* remoteSyncURL;
+- (IBAction)configureSync:(id)sender;
 @end
 
 
@@ -39,6 +42,7 @@
 @synthesize activity;
 @synthesize database;
 @synthesize tableView;
+@synthesize remoteSyncURL;
 
 
 #pragma mark - View lifecycle
@@ -55,12 +59,20 @@
                                                            action: @selector(deleteCheckedItems:)];
     self.navigationItem.leftBarButtonItem = [deleteButton autorelease];
     
+    UIBarButtonItem* syncButton = [[UIBarButtonItem alloc] initWithTitle: @"Sync"
+                                                                   style:UIBarButtonItemStylePlain
+                                                                  target: self 
+                                                                  action: @selector(configureSync:)];
+    self.navigationItem.rightBarButtonItem = [syncButton autorelease];
+    
+    /*
     self.activity = [[[UIActivityIndicatorView alloc] 
                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
     [self.activity startAnimating];
     UIBarButtonItem* activityButtonItem = [[UIBarButtonItem alloc] initWithCustomView:activity];
     activityButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = [activityButtonItem autorelease];
+    */
     
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -85,37 +97,63 @@
 }
 
 
+- (void)updateSyncURL {
+    if (!self.database)
+        return;
+    NSURL* newRemoteURL = nil;
+    NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
+    if (syncpoint.length > 0)
+        newRemoteURL = [NSURL URLWithString:syncpoint];
+    
+    if (newRemoteURL != remoteSyncURL && ![newRemoteURL isEqual: remoteSyncURL]) {
+        // Set up synchronization to/from a remote database:
+        NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
+        self.remoteSyncURL = newRemoteURL;
+        RESTOperation *pull = [database pullFromDatabaseAtURL: newRemoteURL
+                                                      options: kCouchReplicationContinuous];
+        [pull onCompletion:^() {
+            if (pull.isSuccessful)
+                NSLog(@"continous sync triggered from %@", syncpoint);
+            else
+                [self showErrorAlert: @"Unable to sync with the server. You may still work offline."
+                        forOperation: pull];
+        }];
+        
+        RESTOperation *push = [database pushToDatabaseAtURL: newRemoteURL
+                                                    options: kCouchReplicationContinuous];
+        [push onCompletion:^() {
+            if (push.isSuccessful)
+                NSLog(@"continous sync triggered to %@", syncpoint);
+            else
+                [self showErrorAlert: @"Unable to sync with the server. You may still work offline." 
+                        forOperation: push];
+        }];
+    }
+}
+
+
 -(void)useDatabase:(CouchDatabase*)theDatabase {
     self.database = theDatabase;
     CouchLiveQuery* query = [[database getAllDocuments] asLiveQuery];
     query.descending = YES;  // Sort by descending ID, which will imply descending create time
     self.dataSource.query = query;
     self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+    [self updateSyncURL];
+}
 
-    // Set up synchronization to/from a remote database:
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *syncpoint = [defaults objectForKey:@"syncpoint"];
-    NSURL *remoteURL = [NSURL URLWithString:syncpoint];
 
-    RESTOperation *pull = [database pullFromDatabaseAtURL: remoteURL
-                                                  options: kCouchReplicationContinuous];
-    [pull onCompletion:^() {
-        if (pull.isSuccessful)
-            NSLog(@"continous sync triggered from %@", syncpoint);
-        else
-            [self showErrorAlert: @"Unable to sync with the server. You may still work offline."
-                  forOperation: pull];
-	}];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear: animated];
+    // Check for changes after returning from the sync confic view:
+    [self updateSyncURL];
+}
 
-    RESTOperation *push = [database pushToDatabaseAtURL: remoteURL
-                                                options: kCouchReplicationContinuous];
-    [push onCompletion:^() {
-        if (push.isSuccessful)
-            NSLog(@"continous sync triggered to %@", syncpoint);
-        else
-            [self showErrorAlert: @"Unable to sync with the server. You may still work offline." 
-                  forOperation: pull];
-	}];
+
+- (IBAction)configureSync:(id)sender {
+    UINavigationController* navController = (UINavigationController*)self.parentViewController;
+    ConfigViewController* controller = [[ConfigViewController alloc] init];
+    [navController pushViewController: controller animated: YES];
+    [controller release];
 }
 
 
