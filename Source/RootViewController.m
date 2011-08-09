@@ -41,8 +41,7 @@
 @synthesize tableView;
 
 
-#pragma mark -
-#pragma mark View lifecycle
+#pragma mark - View lifecycle
 
 
 - (void)viewDidLoad {
@@ -50,11 +49,11 @@
 
     [CouchUITableSource class];     // Prevents class from being dead-stripped by linker
 
-    UIBarButtonItem* purgeButton = [[UIBarButtonItem alloc] initWithTitle: @"Purge"
+    UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle: @"Clean"
                                                             style:UIBarButtonItemStylePlain
                                                            target: self 
-                                                           action: @selector(purgeDeletedItems:)];
-    self.navigationItem.leftBarButtonItem = [purgeButton autorelease];
+                                                           action: @selector(deleteCheckedItems:)];
+    self.navigationItem.leftBarButtonItem = [deleteButton autorelease];
     
     self.activity = [[[UIActivityIndicatorView alloc] 
                      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
@@ -120,8 +119,7 @@
 }
 
 
-#pragma mark -
-#pragma mark Couch table source delegate
+#pragma mark - Couch table source delegate
 
 
 - (void)couchTableSource:(CouchUITableSource*)source
@@ -161,8 +159,7 @@
 }
 
 
-#pragma mark -
-#pragma mark Table view delegate
+#pragma mark - Table view delegate
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -191,8 +188,7 @@
 }
 
 
-#pragma mark
-#pragma mark Editing:
+#pragma mark - Editing:
 
 
 - (NSArray*)checkedDocuments {
@@ -207,7 +203,7 @@
 }
 
 
-- (IBAction) purgeDeletedItems:(id)sender {
+- (IBAction)deleteCheckedItems:(id)sender {
     NSUInteger numChecked = self.checkedDocuments.count;
     if (numChecked == 0)
         return;
@@ -239,8 +235,7 @@
 }
 
 
-#pragma mark -
-#pragma mark UITextField delegate
+#pragma mark - UITextField delegate
 
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
