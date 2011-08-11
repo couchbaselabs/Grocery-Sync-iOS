@@ -25,11 +25,11 @@
 
 @interface DemoAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate, 
                                        CouchbaseDelegate> {
-    
     UIWindow *window;
     UINavigationController *navigationController;
     UIImageView *splashView;
 
+       
     CouchDatabase *database;
 }
 

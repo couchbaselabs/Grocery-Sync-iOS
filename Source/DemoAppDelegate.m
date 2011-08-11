@@ -111,6 +111,7 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
     self.database = [server databaseNamed: kDatabaseName];
     [server release];
+    self.database.tracksActiveOperations = YES;
     
 #if !INSTALL_CANNED_DATABASE
     // Create the database on the first run of the app.
@@ -128,10 +129,15 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-	// CouchDB seems to get stuck when in background. exit() so we get relaunched freshly.
-    // (Setting the UIApplicationExitsOnSuspend key in the Info.plist accomplishes the same goal.)
+	// Make sure all transactions complete, because going into the background will
+    // close down the CouchDB server:
+    [RESTOperation wait: self.database.activeOperations];
+}
 
-	exit(0);
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+	// Make sure all transactions complete before quitting:
+    [RESTOperation wait: self.database.activeOperations];
 }
 
 
