@@ -28,10 +28,13 @@
 
 
 @interface RootViewController ()
-@property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)CouchDatabase *database;
 @property(nonatomic, retain)NSURL* remoteSyncURL;
+- (void)updateSyncURL;
+- (void)showSyncButton;
+- (void)showSyncStatus;
 - (IBAction)configureSync:(id)sender;
+- (void)stopSync;
 @end
 
 
@@ -39,7 +42,6 @@
 
 
 @synthesize dataSource;
-@synthesize activity;
 @synthesize database;
 @synthesize tableView;
 @synthesize remoteSyncURL;
@@ -59,20 +61,7 @@
                                                            action: @selector(deleteCheckedItems:)];
     self.navigationItem.leftBarButtonItem = [deleteButton autorelease];
     
-    UIBarButtonItem* syncButton = [[UIBarButtonItem alloc] initWithTitle: @"Sync"
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target: self 
-                                                                  action: @selector(configureSync:)];
-    self.navigationItem.rightBarButtonItem = [syncButton autorelease];
-    
-    /*
-    self.activity = [[[UIActivityIndicatorView alloc] 
-                     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
-    [self.activity startAnimating];
-    UIBarButtonItem* activityButtonItem = [[UIBarButtonItem alloc] initWithCustomView:activity];
-    activityButtonItem.enabled = NO;
-    self.navigationItem.rightBarButtonItem = [activityButtonItem autorelease];
-    */
+    [self showSyncButton];
     
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -85,60 +74,9 @@
 
 
 - (void)dealloc {
+    [self stopSync];
     [database release];
     [super dealloc];
-}
-
-
-- (void)showErrorAlert: (NSString*)message forOperation: (RESTOperation*)op {
-    NSLog(@"%@: op=%@, error=%@", message, op, op.error);
-    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate] 
-        showAlert: message error: op.error fatal: NO];
-}
-
-
-- (void)updateSyncURL {
-    if (!self.database)
-        return;
-    NSURL* newRemoteURL = nil;
-    NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
-    if (syncpoint.length > 0)
-        newRemoteURL = [NSURL URLWithString:syncpoint];
-    
-    if (newRemoteURL != remoteSyncURL && ![newRemoteURL isEqual: remoteSyncURL]) {
-        // Set up synchronization to/from a remote database:
-        NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
-        self.remoteSyncURL = newRemoteURL;
-        RESTOperation *pull = [database pullFromDatabaseAtURL: newRemoteURL
-                                                      options: kCouchReplicationContinuous];
-        [pull onCompletion:^() {
-            if (pull.isSuccessful)
-                NSLog(@"continous sync triggered from %@", syncpoint);
-            else
-                [self showErrorAlert: @"Unable to sync with the server. You may still work offline."
-                        forOperation: pull];
-        }];
-        
-        RESTOperation *push = [database pushToDatabaseAtURL: newRemoteURL
-                                                    options: kCouchReplicationContinuous];
-        [push onCompletion:^() {
-            if (push.isSuccessful)
-                NSLog(@"continous sync triggered to %@", syncpoint);
-            else
-                [self showErrorAlert: @"Unable to sync with the server. You may still work offline." 
-                        forOperation: push];
-        }];
-    }
-}
-
-
--(void)useDatabase:(CouchDatabase*)theDatabase {
-    self.database = theDatabase;
-    CouchLiveQuery* query = [[database getAllDocuments] asLiveQuery];
-    query.descending = YES;  // Sort by descending ID, which will imply descending create time
-    self.dataSource.query = query;
-    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
-    [self updateSyncURL];
 }
 
 
@@ -149,23 +87,24 @@
 }
 
 
-- (IBAction)configureSync:(id)sender {
-    UINavigationController* navController = (UINavigationController*)self.parentViewController;
-    ConfigViewController* controller = [[ConfigViewController alloc] init];
-    [navController pushViewController: controller animated: YES];
-    [controller release];
+- (void)useDatabase:(CouchDatabase*)theDatabase {
+    self.database = theDatabase;
+    CouchLiveQuery* query = [[database getAllDocuments] asLiveQuery];
+    query.descending = YES;  // Sort by descending ID, which will imply descending create time
+    self.dataSource.query = query;
+    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+    [self updateSyncURL];
+}
+
+
+- (void)showErrorAlert: (NSString*)message forOperation: (RESTOperation*)op {
+    NSLog(@"%@: op=%@, error=%@", message, op, op.error);
+    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate] 
+        showAlert: message error: op.error fatal: NO];
 }
 
 
 #pragma mark - Couch table source delegate
-
-
-- (void)couchTableSource:(CouchUITableSource*)source
-     willUpdateFromQuery:(CouchLiveQuery*)query
-{
-    // Turn off the activity indicator as soon as we get results on the initial load.
-    [self.activity stopAnimating];
-}
 
 
 // Customize the appearance of table view cells.
@@ -320,6 +259,101 @@
 		[self.dataSource.query start];
 	}];
     [op start];
+}
+
+
+#pragma mark - SYNC:
+
+
+- (IBAction)configureSync:(id)sender {
+    UINavigationController* navController = (UINavigationController*)self.parentViewController;
+    ConfigViewController* controller = [[ConfigViewController alloc] init];
+    [navController pushViewController: controller animated: YES];
+    [controller release];
+}
+
+
+- (void)updateSyncURL {
+    if (!self.database)
+        return;
+    NSURL* newRemoteURL = nil;
+    NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
+    if (syncpoint.length > 0)
+        newRemoteURL = [NSURL URLWithString:syncpoint];
+    
+    if (newRemoteURL != remoteSyncURL && ![newRemoteURL isEqual: remoteSyncURL]) {
+        // Set up synchronization to/from a remote database:
+        NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
+        self.remoteSyncURL = newRemoteURL;
+        [self stopSync];
+        _pull = [[database pullFromDatabaseAtURL: newRemoteURL
+                                         options: kCouchReplicationContinuous] retain];
+        [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+        
+        _push = [[database pushToDatabaseAtURL: newRemoteURL
+                                       options: kCouchReplicationContinuous] retain];
+        [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+    }
+    
+    database.server.activityPollInterval = 0.5;
+}
+
+
+- (void) stopSync {
+    [_pull removeObserver: self forKeyPath: @"status"];
+    [_pull stop];
+    [_pull release];
+    _pull = nil;
+    [_push removeObserver: self forKeyPath: @"status"];
+    [_push stop];
+    [_push release];
+    _push = nil;
+}
+
+
+- (void)showSyncButton {
+    if (!showingSyncButton) {
+        showingSyncButton = YES;
+        UIBarButtonItem* syncButton =
+                [[UIBarButtonItem alloc] initWithTitle: @"Configure"
+                                                 style:UIBarButtonItemStylePlain
+                                                target: self 
+                                                action: @selector(configureSync:)];
+        self.navigationItem.rightBarButtonItem = [syncButton autorelease];
+    }
+}
+
+
+- (void)showSyncStatus {
+    if (showingSyncButton) {
+        showingSyncButton = NO;
+        if (!progress) {
+            progress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+            CGRect frame = progress.frame;
+            frame.size.width = self.view.frame.size.width / 4.0;
+            progress.frame = frame;
+        }
+        UIBarButtonItem* progressItem = [[UIBarButtonItem alloc] initWithCustomView:progress];
+        progressItem.enabled = NO;
+        self.navigationItem.rightBarButtonItem = [progressItem autorelease];
+    }
+}
+
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object 
+                         change:(NSDictionary *)change context:(void *)context
+{
+    if (object == _pull || object == _push) {
+        unsigned completed = _pull.completed + _push.completed;
+        unsigned total = _pull.total + _push.total;
+        NSLog(@"SYNC progress: %u / %u", completed, total);
+        if (total > 0 && completed < total) {
+            [self showSyncStatus];
+            [progress setProgress:(completed / (float)total) animated:NO];
+        } else {
+            [self showSyncButton];
+        }
+    }
 }
 
 

@@ -20,16 +20,19 @@
 
 #import <UIKit/UIKit.h>
 #import <CouchCocoa/CouchUITableSource.h>
-@class CouchDatabase;
+@class CouchDatabase, CouchReplication;
 
 
 @interface RootViewController : UIViewController <CouchUITableDelegate, UITextFieldDelegate>
 {
     CouchDatabase *database;
     NSURL* remoteSyncURL;
+    CouchReplication* _pull;
+    CouchReplication* _push;
     
-    UIActivityIndicatorView *activity;
     UITableView *tableView;
+    IBOutlet UIProgressView *progress;
+    BOOL showingSyncButton;
     IBOutlet UITextField *addItemTextField;
     IBOutlet UIImageView *addItemBackground;
 }

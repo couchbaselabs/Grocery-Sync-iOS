@@ -56,6 +56,7 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 
 // Override point for customization after application launch.
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSLog(@"------ application:didFinishLaunchingWithOptions:");
 #ifdef kDefaultSyncDbURL
     // Register the default value of the pref for the remote database URL to sync with:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -128,14 +129,27 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 }
 
 
+- (void)applicationWillResignActive:(UIApplication *)application {
+    NSLog(@"------ applicationWillResignActive");
+}
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+    NSLog(@"------ applicationDidEnterBackground");
 	// Make sure all transactions complete, because going into the background will
     // close down the CouchDB server:
     [RESTOperation wait: self.database.activeOperations];
 }
 
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    NSLog(@"------ applicationWillEnterForeground");
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    NSLog(@"------ applicationDidBecomeActive");
+}
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+    NSLog(@"------ applicationWillTerminate");
 	// Make sure all transactions complete before quitting:
     [RESTOperation wait: self.database.activeOperations];
 }
@@ -163,7 +177,7 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 // If 'fatal' is true, the app will quit when it's pressed.
 - (void)showAlert: (NSString*)message error: (NSError*)error fatal: (BOOL)fatal {
     if (error) {
-        message = [NSString stringWithFormat: @"%@\n\n%@", message, error.localizedFailureReason];
+        message = [NSString stringWithFormat: @"%@\n\n%@", message, error.localizedDescription];
     }
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle: (fatal ? @"Fatal Error" : @"Error")
                                                     message: message
