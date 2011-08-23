@@ -286,16 +286,18 @@
         NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
         self.remoteSyncURL = newRemoteURL;
         [self stopSync];
-        _pull = [[database pullFromDatabaseAtURL: newRemoteURL
-                                         options: kCouchReplicationContinuous] retain];
-        [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
-        
-        _push = [[database pushToDatabaseAtURL: newRemoteURL
-                                       options: kCouchReplicationContinuous] retain];
-        [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+        if (newRemoteURL) {
+            _pull = [[database pullFromDatabaseAtURL: newRemoteURL
+                                             options: kCouchReplicationContinuous] retain];
+            [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+            
+            _push = [[database pushToDatabaseAtURL: newRemoteURL
+                                           options: kCouchReplicationContinuous] retain];
+            [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+            database.server.activityPollInterval = 1.0;
+        }
     }
     
-    database.server.activityPollInterval = 0.5;
 }
 
 
@@ -308,6 +310,7 @@
     [_push stop];
     [_push release];
     _push = nil;
+    database.server.activityPollInterval = 0.0;
 }
 
 
@@ -349,9 +352,11 @@
         NSLog(@"SYNC progress: %u / %u", completed, total);
         if (total > 0 && completed < total) {
             [self showSyncStatus];
-            [progress setProgress:(completed / (float)total) animated:NO];
+            [progress setProgress:(completed / (float)total)];
+            database.server.activityPollInterval = 0.5;   // poll often while progress is showing
         } else {
             [self showSyncButton];
+            database.server.activityPollInterval = 2.0;   // poll less often at other times
         }
     }
 }
