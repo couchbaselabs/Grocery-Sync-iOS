@@ -46,9 +46,6 @@
 @implementation DemoAppDelegate
 
 
-static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
-
-
 @synthesize window;
 @synthesize navigationController;
 @synthesize database;
@@ -78,16 +75,16 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
                withObject: [NSURL URLWithString: USE_REMOTE_SERVER]
                afterDelay: 0.0];
 #else
-    gCouchbaseEmbeddedServer = [[CouchbaseEmbeddedServer alloc] init];
-    gCouchbaseEmbeddedServer.delegate = self;
+    CouchbaseMobile* couchbase = [[CouchbaseMobile alloc] init];
+    couchbase.delegate = self;
 #if INSTALL_CANNED_DATABASE
     NSString* dbPath = [[NSBundle mainBundle] pathForResource: kDatabaseName ofType: @"couch"];
     NSAssert(dbPath, @"Couldn't find "kDatabaseName".couch");
-    [gCouchbaseEmbeddedServer installDefaultDatabase: dbPath];
+    [gCouchbaseMobile installDefaultDatabase: dbPath];
 #endif
-    if (![gCouchbaseEmbeddedServer start]) {
+    if (![couchbase start]) {
         [self showAlert: @"Couldn't start Couchbase."
-                  error: gCouchbaseEmbeddedServer.error 
+                  error: couchbase.error 
                   fatal: YES];
     }
 #endif
@@ -96,17 +93,11 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 }
 
 
--(void)couchbaseDidStart:(NSURL *)serverURL {
-    NSLog(@"CouchDemo: couchbaseDidStart: <%@>", serverURL);
-    if (serverURL == nil) {
-        [self showAlert: @"Couldn't start Couchbase." 
-                  error: gCouchbaseEmbeddedServer.error
-                  fatal: YES];
-        return;
-    }
-    
+-(void)couchbaseMobile:(CouchbaseMobile*)couchbase didStart:(NSURL*)serverURL {
+    NSLog(@"GrocerySync: couchbaseMobile:didStart: <%@>", serverURL);
 #if DEBUG
     gRESTLogLevel = kRESTLogRequestURLs;
+    gCouchLogLevel = 1;
 #endif
 
     CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
@@ -126,6 +117,14 @@ static CouchbaseEmbeddedServer* gCouchbaseEmbeddedServer;
 
     // Take down the splash screen:
     [self removeSplash];
+}
+
+
+-(void)couchbaseMobile:(CouchbaseMobile*)couchbase failedToStart:(NSError*)error {
+    NSLog(@"GrocerySync: couchbaseMobile:failedToStart: %@", error);
+    [self showAlert: @"Couldn't start Couchbase." 
+              error: error
+              fatal: YES];
 }
 
 

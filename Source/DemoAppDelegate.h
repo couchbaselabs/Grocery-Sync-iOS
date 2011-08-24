@@ -19,7 +19,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Couchbase/CouchbaseEmbeddedServer.h>
+#import <Couchbase/CouchbaseMobile.h>
 @class CouchDatabase, RootViewController;
 
 

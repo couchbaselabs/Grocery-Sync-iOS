@@ -193,9 +193,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		27167F1813C4FA57001CC5B6 /* CouchDemo */ = {
+		27167F1813C4FA57001CC5B6 /* GrocerySync */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 27167F5E13C4FA57001CC5B6 /* Build configuration list for PBXNativeTarget "CouchDemo" */;
+			buildConfigurationList = 27167F5E13C4FA57001CC5B6 /* Build configuration list for PBXNativeTarget "GrocerySync" */;
 			buildPhases = (
 				27167F1913C4FA57001CC5B6 /* Resources */,
 				27167F2313C4FA57001CC5B6 /* Copy CouchDB */,
@@ -206,7 +206,7 @@
 			);
 			dependencies = (
 			);
-			name = CouchDemo;
+			name = GrocerySync;
 			productName = Demo;
 			productReference = 27167F6113C4FA57001CC5B6 /* GrocerySync.app */;
 			productType = "com.apple.product-type.application";
@@ -234,7 +234,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				27167F1813C4FA57001CC5B6 /* CouchDemo */,
+				27167F1813C4FA57001CC5B6 /* GrocerySync */,
 			);
 		};
 /* End PBXProject section */
@@ -371,7 +371,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		27167F5E13C4FA57001CC5B6 /* Build configuration list for PBXNativeTarget "CouchDemo" */ = {
+		27167F5E13C4FA57001CC5B6 /* Build configuration list for PBXNativeTarget "GrocerySync" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27167F5F13C4FA57001CC5B6 /* Debug */,

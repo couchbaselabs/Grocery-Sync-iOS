@@ -14,8 +14,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "27167F1813C4FA57001CC5B6"
-               BuildableName = "CouchDemo.app"
-               BlueprintName = "CouchDemo"
+               BuildableName = "GrocerySync.app"
+               BlueprintName = "GrocerySync"
                ReferencedContainer = "container:CouchDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,6 +28,15 @@
       buildConfiguration = "Debug">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "27167F1813C4FA57001CC5B6"
+            BuildableName = "GrocerySync.app"
+            BlueprintName = "GrocerySync"
+            ReferencedContainer = "container:CouchDemo.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
@@ -41,8 +50,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "27167F1813C4FA57001CC5B6"
-            BuildableName = "CouchDemo.app"
-            BlueprintName = "CouchDemo"
+            BuildableName = "GrocerySync.app"
+            BlueprintName = "GrocerySync"
             ReferencedContainer = "container:CouchDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -74,8 +83,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "27167F1813C4FA57001CC5B6"
-            BuildableName = "CouchDemo.app"
-            BlueprintName = "CouchDemo"
+            BuildableName = "GrocerySync.app"
+            BlueprintName = "GrocerySync"
             ReferencedContainer = "container:CouchDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

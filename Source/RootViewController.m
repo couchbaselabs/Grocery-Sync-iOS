@@ -24,7 +24,7 @@
 
 #import <CouchCocoa/CouchCocoa.h>
 #import <CouchCocoa/RESTBody.h>
-#import <Couchbase/CouchbaseEmbeddedServer.h>
+#import <Couchbase/CouchbaseMobile.h>
 
 
 @interface RootViewController ()
