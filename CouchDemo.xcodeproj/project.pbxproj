@@ -21,6 +21,9 @@
 		276A43C913F088B800E5743A /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A43C713F088B700E5743A /* ConfigViewController.m */; };
 		276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276A43C813F088B700E5743A /* ConfigViewController.xib */; };
 		278D97C414042B5300956686 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278D97C314042B5300956686 /* libstdc++.dylib */; };
+		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
+		279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6597140FEFCF00A0E56D /* icon@2x.png */; };
+		279C659A140FF07000A0E56D /* icon~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6599140FF07000A0E56D /* icon~ipad.png */; };
 		27AFCEB613E9FBC300F00AFB /* item_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEB513E9FBC300F00AFB /* item_background.png */; };
 		27AFCEB913E9FFAE00F00AFB /* item_background~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */; };
 		27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBA13EA08D600F00AFB /* background.jpg */; };
@@ -31,12 +34,9 @@
 		CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */; };
 		CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2313E0293300CF15A9 /* textfield___active.png */; };
 		CBD32A3113E0293300CF15A9 /* textfield___inactive.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2413E0293300CF15A9 /* textfield___inactive.png */; };
-		CBD32A4F13E15DDB00CF15A9 /* icon~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A4E13E15DDB00CF15A9 /* icon~ipad.png */; };
 		CBD32A5413E15E8500CF15A9 /* Default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A5313E15E8500CF15A9 /* Default~ipad.png */; };
 		CBD32A5713E15ED000CF15A9 /* textfield___active~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A5513E15ED000CF15A9 /* textfield___active~ipad.png */; };
 		CBD32A5813E15ED000CF15A9 /* textfield___inactive~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A5613E15ED000CF15A9 /* textfield___inactive~ipad.png */; };
-		CBD6E07C13E01711001EFA8C /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD6E07A13E01711001EFA8C /* icon.png */; };
-		CBD6E07D13E01711001EFA8C /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD6E07B13E01711001EFA8C /* icon@2x.png */; };
 		CBD6E08413E01ECB001EFA8C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD6E08313E01ECB001EFA8C /* Default.png */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +51,9 @@
 		276A43C713F088B700E5743A /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		276A43C813F088B700E5743A /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ConfigViewController.xib; path = ../Source/ConfigViewController.xib; sourceTree = "<group>"; };
 		278D97C314042B5300956686 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		279C6595140FEF9A00A0E56D /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
+		279C6597140FEFCF00A0E56D /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
+		279C6599140FF07000A0E56D /* icon~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon~ipad.png"; path = "../icon~ipad.png"; sourceTree = "<group>"; };
 		27AFCEB513E9FBC300F00AFB /* item_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = item_background.png; path = Resources/Elements/item_background.png; sourceTree = SOURCE_ROOT; };
 		27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "item_background~ipad.png"; path = "Resources/Elements/item_background~ipad.png"; sourceTree = SOURCE_ROOT; };
 		27AFCEBA13EA08D600F00AFB /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
@@ -71,12 +74,9 @@
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
 		CBD32A2313E0293300CF15A9 /* textfield___active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active.png"; sourceTree = "<group>"; };
 		CBD32A2413E0293300CF15A9 /* textfield___inactive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___inactive.png"; sourceTree = "<group>"; };
-		CBD32A4E13E15DDB00CF15A9 /* icon~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon~ipad.png"; sourceTree = "<group>"; };
 		CBD32A5313E15E8500CF15A9 /* Default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default~ipad.png"; sourceTree = "<group>"; };
 		CBD32A5513E15ED000CF15A9 /* textfield___active~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active~ipad.png"; sourceTree = "<group>"; };
 		CBD32A5613E15ED000CF15A9 /* textfield___inactive~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___inactive~ipad.png"; sourceTree = "<group>"; };
-		CBD6E07A13E01711001EFA8C /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		CBD6E07B13E01711001EFA8C /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		CBD6E08313E01ECB001EFA8C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -149,9 +149,9 @@
 				8D1107310486CEB800E47090 /* CouchDemo-Info.plist */,
 				3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */,
 				27ED52D713C3944B00AB846D /* grocery-sync.couch */,
-				CBD6E07A13E01711001EFA8C /* icon.png */,
-				CBD6E07B13E01711001EFA8C /* icon@2x.png */,
-				CBD32A4E13E15DDB00CF15A9 /* icon~ipad.png */,
+				279C6595140FEF9A00A0E56D /* icon.png */,
+				279C6597140FEFCF00A0E56D /* icon@2x.png */,
+				279C6599140FF07000A0E56D /* icon~ipad.png */,
 				28F335F01007B36200424DE2 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				276A43C813F088B700E5743A /* ConfigViewController.xib */,
@@ -248,14 +248,11 @@
 				27167F1B13C4FA57001CC5B6 /* RootViewController.xib in Resources */,
 				27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */,
 				27167F2213C4FA57001CC5B6 /* grocery-sync.couch in Resources */,
-				CBD6E07C13E01711001EFA8C /* icon.png in Resources */,
-				CBD6E07D13E01711001EFA8C /* icon@2x.png in Resources */,
 				CBD6E08413E01ECB001EFA8C /* Default.png in Resources */,
 				CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */,
 				CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */,
 				CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */,
 				CBD32A3113E0293300CF15A9 /* textfield___inactive.png in Resources */,
-				CBD32A4F13E15DDB00CF15A9 /* icon~ipad.png in Resources */,
 				CBD32A5413E15E8500CF15A9 /* Default~ipad.png in Resources */,
 				CBD32A5713E15ED000CF15A9 /* textfield___active~ipad.png in Resources */,
 				CBD32A5813E15ED000CF15A9 /* textfield___inactive~ipad.png in Resources */,
@@ -265,6 +262,9 @@
 				27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */,
 				276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */,
 				27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */,
+				279C6596140FEF9A00A0E56D /* icon.png in Resources */,
+				279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */,
+				279C659A140FF07000A0E56D /* icon~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +353,8 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = Resources/Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: CouchOne";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -363,6 +364,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6786F80-ABAF-4CCF-B8EB-33C3D7F81AB1";
 				SDKROOT = iphoneos;
 				WARNING_CFLAGS = "-Wall";
 			};
