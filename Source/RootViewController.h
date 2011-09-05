@@ -45,4 +45,7 @@
 - (IBAction)configureSync:(id)sender;
 - (IBAction) deleteCheckedItems:(id)sender;
 
+- (void) startSync;
+- (void) stopSync;
+
 @end

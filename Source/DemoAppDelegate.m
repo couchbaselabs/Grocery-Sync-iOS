@@ -100,23 +100,32 @@
     gCouchLogLevel = 1;
 #endif
 
-    CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-    self.database = [server databaseNamed: kDatabaseName];
-    [server release];
-    self.database.tracksActiveOperations = YES;
+    RootViewController* root = (RootViewController*)navigationController.topViewController;
+
+    if (!database) {
+        // This is the first time the server has started:
+        CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+        self.database = [server databaseNamed: kDatabaseName];
+        [server release];
     
 #if !INSTALL_CANNED_DATABASE
-    // Create the database on the first run of the app.
-    if (![[self.database GET] wait])
-        [[self.database create] wait];
+        // Create the database on the first run of the app.
+        if (![[self.database GET] wait])
+            [[self.database create] wait];
 #endif
-    
-    // Tell the RootViewController:
-    RootViewController* root = (RootViewController*)navigationController.topViewController;
-    [root useDatabase: database];
+        
+        // Tell the RootViewController:
+        [root useDatabase: database];
 
-    // Take down the splash screen:
-    [self removeSplash];
+        // Take down the splash screen:
+        [self removeSplash];
+    } else {
+        // When the server restarts, just tell the root controller to start syncing again:
+        [root startSync];
+    }
+    
+    database.tracksChanges = YES;
+    database.tracksActiveOperations = YES;
 }
 
 
@@ -134,6 +143,13 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     NSLog(@"------ applicationDidEnterBackground");
+    // Turn off the _changes watcher:
+    database.tracksChanges = NO;
+    
+    // Turn off syncing:
+    RootViewController* root = (RootViewController*)navigationController.topViewController;
+    [root stopSync];
+
 	// Make sure all transactions complete, because going into the background will
     // close down the CouchDB server:
     [RESTOperation wait: self.database.activeOperations];
@@ -141,6 +157,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     NSLog(@"------ applicationWillEnterForeground");
+    // Don't reconnect to the server yet ... wait for it to tell us it's back up.
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {

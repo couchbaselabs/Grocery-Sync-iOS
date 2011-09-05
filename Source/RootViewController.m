@@ -289,18 +289,23 @@
         NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
         self.remoteSyncURL = newRemoteURL;
         [self stopSync];
-        if (newRemoteURL) {
-            _pull = [[database pullFromDatabaseAtURL: newRemoteURL
-                                             options: kCouchReplicationContinuous] retain];
-            [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
-            
-            _push = [[database pushToDatabaseAtURL: newRemoteURL
-                                           options: kCouchReplicationContinuous] retain];
-            [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
-            database.server.activityPollInterval = 1.0;
-        }
+        [self startSync];
     }
     
+}
+
+
+- (void) startSync {
+    if (remoteSyncURL && !_pull) {
+        _pull = [[database pullFromDatabaseAtURL: remoteSyncURL
+                                         options: kCouchReplicationContinuous] retain];
+        [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+        
+        _push = [[database pushToDatabaseAtURL: remoteSyncURL
+                                       options: kCouchReplicationContinuous] retain];
+        [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
+        database.server.activityPollInterval = 1.0;
+    }
 }
 
 
