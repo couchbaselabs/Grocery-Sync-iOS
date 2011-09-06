@@ -297,6 +297,7 @@
 
 - (void) startSync {
     if (remoteSyncURL && !_pull) {
+        NSLog(@"Starting sync with %@", remoteSyncURL);
         _pull = [[database pullFromDatabaseAtURL: remoteSyncURL
                                          options: kCouchReplicationContinuous] retain];
         [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
@@ -310,6 +311,8 @@
 
 
 - (void) stopSync {
+    if (_pull || _push)
+        NSLog(@"Stopping sync");
     [_pull removeObserver: self forKeyPath: @"status"];
     [_pull stop];
     [_pull release];
