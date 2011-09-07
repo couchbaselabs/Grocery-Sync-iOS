@@ -4,5 +4,7 @@
 <dict>
 	<key>get-task-allow</key>
 	<false/>
+	<key>application-identifier</key>
+	<string>5UCEE2F6FU.com.couchone.GrocerySync</string>
 </dict>
 </plist>

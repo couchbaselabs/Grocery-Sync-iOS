@@ -50,7 +50,7 @@
 	<key>CFBundleSignature</key>
 	<string>codm</string>
 	<key>CFBundleVersion</key>
-	<string>101</string>
+	<string>103</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSMainNibFile</key>
