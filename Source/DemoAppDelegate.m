@@ -95,10 +95,7 @@
 
 -(void)couchbaseMobile:(CouchbaseMobile*)couchbase didStart:(NSURL*)serverURL {
     NSLog(@"GrocerySync: couchbaseMobile:didStart: <%@>", serverURL);
-#if DEBUG
-    gRESTLogLevel = kRESTLogRequestURLs;
     gCouchLogLevel = 1;
-#endif
 
     RootViewController* root = (RootViewController*)navigationController.topViewController;
 
@@ -152,7 +149,7 @@
 
 	// Make sure all transactions complete, because going into the background will
     // close down the CouchDB server:
-    [RESTOperation wait: self.database.activeOperations];
+    [RESTOperation wait: self.database.server.activeOperations];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
