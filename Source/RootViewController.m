@@ -89,8 +89,14 @@
 
 - (void)useDatabase:(CouchDatabase*)theDatabase {
     self.database = theDatabase;
-    CouchLiveQuery* query = [[database getAllDocuments] asLiveQuery];
-    query.descending = YES;  // Sort by descending ID, which will imply descending create time
+    
+    // Create a CouchDB 'view' containing list items sorted by date:
+    CouchDesignDocument* design = [theDatabase designDocumentWithName: @"grocery"];
+    [design defineViewNamed: @"byDate"
+                        map: @"function(doc) {if (doc.created_at) emit(doc.created_at, doc);}"];
+    CouchLiveQuery* query = [[design queryViewNamed: @"byDate"] asLiveQuery];
+    query.descending = YES;  // Sort by descending date, i.e. newest items first
+    
     self.dataSource.query = query;
     self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
     [self updateSyncURL];
