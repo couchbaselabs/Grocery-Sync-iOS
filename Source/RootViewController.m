@@ -34,7 +34,7 @@
 - (void)showSyncButton;
 - (void)showSyncStatus;
 - (IBAction)configureSync:(id)sender;
-- (void)stopSync;
+- (void)forgetSync;
 @end
 
 
@@ -74,7 +74,7 @@
 
 
 - (void)dealloc {
-    [self stopSync];
+    [self forgetSync];
     [database release];
     [super dealloc];
 }
@@ -82,7 +82,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear: animated];
-    // Check for changes after returning from the sync confic view:
+    // Check for changes after returning from the sync config view:
     [self updateSyncURL];
 }
 
@@ -290,44 +290,23 @@
     if (syncpoint.length > 0)
         newRemoteURL = [NSURL URLWithString:syncpoint];
     
-    if (newRemoteURL != remoteSyncURL && ![newRemoteURL isEqual: remoteSyncURL]) {
-        // Set up synchronization to/from a remote database:
-        NSLog(@"Changing sync to <%@>", newRemoteURL.absoluteString);
-        self.remoteSyncURL = newRemoteURL;
-        [self stopSync];
-        [self startSync];
-    }
-    
+    [self forgetSync];
+
+    NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
+    _pull = [[repls objectAtIndex: 0] retain];
+    _push = [[repls objectAtIndex: 1] retain];
+    [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+    [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
 }
 
 
-- (void) startSync {
-    if (remoteSyncURL && !_pull) {
-        NSLog(@"Starting sync with %@", remoteSyncURL);
-        _pull = [[database pullFromDatabaseAtURL: remoteSyncURL
-                                         options: kCouchReplicationContinuous] retain];
-        [_pull addObserver: self forKeyPath: @"status" options: 0 context: NULL];
-        
-        _push = [[database pushToDatabaseAtURL: remoteSyncURL
-                                       options: kCouchReplicationContinuous] retain];
-        [_push addObserver: self forKeyPath: @"status" options: 0 context: NULL];
-        database.server.activityPollInterval = 1.0;
-    }
-}
-
-
-- (void) stopSync {
-    if (_pull || _push)
-        NSLog(@"Stopping sync");
-    [_pull removeObserver: self forKeyPath: @"status"];
-    [_pull stop];
+- (void) forgetSync {
+    [_pull removeObserver: self forKeyPath: @"completed"];
     [_pull release];
     _pull = nil;
-    [_push removeObserver: self forKeyPath: @"status"];
-    [_push stop];
+    [_push removeObserver: self forKeyPath: @"completed"];
     [_push release];
     _push = nil;
-    database.server.activityPollInterval = 0.0;
 }
 
 

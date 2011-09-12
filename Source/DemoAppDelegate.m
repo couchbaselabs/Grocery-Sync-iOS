@@ -71,7 +71,7 @@
 
     // Start the Couchbase Server
 #ifdef USE_REMOTE_SERVER
-    [self performSelector: @selector(couchbaseDidStart:)
+    [self performSelector: @selector(connectToServer:)
                withObject: [NSURL URLWithString: USE_REMOTE_SERVER]
                afterDelay: 0.0];
 #else
@@ -93,9 +93,9 @@
 }
 
 
--(void)couchbaseMobile:(CouchbaseMobile*)couchbase didStart:(NSURL*)serverURL {
+- (void)connectToServer:(NSURL*)serverURL {
     NSLog(@"GrocerySync: couchbaseMobile:didStart: <%@>", serverURL);
-    gCouchLogLevel = 1;
+    gCouchLogLevel = 2;
 
     RootViewController* root = (RootViewController*)navigationController.topViewController;
 
@@ -116,13 +116,15 @@
 
         // Take down the splash screen:
         [self removeSplash];
-    } else {
-        // When the server restarts, just tell the root controller to start syncing again:
-        [root startSync];
     }
     
     database.tracksChanges = YES;
     database.tracksActiveOperations = YES;
+}
+
+
+-(void)couchbaseMobile:(CouchbaseMobile*)couchbase didStart:(NSURL*)serverURL {
+    [self connectToServer:serverURL];
 }
 
 
@@ -143,10 +145,6 @@
     // Turn off the _changes watcher:
     database.tracksChanges = NO;
     
-    // Turn off syncing:
-    RootViewController* root = (RootViewController*)navigationController.topViewController;
-    [root stopSync];
-
 	// Make sure all transactions complete, because going into the background will
     // close down the CouchDB server:
     [RESTOperation wait: self.database.server.activeOperations];
