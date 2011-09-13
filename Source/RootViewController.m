@@ -129,12 +129,13 @@
     cell.textLabel.font = [UIFont fontWithName: @"Helvetica" size:18.0];
     cell.textLabel.backgroundColor = [UIColor clearColor];
     
-    // Configure the cell contents:
-    NSDictionary* properties = row.document.properties;
-    BOOL checked = [[properties valueForKey:@"check"] boolValue];
+    // Configure the cell contents. Our view function (see above) copies the document properties
+    // into its value, so we can read them from there without having to load the document:
+    NSDictionary* properties = row.value;
+    BOOL checked = [[properties objectForKey:@"check"] boolValue];
     
     UILabel *labelWithText = cell.textLabel;
-    labelWithText.text = [properties valueForKey:@"text"];
+    labelWithText.text = [properties objectForKey:@"text"];
     labelWithText.textColor = checked ? [UIColor grayColor] : [UIColor blackColor];
 
     [cell.imageView setImage:[UIImage imageNamed:
