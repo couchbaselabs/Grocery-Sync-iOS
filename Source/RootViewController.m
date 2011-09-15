@@ -130,16 +130,13 @@
     cell.textLabel.backgroundColor = [UIColor clearColor];
     
     // Configure the cell contents. Our view function (see above) copies the document properties
-    // into its value, so we can read them from there without having to load the document:
+    // into its value, so we can read them from there without having to load the document.
+    // cell.textLabel.text is already set, thanks to setting up labelProperty above.
     NSDictionary* properties = row.value;
     BOOL checked = [[properties objectForKey:@"check"] boolValue];
-    
-    UILabel *labelWithText = cell.textLabel;
-    labelWithText.text = [properties objectForKey:@"text"];
-    labelWithText.textColor = checked ? [UIColor grayColor] : [UIColor blackColor];
-
-    [cell.imageView setImage:[UIImage imageNamed:
-            (checked ? @"list_area___checkbox___checked" : @"list_area___checkbox___unchecked")]];
+    cell.textLabel.textColor = checked ? [UIColor grayColor] : [UIColor blackColor];
+    cell.imageView.image = [UIImage imageNamed:
+            (checked ? @"list_area___checkbox___checked" : @"list_area___checkbox___unchecked")];
 }
 
 
