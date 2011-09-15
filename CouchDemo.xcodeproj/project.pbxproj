@@ -21,6 +21,7 @@
 		276A43C913F088B800E5743A /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A43C713F088B700E5743A /* ConfigViewController.m */; };
 		276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276A43C813F088B700E5743A /* ConfigViewController.xib */; };
 		278D97C414042B5300956686 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278D97C314042B5300956686 /* libstdc++.dylib */; };
+		2794EBFD14227F1E00A53EE2 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2794EBFC14227F1E00A53EE2 /* libz.dylib */; };
 		27962307142031E80051455D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27962306142031E80051455D /* Security.framework */; };
 		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
 		279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6597140FEFCF00A0E56D /* icon@2x.png */; };
@@ -53,6 +54,7 @@
 		276A43C713F088B700E5743A /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		276A43C813F088B700E5743A /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ConfigViewController.xib; path = ../Source/ConfigViewController.xib; sourceTree = "<group>"; };
 		278D97C314042B5300956686 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		2794EBFC14227F1E00A53EE2 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		27962306142031E80051455D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		279C6595140FEF9A00A0E56D /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		279C6597140FEFCF00A0E56D /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
@@ -89,12 +91,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				27962307142031E80051455D /* Security.framework in Frameworks */,
-				278D97C414042B5300956686 /* libstdc++.dylib in Frameworks */,
 				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
 				27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */,
 				27167F5B13C4FA57001CC5B6 /* Couchbase.framework in Frameworks */,
 				79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */,
+				278D97C414042B5300956686 /* libstdc++.dylib in Frameworks */,
+				2794EBFD14227F1E00A53EE2 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,6 +177,7 @@
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
 				27962306142031E80051455D /* Security.framework */,
 				278D97C314042B5300956686 /* libstdc++.dylib */,
+				2794EBFC14227F1E00A53EE2 /* libz.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
