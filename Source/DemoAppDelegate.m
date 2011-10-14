@@ -102,6 +102,7 @@
     if (!database) {
         // This is the first time the server has started:
         CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
+        server.tracksActiveOperations = YES;
         self.database = [server databaseNamed: kDatabaseName];
         [server release];
     
@@ -119,7 +120,6 @@
     }
     
     database.tracksChanges = YES;
-    database.tracksActiveOperations = YES;
 }
 
 
@@ -162,7 +162,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     NSLog(@"------ applicationWillTerminate");
 	// Make sure all transactions complete before quitting:
-    [RESTOperation wait: self.database.activeOperations];
+    [RESTOperation wait: self.database.server.activeOperations];
 }
 
 

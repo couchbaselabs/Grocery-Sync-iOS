@@ -23,7 +23,6 @@
 #import "DemoAppDelegate.h"
 
 #import <CouchCocoa/CouchCocoa.h>
-#import <CouchCocoa/RESTBody.h>
 #import <Couchbase/CouchbaseMobile.h>
 
 
@@ -240,24 +239,14 @@
     }
     [addItemTextField setText:nil];
 
-    // Get the current date+time as a string in standard JSON format:
-    NSString* dateString = [RESTBody JSONObjectWithDate: [NSDate date]];
-
-    // Construct a unique document ID that will sort chronologically:
-    CFUUIDRef uuid = CFUUIDCreate(nil);
-    NSString *guid = (NSString*)CFUUIDCreateString(nil, uuid);
-    CFRelease(uuid);
-	NSString *docId = [NSString stringWithFormat:@"%@-%@", dateString, guid];
-    [guid release];
-
     // Create the new document's properties:
 	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text",
                                 [NSNumber numberWithBool:NO], @"check",
-                                dateString, @"created_at",
+                                [RESTBody JSONObjectWithDate: [NSDate date]], @"created_at",
                                 nil];
 
     // Save the document, asynchronously:
-    CouchDocument* doc = [database documentWithID: docId];
+    CouchDocument* doc = [database untitledDocument];
     RESTOperation* op = [doc putProperties:inDocument];
     [op onCompletion: ^{
         if (op.error)
