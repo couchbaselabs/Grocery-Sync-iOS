@@ -23,7 +23,6 @@
 #import "DemoAppDelegate.h"
 
 #import <CouchCocoa/CouchCocoa.h>
-#import <Couchbase/CouchbaseMobile.h>
 
 
 @interface RootViewController ()
@@ -89,12 +88,18 @@
 - (void)useDatabase:(CouchDatabase*)theDatabase {
     self.database = theDatabase;
     
-    // Create a CouchDB 'view' containing list items sorted by date:
+    // Create a CouchDB 'view' containing list items sorted by date,
+    // and a validation function requiring parseable dates:
     CouchDesignDocument* design = [theDatabase designDocumentWithName: @"grocery"];
+    design.language = kCouchLanguageJavaScript;
     [design defineViewNamed: @"byDate"
                         map: @"function(doc) {if (doc.created_at) emit(doc.created_at, doc);}"];
+    design.validation = @"function(doc) {if (doc.created_at && !(Date.parse(doc.created_at) > 0))"
+                            "throw({forbidden:'Invalid date'});}";
+
+    // Create a query sorted by descending date, i.e. newest items first:
     CouchLiveQuery* query = [[design queryViewNamed: @"byDate"] asLiveQuery];
-    query.descending = YES;  // Sort by descending date, i.e. newest items first
+    query.descending = YES;
     
     self.dataSource.query = query;
     self.dataSource.labelProperty = @"text";    // Document property to display in the cell label

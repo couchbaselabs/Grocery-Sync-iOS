@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class CouchServer;
 
 @interface ConfigViewController : UIViewController
 
