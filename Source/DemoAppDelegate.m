@@ -20,6 +20,7 @@
 
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
+#import <Couchbase/CouchbaseMobile.h>
 #import <CouchCocoa/CouchCocoa.h>
 
 // The name of the database the app will use.
@@ -38,8 +39,8 @@
 
 
 @interface DemoAppDelegate ()
--(void)showSplash;
--(void)removeSplash;
+- (void)showSplash;
+- (void)removeSplash;
 @end
 
 
@@ -69,100 +70,48 @@
     
     [self showSplash];
 
-    // Start the Couchbase Server
+    // Start the Couchbase Mobile server:
+    // gCouchLogLevel = 1;
+    [CouchbaseMobile class];  // prevents dead-stripping
+    CouchEmbeddedServer* server;
 #ifdef USE_REMOTE_SERVER
-    [self performSelector: @selector(connectToServer:)
-               withObject: [NSURL URLWithString: USE_REMOTE_SERVER]
-               afterDelay: 0.0];
+    server = [[CouchEmbeddedServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
 #else
-    CouchbaseMobile* couchbase = [[CouchbaseMobile alloc] init];
-    couchbase.delegate = self;
+    server = [[CouchEmbeddedServer alloc] init];
+#endif
+    
 #if INSTALL_CANNED_DATABASE
     NSString* dbPath = [[NSBundle mainBundle] pathForResource: kDatabaseName ofType: @"couch"];
     NSAssert(dbPath, @"Couldn't find "kDatabaseName".couch");
-    [gCouchbaseMobile installDefaultDatabase: dbPath];
+    [server installDefaultDatabase: dbPath];
 #endif
-    if (![couchbase start]) {
-        [self showAlert: @"Couldn't start Couchbase."
-                  error: couchbase.error 
-                  fatal: YES];
-    }
-#endif
-
-    return YES;
-}
-
-
-- (void)connectToServer:(NSURL*)serverURL {
-    NSLog(@"GrocerySync: couchbaseMobile:didStart: <%@>", serverURL);
-    gCouchLogLevel = 2;
-
-    RootViewController* root = (RootViewController*)navigationController.topViewController;
-
-    if (!database) {
-        // This is the first time the server has started:
-        CouchServer *server = [[CouchServer alloc] initWithURL: serverURL];
-        server.tracksActiveOperations = YES;
-        self.database = [server databaseNamed: kDatabaseName];
-        [server release];
     
-#if !INSTALL_CANNED_DATABASE
+    [server start: ^{  // ... this block runs later on when the server has started up:
+        if (server.error) {
+            [self showAlert: @"Couldn't start Couchbase." error: server.error fatal: YES];
+            return;
+        }
+        
+        self.database = [server databaseNamed: kDatabaseName];
+        
+#if !INSTALL_CANNED_DATABASE && !defined(USE_REMOTE_SERVER)
         // Create the database on the first run of the app.
-        if (![[self.database GET] wait])
-            [[self.database create] wait];
+        NSError* error;
+        if (![self.database ensureCreated: &error]) {
+            [self showAlert: @"Couldn't create local database." error: error fatal: YES];
+            return;
+        }
 #endif
         
+        database.tracksChanges = YES;
+        
         // Tell the RootViewController:
+        RootViewController* root = (RootViewController*)navigationController.topViewController;
         [root useDatabase: database];
-
-        // Take down the splash screen:
+        
         [self removeSplash];
-    }
-    
-    database.tracksChanges = YES;
-}
-
-
--(void)couchbaseMobile:(CouchbaseMobile*)couchbase didStart:(NSURL*)serverURL {
-    [self connectToServer:serverURL];
-}
-
-
--(void)couchbaseMobile:(CouchbaseMobile*)couchbase failedToStart:(NSError*)error {
-    NSLog(@"GrocerySync: couchbaseMobile:failedToStart: %@", error);
-    [self showAlert: @"Couldn't start Couchbase." 
-              error: error
-              fatal: YES];
-}
-
-
-- (void)applicationWillResignActive:(UIApplication *)application {
-    NSLog(@"------ applicationWillResignActive");
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    NSLog(@"------ applicationDidEnterBackground");
-    // Turn off the _changes watcher:
-    database.tracksChanges = NO;
-    
-	// Make sure all transactions complete, because going into the background will
-    // close down the CouchDB server:
-    [RESTOperation wait: self.database.server.activeOperations];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    NSLog(@"------ applicationWillEnterForeground");
-    // Don't reconnect to the server yet ... wait for it to tell us it's back up.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    NSLog(@"------ applicationDidBecomeActive");
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    NSLog(@"------ applicationWillTerminate");
-	// Make sure all transactions complete before quitting:
-    [RESTOperation wait: self.database.server.activeOperations];
+    }];
+    return YES;
 }
 
 

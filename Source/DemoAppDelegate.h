@@ -19,21 +19,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Couchbase/CouchbaseMobile.h>
 @class CouchDatabase, RootViewController;
 
 
-@interface DemoAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate, 
-                                       CouchbaseDelegate> {
-    UIWindow *window;
-    UINavigationController *navigationController;
+@interface DemoAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate>
+{
     UIImageView *splashView;
-
-       
-    CouchDatabase *database;
 }
 
-@property(nonatomic, retain)CouchDatabase *database;
+@property (nonatomic, retain) CouchDatabase *database;
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
