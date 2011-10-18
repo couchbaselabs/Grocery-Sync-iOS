@@ -25,8 +25,7 @@ Prerequisite: Xcode 4.0.2 or later with the SDK for iOS 4 or later. (It's possib
 ### Get the frameworks (CouchCocoa as well as the embedded Couchbase server)
 
 1. [Download and unzip the latest][1] compiled Couchbase.framework. (Building this is messy, you probably don't want to do it yourself.)
-2. Either [download and unzip the latest][5] compiled CouchCocoa.framework, or [check out the source code][6] and build it yourself. (Build the "iOS Framework" scheme, then find CouchCocoa.framework in the build output directory.)
-3. Copy both Couchbase.framework and CouchCocoa.framework into the Frameworks directory of this repo.
+2. Copy both Couchbase.framework and CouchCocoa.framework into the Frameworks directory of this repo.
 
 ### Open the Xcode workspace
 
