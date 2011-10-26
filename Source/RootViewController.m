@@ -23,6 +23,7 @@
 #import "DemoAppDelegate.h"
 
 #import <CouchCocoa/CouchCocoa.h>
+#import <CouchCocoa/CouchDesignDocument_Embedded.h>
 
 
 @interface RootViewController ()
@@ -91,11 +92,18 @@
     // Create a CouchDB 'view' containing list items sorted by date,
     // and a validation function requiring parseable dates:
     CouchDesignDocument* design = [theDatabase designDocumentWithName: @"grocery"];
-    design.language = kCouchLanguageJavaScript;
-    [design defineViewNamed: @"byDate"
-                        map: @"function(doc) {if (doc.created_at) emit(doc.created_at, doc);}"];
-    design.validation = @"function(doc) {if (doc.created_at && !(Date.parse(doc.created_at) > 0))"
-                            "throw({forbidden:'Invalid date'});}";
+    [design defineViewNamed: @"byDate" mapBlock: MAPBLOCK({
+        id date = [doc objectForKey: @"created_at"];
+        if (date) emit(date, doc);
+    })];
+    design.validationBlock = VALIDATIONBLOCK({
+        id date = [doc objectForKey: @"created_at"];
+        if (date && ! [RESTBody dateWithJSONObject: date]) {
+            context.errorMessage = @"invalid date";
+            return NO;
+        }
+        return YES;
+    });
 
     // Create a query sorted by descending date, i.e. newest items first:
     CouchLiveQuery* query = [[design queryViewNamed: @"byDate"] asLiveQuery];
