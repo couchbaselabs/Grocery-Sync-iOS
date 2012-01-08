@@ -69,13 +69,22 @@
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
         [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
     }
+
+    // Create a query sorted by descending date, i.e. newest items first:
+    NSAssert(database!=nil, @"Not hooked up to database yet");
+    CouchLiveQuery* query = [[[database designDocumentWithName: @"grocery"]
+                                                queryViewNamed: @"byDate"] asLiveQuery];
+    query.descending = YES;
+    
+    self.dataSource.query = query;
+    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+
+    [self updateSyncURL];
 }
 
 
 - (void)dealloc {
     [self forgetSync];
-    [database release];
-    [super dealloc];
 }
 
 
@@ -89,29 +98,24 @@
 - (void)useDatabase:(CouchDatabase*)theDatabase {
     self.database = theDatabase;
     
-    // Create a CouchDB 'view' containing list items sorted by date,
-    // and a validation function requiring parseable dates:
-    CouchDesignDocument* design = [theDatabase designDocumentWithName: @"grocery"];
+    // Create a 'view' containing list items sorted by date:
+    CouchDesignDocument* design = [database designDocumentWithName: @"grocery"];
     [design defineViewNamed: @"byDate" mapBlock: MAPBLOCK({
         id date = [doc objectForKey: @"created_at"];
         if (date) emit(date, doc);
-    })];
+    }) version: @"1.0"];
+    
+    // and a validation function requiring parseable dates:
     design.validationBlock = VALIDATIONBLOCK({
-        id date = [doc objectForKey: @"created_at"];
+        if (newRevision.deleted)
+            return YES;
+        id date = [newRevision.properties objectForKey: @"created_at"];
         if (date && ! [RESTBody dateWithJSONObject: date]) {
-            context.errorMessage = @"invalid date";
+            context.errorMessage = [@"invalid date " stringByAppendingString: date];
             return NO;
         }
         return YES;
     });
-
-    // Create a query sorted by descending date, i.e. newest items first:
-    CouchLiveQuery* query = [[design queryViewNamed: @"byDate"] asLiveQuery];
-    query.descending = YES;
-    
-    self.dataSource.query = query;
-    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
-    [self updateSyncURL];
 }
 
 
@@ -287,16 +291,25 @@
         return;
     NSURL* newRemoteURL = nil;
     NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
-    if (syncpoint.length > 0)
+    if (syncpoint.length > 0) {
         newRemoteURL = [NSURL URLWithString:syncpoint];
+        if ([newRemoteURL isEqual: _pull.remoteURL])
+            return;  // no-op
+    }
     
+    [_pull stop];
+    [_push stop];
     [self forgetSync];
 
-    NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
-    _pull = [[repls objectAtIndex: 0] retain];
-    _push = [[repls objectAtIndex: 1] retain];
-    [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
-    [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+    if (newRemoteURL) {
+        _pull = [[self.database pullFromDatabaseAtURL: newRemoteURL
+                                              options: kCouchReplicationContinuous] retain];
+        _push = [[self.database pushToDatabaseAtURL: newRemoteURL
+                                            options: kCouchReplicationContinuous] retain];
+
+        [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+        [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+    }
 }
 
 
@@ -329,7 +342,7 @@
         if (!progress) {
             progress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
             CGRect frame = progress.frame;
-            frame.size.width = self.view.frame.size.width / 4.0;
+            frame.size.width = self.view.frame.size.width / 4.0f;
             progress.frame = frame;
         }
         UIBarButtonItem* progressItem = [[UIBarButtonItem alloc] initWithCustomView:progress];
@@ -349,10 +362,8 @@
         if (total > 0 && completed < total) {
             [self showSyncStatus];
             [progress setProgress:(completed / (float)total)];
-            database.server.activityPollInterval = 0.5;   // poll often while progress is showing
         } else {
             [self showSyncButton];
-            database.server.activityPollInterval = 2.0;   // poll less often at other times
         }
     }
 }

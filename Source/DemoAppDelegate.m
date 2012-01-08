@@ -68,7 +68,7 @@
     [self showSplash];
 
     // Start the Couchbase Mobile server:
-    // gCouchLogLevel = 1;
+    gCouchLogLevel = 1;
     CouchTouchDBServer* server;
 #ifdef USE_REMOTE_SERVER
     server = [[CouchTouchDBServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
