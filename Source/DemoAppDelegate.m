@@ -20,17 +20,14 @@
 
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
-#import <Couchbase/CouchbaseMobile.h>
 #import <CouchCocoa/CouchCocoa.h>
+#import <CouchCocoa/CouchTouchDBServer.h>
 
 // The name of the database the app will use.
 #define kDatabaseName @"grocery-sync"
 
 // The default remote database URL to sync with, if the user hasn't set a different one as a pref.
 //#define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
-
-// Set this to 1 to install a pre-built database from a ".couch" resource file on first run.
-#define INSTALL_CANNED_DATABASE 0
 
 // Define this to use a server at a specific URL, instead of the embedded Couchbase Mobile.
 // This can be useful for debugging, since you can use the admin console (futon) to inspect
@@ -72,45 +69,36 @@
 
     // Start the Couchbase Mobile server:
     // gCouchLogLevel = 1;
-    [CouchbaseMobile class];  // prevents dead-stripping
-    CouchEmbeddedServer* server;
+    CouchTouchDBServer* server;
 #ifdef USE_REMOTE_SERVER
-    server = [[CouchEmbeddedServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
+    server = [[CouchTouchDBServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
 #else
-    server = [[CouchEmbeddedServer alloc] init];
+    server = [[CouchTouchDBServer alloc] init];
 #endif
     
-#if INSTALL_CANNED_DATABASE
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: kDatabaseName ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find "kDatabaseName".couch");
-    [server installDefaultDatabase: dbPath];
-#endif
+    if (server.error) {
+        [self showAlert: @"Couldn't start Couchbase." error: server.error fatal: YES];
+        return YES;
+    }
     
-    [server start: ^{  // ... this block runs later on when the server has started up:
-        if (server.error) {
-            [self showAlert: @"Couldn't start Couchbase." error: server.error fatal: YES];
-            return;
-        }
-        
-        self.database = [server databaseNamed: kDatabaseName];
-        
+    self.database = [server databaseNamed: kDatabaseName];
+    
 #if !INSTALL_CANNED_DATABASE && !defined(USE_REMOTE_SERVER)
-        // Create the database on the first run of the app.
-        NSError* error;
-        if (![self.database ensureCreated: &error]) {
-            [self showAlert: @"Couldn't create local database." error: error fatal: YES];
-            return;
-        }
+    // Create the database on the first run of the app.
+    NSError* error;
+    if (![self.database ensureCreated: &error]) {
+        [self showAlert: @"Couldn't create local database." error: error fatal: YES];
+        return YES;
+    }
 #endif
-        
-        database.tracksChanges = YES;
-        
-        // Tell the RootViewController:
-        RootViewController* root = (RootViewController*)navigationController.topViewController;
-        [root useDatabase: database];
-        
-        [self removeSplash];
-    }];
+    
+    database.tracksChanges = YES;
+    
+    // Tell the RootViewController:
+    RootViewController* root = (RootViewController*)navigationController.topViewController;
+    [root useDatabase: database];
+    
+    [self removeSplash];
     return YES;
 }
 
