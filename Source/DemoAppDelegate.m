@@ -72,7 +72,6 @@
 
     // Start the Couchbase Mobile server:
     // gCouchLogLevel = 1;
-    [CouchbaseMobile class];  // prevents dead-stripping
     CouchEmbeddedServer* server;
 #ifdef USE_REMOTE_SERVER
     server = [[CouchEmbeddedServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];

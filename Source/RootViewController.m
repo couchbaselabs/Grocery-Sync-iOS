@@ -52,8 +52,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [CouchUITableSource class];     // Prevents class from being dead-stripped by linker
-
     UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle: @"Clean"
                                                             style:UIBarButtonItemStylePlain
                                                            target: self 
@@ -99,7 +97,7 @@
     design.validationBlock = VALIDATIONBLOCK({
         id date = [doc objectForKey: @"created_at"];
         if (date && ! [RESTBody dateWithJSONObject: date]) {
-            context.errorMessage = @"invalid date";
+            context.errorMessage = [@"invalid date " stringByAppendingString: date];
             return NO;
         }
         return YES;
