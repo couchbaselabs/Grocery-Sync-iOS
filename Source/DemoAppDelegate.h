@@ -23,9 +23,6 @@
 
 
 @interface DemoAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate>
-{
-    UIImageView *splashView;
-}
 
 @property (nonatomic, retain) CouchDatabase *database;
 

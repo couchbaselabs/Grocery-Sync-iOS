@@ -10,7 +10,6 @@
 		27167F1A13C4FA57001CC5B6 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
 		27167F1B13C4FA57001CC5B6 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F335F01007B36200424DE2 /* RootViewController.xib */; };
 		27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */; };
-		27167F2213C4FA57001CC5B6 /* grocery-sync.couch in Resources */ = {isa = PBXBuildFile; fileRef = 27ED52D713C3944B00AB846D /* grocery-sync.couch */; };
 		27167F2513C4FA57001CC5B6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		27167F2613C4FA57001CC5B6 /* DemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* DemoAppDelegate.m */; };
 		27167F2713C4FA57001CC5B6 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
@@ -62,7 +61,6 @@
 		27AFCEBA13EA08D600F00AFB /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "background~ipad.jpg"; sourceTree = "<group>"; };
 		27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "couchbase-mobile-icon-nameless.png"; sourceTree = "<group>"; };
-		27ED52D713C3944B00AB846D /* grocery-sync.couch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "grocery-sync.couch"; sourceTree = "<group>"; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28A0AAE50D9B0CCF005BE974 /* CouchDemo_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CouchDemo_Prefix.pch; path = Source/CouchDemo_Prefix.pch; sourceTree = "<group>"; };
 		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -154,7 +152,6 @@
 				CBD32A5313E15E8500CF15A9 /* Default~ipad.png */,
 				8D1107310486CEB800E47090 /* CouchDemo-Info.plist */,
 				3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */,
-				27ED52D713C3944B00AB846D /* grocery-sync.couch */,
 				279C6595140FEF9A00A0E56D /* icon.png */,
 				279C6597140FEFCF00A0E56D /* icon@2x.png */,
 				279C6599140FF07000A0E56D /* icon~ipad.png */,
@@ -204,7 +201,6 @@
 			buildConfigurationList = 27167F5E13C4FA57001CC5B6 /* Build configuration list for PBXNativeTarget "GrocerySync" */;
 			buildPhases = (
 				27167F1913C4FA57001CC5B6 /* Resources */,
-				27167F2313C4FA57001CC5B6 /* Copy CouchDB */,
 				27167F2413C4FA57001CC5B6 /* Sources */,
 				27167F5713C4FA57001CC5B6 /* Frameworks */,
 			);
@@ -253,7 +249,6 @@
 				27167F1A13C4FA57001CC5B6 /* MainWindow.xib in Resources */,
 				27167F1B13C4FA57001CC5B6 /* RootViewController.xib in Resources */,
 				27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */,
-				27167F2213C4FA57001CC5B6 /* grocery-sync.couch in Resources */,
 				CBD6E08413E01ECB001EFA8C /* Default.png in Resources */,
 				CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */,
 				CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */,
@@ -275,23 +270,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		27167F2313C4FA57001CC5B6 /* Copy CouchDB */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy CouchDB";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# The 'CouchbaseResources' subfolder of the framework contains Erlang code and other resources needed at runtime. Copy it into the app bundle:\nrsync -a \"${SRCROOT}/Frameworks/Couchbase.framework/CouchbaseResources\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		27167F2413C4FA57001CC5B6 /* Sources */ = {

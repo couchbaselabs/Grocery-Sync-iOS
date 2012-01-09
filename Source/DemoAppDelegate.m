@@ -35,12 +35,6 @@
 //#define USE_REMOTE_SERVER @"http://localhost:5984/"
 
 
-@interface DemoAppDelegate ()
-- (void)showSplash;
-- (void)removeSplash;
-@end
-
-
 @implementation DemoAppDelegate
 
 
@@ -64,8 +58,6 @@
     // Add the navigation controller's view to the window and display.
 	[window addSubview:navigationController.view];
 	[window makeKeyAndVisible];
-    
-    [self showSplash];
 
     // Start the Couchbase Mobile server:
     gCouchLogLevel = 1;
@@ -97,27 +89,7 @@
     // Tell the RootViewController:
     RootViewController* root = (RootViewController*)navigationController.topViewController;
     [root useDatabase: database];
-    
-    [self removeSplash];
     return YES;
-}
-
-
--(void)showSplash {
-    // Show the splash screen until Couchbase starts up:
-    UIImage *splash = [UIImage imageNamed:@"Default.png"];
-    splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20,
-                                                               splash.size.width,
-                                                               splash.size.height)];
-    splashView.image = splash;
-	[self.window addSubview:splashView];
-}
-
-
--(void)removeSplash {
-	[splashView removeFromSuperview];
-	[splashView release];
-    splashView = nil;
 }
 
 
@@ -142,7 +114,6 @@
 
 
 - (void)dealloc {
-	[splashView release];
 	[navigationController release];
 	[window release];
     [database release];
