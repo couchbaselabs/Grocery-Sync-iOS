@@ -85,6 +85,7 @@
 
 - (void)dealloc {
     [self forgetSync];
+    [super dealloc];
 }
 
 
