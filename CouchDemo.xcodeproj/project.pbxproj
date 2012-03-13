@@ -24,6 +24,7 @@
 		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
 		279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6597140FEFCF00A0E56D /* icon@2x.png */; };
 		279C659A140FF07000A0E56D /* icon~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6599140FF07000A0E56D /* icon~ipad.png */; };
+		279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */; };
 		27AFCEB613E9FBC300F00AFB /* item_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEB513E9FBC300F00AFB /* item_background.png */; };
 		27AFCEB913E9FFAE00F00AFB /* item_background~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */; };
 		27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBA13EA08D600F00AFB /* background.jpg */; };
@@ -57,6 +58,7 @@
 		279C6595140FEF9A00A0E56D /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		279C6597140FEFCF00A0E56D /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
 		279C6599140FF07000A0E56D /* icon~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon~ipad.png"; path = "../icon~ipad.png"; sourceTree = "<group>"; };
+		279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		27AFCEB513E9FBC300F00AFB /* item_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = item_background.png; path = Resources/Elements/item_background.png; sourceTree = SOURCE_ROOT; };
 		27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "item_background~ipad.png"; path = "Resources/Elements/item_background~ipad.png"; sourceTree = SOURCE_ROOT; };
 		27AFCEBA13EA08D600F00AFB /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
 				27962307142031E80051455D /* Security.framework in Frameworks */,
 				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
@@ -173,6 +176,7 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
 				27962306142031E80051455D /* Security.framework */,
+				279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */,
 				278E615514BA5A4B00A0B840 /* libsqlite3.dylib */,
 				27E27BD214E323E3001DFCBB /* libz.dylib */,
 			);

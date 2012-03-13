@@ -52,8 +52,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [CouchUITableSource class];     // Prevents class from being dead-stripped by linker
-
     UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle: @"Clean"
                                                             style:UIBarButtonItemStylePlain
                                                            target: self 
@@ -85,6 +83,7 @@
 
 - (void)dealloc {
     [self forgetSync];
+    [database release];
     [super dealloc];
 }
 
@@ -292,23 +291,16 @@
         return;
     NSURL* newRemoteURL = nil;
     NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
-    if (syncpoint.length > 0) {
+    if (syncpoint.length > 0)
         newRemoteURL = [NSURL URLWithString:syncpoint];
-        if ([newRemoteURL isEqual: _pull.remoteURL])
-            return;  // no-op
-    }
     
-    [_pull stop];
-    [_push stop];
     [self forgetSync];
 
-    if (newRemoteURL) {
-        _pull = [[self.database pullFromDatabaseAtURL: newRemoteURL] retain];
-        _push = [[self.database pushToDatabaseAtURL: newRemoteURL] retain];
-        _pull.continuous = _push.continuous = YES;
-        [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
-        [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
-    }
+    NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
+    _pull = [[repls objectAtIndex: 0] retain];
+    _push = [[repls objectAtIndex: 1] retain];
+    [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+    [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
 }
 
 
