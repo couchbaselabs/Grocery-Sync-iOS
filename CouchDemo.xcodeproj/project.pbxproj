@@ -18,6 +18,7 @@
 		27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
 		276A43C913F088B800E5743A /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A43C713F088B700E5743A /* ConfigViewController.m */; };
 		276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276A43C813F088B700E5743A /* ConfigViewController.xib */; };
+		2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783A0D5156D6A8500DC8692 /* CFNetwork.framework */; };
 		278E615414BA5A2A00A0B840 /* TouchDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615314BA5A2A00A0B840 /* TouchDB.framework */; };
 		278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615514BA5A4B00A0B840 /* libsqlite3.dylib */; };
 		27962307142031E80051455D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27962306142031E80051455D /* Security.framework */; };
@@ -52,6 +53,7 @@
 		276A43C613F088B700E5743A /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
 		276A43C713F088B700E5743A /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		276A43C813F088B700E5743A /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ConfigViewController.xib; path = ../Source/ConfigViewController.xib; sourceTree = "<group>"; };
+		2783A0D5156D6A8500DC8692 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		278E615314BA5A2A00A0B840 /* TouchDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TouchDB.framework; path = Frameworks/TouchDB.framework; sourceTree = "<group>"; };
 		278E615514BA5A4B00A0B840 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		27962306142031E80051455D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -90,15 +92,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
-				27962307142031E80051455D /* Security.framework in Frameworks */,
-				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
-				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
+				2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */,
 				27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */,
-				79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */,
-				278E615414BA5A2A00A0B840 /* TouchDB.framework in Frameworks */,
+				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
+				27962307142031E80051455D /* Security.framework in Frameworks */,
+				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
+				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
 				278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */,
 				27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */,
+				278E615414BA5A2A00A0B840 /* TouchDB.framework in Frameworks */,
+				79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,11 +175,12 @@
 			children = (
 				278E615314BA5A2A00A0B840 /* TouchDB.framework */,
 				79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				27962306142031E80051455D /* Security.framework */,
 				279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				278E615514BA5A4B00A0B840 /* libsqlite3.dylib */,
 				27E27BD214E323E3001DFCBB /* libz.dylib */,
 			);

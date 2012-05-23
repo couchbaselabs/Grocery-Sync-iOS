@@ -1,12 +1,20 @@
 ## Grocery Sync for iOS
 
-This is a simple demo app showing how to use the [Couchbase Mobile][1] framework to run [Apache CouchDB][2] on iOS. The app just presents a simple editable list of textual items, which are stored persistently in a local database, and shared in realtime via a syncpoint in the cloud.
+This is a simple demo app showing how to use the [TouchDB][1] and [CouchCocoa][6] frameworks to embed a nonrelational ("NoSQL") [CouchDB][2]-compatible database in an iOS app and sync it with a database server in "the cloud".
 
-**Keep in mind that the default is to share the globally shared grocery list.** To use a private grocery list, the user must create a password protected database and then direct Grocery Sync at it via the Settings application. URLs are specified in the form `http://username:password@myhost.iriscouch.com/grocery-sync`
+Here's the "user story":
 
-So this dude is at the grocery store picking up produce and checking it off on his phone. He's all proud looking when he is about to check off the last item on the list, but then... suddenly new items start appearing. Cut to his wife at home with the kids and she's adding items.
+> "So this dude is at the grocery store picking up produce and checking it off on his phone. He's all proud looking when he is about to check off the last item on the list, but then ... suddenly new items start appearing. Cut to his wife at home with the kids, and she's adding items.
 
-Okra? Ok. Coconut milk. But I already got regular milk! He checks them off as he goes. Cut to his wife who sees them marked done, she gets a big grin and starts adding cookies and ice cream and paper towels or whatever.
+> "'Okra? Ok. Coconut milk? But I already got regular milk!' He checks them off as he goes. Cut to his wife who sees them marked done; she gets a big grin and starts adding cookies and ice cream and paper towels or whatever."
+
+The app just presents a simple editable list of textual items with checkboxes, which are stored persistently in a local database, and shared in realtime with all other users who are synced with the same cloud database.
+
+Syncing is not enabled by default. To sync, press the "Configure" button and enter the URL of a CouchDB-compatible database. Your choices for a database include:
+
+* Signing up for a free account at [IrisCouch][8] or [Cloudant][9], or
+* Installing your own instance of [Apache CouchDB](2), or
+* Using a (rather anarchic) grocery list database we've set up at `http://couchbase.iriscouch.com/grocery-sync`
 
 ## Getting Started
 
@@ -14,7 +22,8 @@ These instructions assume you are familiar with how to make an iPhone app. Pleas
 
 If you have questions or get stuck or just want to say hi, please visit the [Mobile Couchbase group][4] on Google Groups.
 
-Prerequisite: Xcode 4.0.2 or later with the SDK for iOS 4 or later. (It's possible the project might still work with Xcode 3, but we're not testing or supporting this anymore.)
+Prerequisite: Xcode 4.2 or later with the SDK for iOS 4 or later.
+
 
 ## Building The Demo App
 
@@ -24,8 +33,9 @@ Prerequisite: Xcode 4.0.2 or later with the SDK for iOS 4 or later. (It's possib
 
 ### Get the frameworks (CouchCocoa as well as the embedded Couchbase server)
 
-1. [Download and unzip the latest][1] compiled Couchbase.framework. (Building this is messy, you probably don't want to do it yourself.)
-2. Copy both Couchbase.framework and CouchCocoa.framework into the Frameworks directory of this repo.
+1. Either [download a compiled build][7] of TouchDB, or [check out][1] and build it yourself (be sure to follow its README.)
+2. Likewise, either [download a compiled build][5] of CouchCocoa, or [check out][6] and build it yourself (be sure to follow its README.)
+2. Copy both `Couchbase.framework` and `CouchCocoa.framework` (the ones for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
 
 ### Open the Xcode workspace
 
@@ -38,21 +48,24 @@ Prerequisite: Xcode 4.0.2 or later with the SDK for iOS 4 or later. (It's possib
 
 That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
 
+
 ## To add the framework to your existing Xcode project
 
-Please see the documentation on the [Couchbase Mobile][1] home page.
+Please see the documentation for [TouchDB][1] and [CouchCocoa][1].
+
 
 ## License
 
-Portions under Apache, Erlang, and other licenses.
+Released under the Apache license, 2.0.
 
-The overall package is released under the Apache license, 2.0.
-
-Copyright 2011, Couchbase, Inc.
+Copyright 2011-2012, Couchbase, Inc.
 
 
-[1]: http://www.couchbase.org/get/couchbase-mobile-for-ios/current
+[1]: https://github.com/couchbaselabs/TouchDB-iOS/
 [2]: http://couchdb.apache.org
 [4]: https://groups.google.com/group/mobile-couchbase
 [5]: https://github.com/couchbaselabs/CouchCocoa/downloads
 [6]: https://github.com/couchbaselabs/CouchCocoa/
+[7]: https://github.com/couchbaselabs/TouchDB-iOS/downloads
+[8]: http://iriscouch.com
+[9]: http://cloudant.com
