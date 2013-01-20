@@ -37,6 +37,7 @@ Prerequisite: Xcode 4.2 or later with the SDK for iOS 4 or later.
 2. Type this in terminal:
 
     ```cd iOS-Couchbase-Demo
+
     pod install```
 
 ### Get the frameworks manually if you're not lazy (CouchCocoa as well as the embedded Couchbase server)
