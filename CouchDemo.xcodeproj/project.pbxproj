@@ -19,7 +19,6 @@
 		276A43C913F088B800E5743A /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A43C713F088B700E5743A /* ConfigViewController.m */; };
 		276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276A43C813F088B700E5743A /* ConfigViewController.xib */; };
 		2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783A0D5156D6A8500DC8692 /* CFNetwork.framework */; };
-		278E615414BA5A2A00A0B840 /* TouchDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615314BA5A2A00A0B840 /* TouchDB.framework */; };
 		278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615514BA5A4B00A0B840 /* libsqlite3.dylib */; };
 		27962307142031E80051455D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27962306142031E80051455D /* Security.framework */; };
 		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
@@ -32,7 +31,6 @@
 		27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */; };
 		27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */ = {isa = PBXBuildFile; fileRef = 27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */; };
 		27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E27BD214E323E3001DFCBB /* libz.dylib */; };
-		79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */; };
 		CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */; };
 		CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */; };
 		CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2313E0293300CF15A9 /* textfield___active.png */; };
@@ -41,6 +39,7 @@
 		CBD32A5713E15ED000CF15A9 /* textfield___active~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A5513E15ED000CF15A9 /* textfield___active~ipad.png */; };
 		CBD32A5813E15ED000CF15A9 /* textfield___inactive~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A5613E15ED000CF15A9 /* textfield___inactive~ipad.png */; };
 		CBD6E08413E01ECB001EFA8C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD6E08313E01ECB001EFA8C /* Default.png */; };
+		E23BD51CF42E4CB1A804DDD3 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50DD7BC0FD6F45C2A4E3DB94 /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,8 +74,10 @@
 		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Source/main.m; sourceTree = "<group>"; };
 		3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		50DD7BC0FD6F45C2A4E3DB94 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		79D0A34813DC9FE400B8F348 /* CouchCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchCocoa.framework; path = Frameworks/CouchCocoa.framework; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* CouchDemo-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CouchDemo-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		B355BFD7F950429EBAA85399 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___checked.png"; sourceTree = "<group>"; };
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
 		CBD32A2313E0293300CF15A9 /* textfield___active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active.png"; sourceTree = "<group>"; };
@@ -100,8 +101,7 @@
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
 				278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */,
 				27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */,
-				278E615414BA5A2A00A0B840 /* TouchDB.framework in Frameworks */,
-				79D0A34913DC9FE400B8F348 /* CouchCocoa.framework in Frameworks */,
+				E23BD51CF42E4CB1A804DDD3 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +139,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				B355BFD7F950429EBAA85399 /* Pods.xcconfig */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -183,6 +184,7 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				278E615514BA5A4B00A0B840 /* libsqlite3.dylib */,
 				27E27BD214E323E3001DFCBB /* libz.dylib */,
+				50DD7BC0FD6F45C2A4E3DB94 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -215,6 +217,7 @@
 				27167F1913C4FA57001CC5B6 /* Resources */,
 				27167F2413C4FA57001CC5B6 /* Sources */,
 				27167F5713C4FA57001CC5B6 /* Frameworks */,
+				3CA0EF6F8BDE4B87976DD8B8 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -231,7 +234,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "CouchDemo" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -283,6 +286,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3CA0EF6F8BDE4B87976DD8B8 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		27167F2413C4FA57001CC5B6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -300,8 +320,8 @@
 /* Begin XCBuildConfiguration section */
 		27167F5F13C4FA57001CC5B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B355BFD7F950429EBAA85399 /* Pods.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
@@ -310,7 +330,6 @@
 				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
 				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = NO;
@@ -319,14 +338,13 @@
 		};
 		27167F6013C4FA57001CC5B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B355BFD7F950429EBAA85399 /* Pods.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
 				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

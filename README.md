@@ -31,11 +31,18 @@ Prerequisite: Xcode 4.2 or later with the SDK for iOS 4 or later.
 
     git clone git://github.com/couchbaselabs/iOS-Couchbase-Demo.git
 
-### Get the frameworks (CouchCocoa as well as the embedded Couchbase server)
+### Get the frameworks (easy way)
+
+1. Go to [CocoaPods site][10] and do what's said in "Install" section.
+2. Type this in terminal:
+    cd iOS-Couchbase-Demo
+    pod install
+
+### Get the frameworks manually if you're not lazy (CouchCocoa as well as the embedded Couchbase server)
 
 1. Either [download a compiled build][7] of TouchDB, or [check out][1] and build it yourself (be sure to follow its README.)
 2. Likewise, either [download a compiled build][5] of CouchCocoa, or [check out][6] and build it yourself (be sure to follow its README.)
-2. Copy both `Couchbase.framework` and `CouchCocoa.framework` (the ones for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
+3. Copy both `Couchbase.framework` and `CouchCocoa.framework` (the ones for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
 
 ### Open the Xcode workspace
 
@@ -69,3 +76,4 @@ Copyright 2011-2012, Couchbase, Inc.
 [7]: https://github.com/couchbaselabs/TouchDB-iOS/downloads
 [8]: http://iriscouch.com
 [9]: http://cloudant.com
+[10]: http://cocoapods.org
