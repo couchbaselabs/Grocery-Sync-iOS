@@ -19,16 +19,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <CouchCocoa/CouchUITableSource.h>
-@class CouchDatabase, CouchPersistentReplication;
+#import <Couchbaselite/CBLUITableSource.h>
+@class CBLDatabase, CBLReplication;
 
 
-@interface RootViewController : UIViewController <CouchUITableDelegate, UITextFieldDelegate>
+@interface RootViewController : UIViewController <CBLUITableDelegate, UITextFieldDelegate>
 {
-    CouchDatabase *database;
+    CBLDatabase *database;
     NSURL* remoteSyncURL;
-    CouchPersistentReplication* _pull;
-    CouchPersistentReplication* _push;
+    CBLReplication* _pull;
+    CBLReplication* _push;
     
     UITableView *tableView;
     IBOutlet UIProgressView *progress;
@@ -37,10 +37,10 @@
     IBOutlet UIImageView *addItemBackground;
 }
 
-@property(nonatomic, retain) IBOutlet UITableView *tableView;
-@property(nonatomic, retain) IBOutlet CouchUITableSource* dataSource;
+@property(nonatomic, strong) IBOutlet UITableView *tableView;
+@property(nonatomic, strong) IBOutlet CBLUITableSource* dataSource;
 
--(void)useDatabase:(CouchDatabase*)theDatabase;
+-(void)useDatabase:(CBLDatabase*)theDatabase;
 
 - (IBAction)configureSync:(id)sender;
 - (IBAction) deleteCheckedItems:(id)sender;

@@ -1,13 +1,13 @@
 //
 //  ConfigViewController.h
-//  CouchDemo
+//  CBLDemo
 //
 //  Created by Jens Alfke on 8/8/11.
 //  Copyright 2011 Couchbase, Inc. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-@class CouchServer;
+@class CBLServer;
 
 @interface ConfigViewController : UIViewController
 

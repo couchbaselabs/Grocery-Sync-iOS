@@ -20,8 +20,11 @@
 
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
-#import <CouchCocoa/CouchCocoa.h>
-#import <CouchCocoa/CouchTouchDBServer.h>
+
+#import <Couchbaselite/CouchbaseLite.h>
+
+//#import <CouchbaseLite/CouchbaseLite.h>
+//#import <CouchbaseLite/CBLManager.h>
 
 // The name of the database the app will use.
 #define kDatabaseName @"grocery-sync"
@@ -60,31 +63,11 @@
 	[window makeKeyAndVisible];
 
     // Start the Couchbase Mobile server:
-    gCouchLogLevel = 1;
-    CouchTouchDBServer* server;
-#ifdef USE_REMOTE_SERVER
-    server = [[CouchTouchDBServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
-#else
-    server = [[CouchTouchDBServer alloc] init];
-#endif
-    
-    if (server.error) {
-        [self showAlert: @"Couldn't start Couchbase." error: server.error fatal: YES];
-        return YES;
-    }
-    
-    self.database = [server databaseNamed: kDatabaseName];
-    
-#if !INSTALL_CANNED_DATABASE && !defined(USE_REMOTE_SERVER)
-    // Create the database on the first run of the app.
     NSError* error;
-    if (![self.database ensureCreated: &error]) {
-        [self showAlert: @"Couldn't create local database." error: error fatal: YES];
-        return YES;
-    }
-#endif
-    
-    database.tracksChanges = YES;
+    self.database = [[CBLManager sharedInstance] createDatabaseNamed: kDatabaseName
+                                                               error: &error];
+    if (!self.database)
+        [self showAlert: @"Couldn't open database" error: error fatal: YES];
     
     // Tell the RootViewController:
     RootViewController* root = (RootViewController*)navigationController.topViewController;
@@ -105,7 +88,6 @@
                                           cancelButtonTitle: (fatal ? @"Quit" : @"Sorry")
                                           otherButtonTitles: nil];
     [alert show];
-    [alert release];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -113,12 +95,6 @@
 }
 
 
-- (void)dealloc {
-	[navigationController release];
-	[window release];
-    [database release];
-	[super dealloc];
-}
 
 
 @end

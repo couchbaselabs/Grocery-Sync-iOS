@@ -10,11 +10,7 @@ Here's the "user story":
 
 The app just presents a simple editable list of textual items with checkboxes, which are stored persistently in a local database, and shared in realtime with all other users who are synced with the same cloud database.
 
-Syncing is not enabled by default. To sync, press the "Configure" button and enter the URL of a CouchDB-compatible database. Your choices for a database include:
-
-* Signing up for a free account at [IrisCouch][8] or [Cloudant][9], or
-* Installing your own instance of [Apache CouchDB](2), or
-* Using a (rather anarchic) grocery list database we've set up at `http://couchbase.iriscouch.com/grocery-sync`
+Syncing is not enabled by default. To sync, press the "Configure" button and enter the URL of a Couchbase Sync Gateway instace. For more info about setting up the Sync Gateway, [read the getting started guide](https://github.com/couchbaselabs/mobile)
 
 ## Getting Started
 
