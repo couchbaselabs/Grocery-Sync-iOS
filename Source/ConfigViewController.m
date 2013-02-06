@@ -1,6 +1,6 @@
 //
 //  ConfigViewController.m
-//  CouchDemo
+//  CBLDemo
 //
 //  Created by Jens Alfke on 8/8/11.
 //  Copyright 2011 Couchbase, Inc. All rights reserved.
@@ -28,7 +28,7 @@ extern double GrocerySyncVersionNumber;
                                                                 style:UIBarButtonItemStyleDone
                                                                target: self 
                                                                action: @selector(done:)];
-        self.navigationItem.leftBarButtonItem = [purgeButton autorelease];
+        self.navigationItem.leftBarButtonItem = purgeButton;
     }
     return self;
 }
@@ -79,7 +79,6 @@ extern double GrocerySyncVersionNumber;
                                                   cancelButtonTitle: @"Fix It"
                                                   otherButtonTitles: @"Revert", nil];
             [alert show];
-            [alert release];
             return;
         }
         

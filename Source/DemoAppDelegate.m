@@ -20,8 +20,11 @@
 
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
-#import <Couchbase/CouchbaseMobile.h>
-#import <CouchCocoa/CouchCocoa.h>
+
+#import <Couchbaselite/CouchbaseLite.h>
+
+//#import <CouchbaseLite/CouchbaseLite.h>
+//#import <CouchbaseLite/CBLManager.h>
 
 // The name of the database the app will use.
 #define kDatabaseName @"grocery-sync"
@@ -29,19 +32,10 @@
 // The default remote database URL to sync with, if the user hasn't set a different one as a pref.
 //#define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
 
-// Set this to 1 to install a pre-built database from a ".couch" resource file on first run.
-#define INSTALL_CANNED_DATABASE 0
-
 // Define this to use a server at a specific URL, instead of the embedded Couchbase Mobile.
 // This can be useful for debugging, since you can use the admin console (futon) to inspect
 // or modify the database contents.
 //#define USE_REMOTE_SERVER @"http://localhost:5984/"
-
-
-@interface DemoAppDelegate ()
-- (void)showSplash;
-- (void)removeSplash;
-@end
 
 
 @implementation DemoAppDelegate
@@ -67,68 +61,18 @@
     // Add the navigation controller's view to the window and display.
 	[window addSubview:navigationController.view];
 	[window makeKeyAndVisible];
-    
-    [self showSplash];
 
     // Start the Couchbase Mobile server:
-    // gCouchLogLevel = 1;
-    CouchEmbeddedServer* server;
-#ifdef USE_REMOTE_SERVER
-    server = [[CouchEmbeddedServer alloc] initWithURL: [NSURL URLWithString: USE_REMOTE_SERVER]];
-#else
-    server = [[CouchEmbeddedServer alloc] init];
-#endif
+    NSError* error;
+    self.database = [[CBLManager sharedInstance] createDatabaseNamed: kDatabaseName
+                                                               error: &error];
+    if (!self.database)
+        [self showAlert: @"Couldn't open database" error: error fatal: YES];
     
-#if INSTALL_CANNED_DATABASE
-    NSString* dbPath = [[NSBundle mainBundle] pathForResource: kDatabaseName ofType: @"couch"];
-    NSAssert(dbPath, @"Couldn't find "kDatabaseName".couch");
-    [server installDefaultDatabase: dbPath];
-#endif
-    
-    [server start: ^{  // ... this block runs later on when the server has started up:
-        if (server.error) {
-            [self showAlert: @"Couldn't start Couchbase." error: server.error fatal: YES];
-            return;
-        }
-        
-        self.database = [server databaseNamed: kDatabaseName];
-        
-#if !INSTALL_CANNED_DATABASE && !defined(USE_REMOTE_SERVER)
-        // Create the database on the first run of the app.
-        NSError* error;
-        if (![self.database ensureCreated: &error]) {
-            [self showAlert: @"Couldn't create local database." error: error fatal: YES];
-            return;
-        }
-#endif
-        
-        database.tracksChanges = YES;
-        
-        // Tell the RootViewController:
-        RootViewController* root = (RootViewController*)navigationController.topViewController;
-        [root useDatabase: database];
-        
-        [self removeSplash];
-    }];
+    // Tell the RootViewController:
+    RootViewController* root = (RootViewController*)navigationController.topViewController;
+    [root useDatabase: database];
     return YES;
-}
-
-
--(void)showSplash {
-    // Show the splash screen until Couchbase starts up:
-    UIImage *splash = [UIImage imageNamed:@"Default.png"];
-    splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 20,
-                                                               splash.size.width,
-                                                               splash.size.height)];
-    splashView.image = splash;
-	[self.window addSubview:splashView];
-}
-
-
--(void)removeSplash {
-	[splashView removeFromSuperview];
-	[splashView release];
-    splashView = nil;
 }
 
 
@@ -144,7 +88,6 @@
                                           cancelButtonTitle: (fatal ? @"Quit" : @"Sorry")
                                           otherButtonTitles: nil];
     [alert show];
-    [alert release];
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -152,13 +95,6 @@
 }
 
 
-- (void)dealloc {
-	[splashView release];
-	[navigationController release];
-	[window release];
-    [database release];
-	[super dealloc];
-}
 
 
 @end

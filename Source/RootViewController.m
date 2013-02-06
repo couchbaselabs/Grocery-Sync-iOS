@@ -22,13 +22,16 @@
 #import "ConfigViewController.h"
 #import "DemoAppDelegate.h"
 
-#import <CouchCocoa/CouchCocoa.h>
-#import <CouchCocoa/CouchDesignDocument_Embedded.h>
+#import <Couchbaselite/CouchbaseLite.h>
+#import <CouchbaseLite/CBLJSON.h>
+
+//#import <CouchbaseLite/CouchbaseLite.h>
+//#import <CouchbaseLite/CBLDesignDocument_Embedded.h>
 
 
 @interface RootViewController ()
-@property(nonatomic, retain)CouchDatabase *database;
-@property(nonatomic, retain)NSURL* remoteSyncURL;
+@property(nonatomic, strong)CBLDatabase *database;
+@property(nonatomic, strong)NSURL* remoteSyncURL;
 - (void)updateSyncURL;
 - (void)showSyncButton;
 - (void)showSyncStatus;
@@ -56,7 +59,7 @@
                                                             style:UIBarButtonItemStylePlain
                                                            target: self 
                                                            action: @selector(deleteCheckedItems:)];
-    self.navigationItem.leftBarButtonItem = [deleteButton autorelease];
+    self.navigationItem.leftBarButtonItem = deleteButton;
     
     [self showSyncButton];
     
@@ -67,13 +70,25 @@
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
         [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
     }
+
+    // Create a query sorted by descending date, i.e. newest items first:
+    NSAssert(database!=nil, @"Not hooked up to database yet");
+//    CBLLiveQuery* query = [[[database designDocumentWithName: @"grocery"]
+//                                                queryViewNamed: @"byDate"] asLiveQuery];
+
+    CBLLiveQuery* query = [[[database viewNamed:@"byDate"] query] asLiveQuery];
+    
+    query.descending = YES;
+    
+    self.dataSource.query = query;
+    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+
+    [self updateSyncURL];
 }
 
 
 - (void)dealloc {
     [self forgetSync];
-    [database release];
-    [super dealloc];
 }
 
 
@@ -84,39 +99,32 @@
 }
 
 
-- (void)useDatabase:(CouchDatabase*)theDatabase {
+- (void)useDatabase:(CBLDatabase*)theDatabase {
     self.database = theDatabase;
     
-    // Create a CouchDB 'view' containing list items sorted by date,
-    // and a validation function requiring parseable dates:
-    CouchDesignDocument* design = [theDatabase designDocumentWithName: @"grocery"];
-    [design defineViewNamed: @"byDate" mapBlock: MAPBLOCK({
+    [[theDatabase viewNamed: @"byDate"] setMapBlock: MAPBLOCK({
         id date = [doc objectForKey: @"created_at"];
         if (date) emit(date, doc);
-    })];
-    design.validationBlock = VALIDATIONBLOCK({
-        id date = [doc objectForKey: @"created_at"];
-        if (date && ! [RESTBody dateWithJSONObject: date]) {
-            context.errorMessage = [@"invalid date " stringByAppendingString: date];
+    }) reduceBlock: nil version: @"1.1"];
+    
+    // and a validation function requiring parseable dates:
+    [theDatabase defineValidation: @"created_at" asBlock: VALIDATIONBLOCK({
+        if (newRevision.isDeleted)
+            return YES;
+        id date = [newRevision.properties objectForKey: @"created_at"];
+        if (date && ! [CBLJSON dateWithJSONObject: date]) {
+            context.errorMessage = [@"invalid date " stringByAppendingString: [date description]];
             return NO;
         }
         return YES;
-    });
-
-    // Create a query sorted by descending date, i.e. newest items first:
-    CouchLiveQuery* query = [[design queryViewNamed: @"byDate"] asLiveQuery];
-    query.descending = YES;
-    
-    self.dataSource.query = query;
-    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
-    [self updateSyncURL];
+    })];
 }
 
 
-- (void)showErrorAlert: (NSString*)message forOperation: (RESTOperation*)op {
-    NSLog(@"%@: op=%@, error=%@", message, op, op.error);
-    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate] 
-        showAlert: message error: op.error fatal: NO];
+- (void)showErrorAlert: (NSString*)message forError: (NSError*)error {
+    NSLog(@"%@: error=%@", message, error);
+    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate]
+     showAlert: message error: error fatal: NO];
 }
 
 
@@ -124,15 +132,14 @@
 
 
 // Customize the appearance of table view cells.
-- (void)couchTableSource:(CouchUITableSource*)source
+- (void)couchTableSource:(CBLUITableSource*)source
              willUseCell:(UITableViewCell*)cell
-                  forRow:(CouchQueryRow*)row
+                  forRow:(CBLQueryRow*)row
 {
     // Set the cell background and font:
     static UIColor* kBGColor;
     if (!kBGColor)
-        kBGColor = [[UIColor colorWithPatternImage: [UIImage imageNamed:@"item_background"]] 
-                        retain];
+        kBGColor = [UIColor colorWithPatternImage: [UIImage imageNamed:@"item_background"]];
     cell.backgroundColor = kBGColor;
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
 
@@ -159,23 +166,19 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    CouchQueryRow *row = [self.dataSource rowAtIndex:indexPath.row];
-    CouchDocument *doc = [row document];
+    CBLQueryRow *row = [self.dataSource rowAtIndex:indexPath.row];
+    CBLDocument *doc = [row document];
 
     // Toggle the document's 'checked' property:
-    NSMutableDictionary *docContent = [[doc.properties mutableCopy] autorelease];
+    NSMutableDictionary *docContent = [doc.properties mutableCopy];
     BOOL wasChecked = [[docContent valueForKey:@"check"] boolValue];
     [docContent setObject:[NSNumber numberWithBool:!wasChecked] forKey:@"check"];
 
-    // Save changes, asynchronously:
-    RESTOperation* op = [doc putProperties:docContent];
-    [op onCompletion: ^{
-        if (op.error)
-            [self showErrorAlert: @"Failed to update item" forOperation: op];
-        // Re-run the query:
-		[self.dataSource.query start];
-    }];
-    [op start];
+    // Save changes:
+    NSError* error;
+    if (![doc.currentRevision putProperties: docContent error: &error]) {
+        [self showErrorAlert: @"Failed to update item" forError: error];
+    }
 }
 
 
@@ -185,8 +188,8 @@
 - (NSArray*)checkedDocuments {
     // If there were a whole lot of documents, this would be more efficient with a custom query.
     NSMutableArray* checked = [NSMutableArray array];
-    for (CouchQueryRow* row in self.dataSource.rows) {
-        CouchDocument* doc = row.document;
+    for (CBLQueryRow* row in self.dataSource.rows) {
+        CBLDocument* doc = row.document;
         if ([[doc.properties valueForKey:@"check"] boolValue])
             [checked addObject: doc];
     }
@@ -207,7 +210,6 @@
                                           cancelButtonTitle: @"Cancel"
                                           otherButtonTitles: @"Remove", nil];
     [alert show];
-    [alert release];
 }
 
 
@@ -216,15 +218,6 @@
         return;
     [dataSource deleteDocuments: self.checkedDocuments];
 }
-
-
-- (void)couchTableSource:(CouchUITableSource*)source
-         operationFailed:(RESTOperation*)op
-{
-    NSString* message = op.isDELETE ? @"Couldn't delete item" : @"Operation failed";
-    [self showErrorAlert: message forOperation: op];
-}
-
 
 #pragma mark - UITextField delegate
 
@@ -253,19 +246,15 @@
     // Create the new document's properties:
 	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text",
                                 [NSNumber numberWithBool:NO], @"check",
-                                [RESTBody JSONObjectWithDate: [NSDate date]], @"created_at",
+                                [CBLJSON JSONObjectWithDate: [NSDate date]], @"created_at",
                                 nil];
-
-    // Save the document, asynchronously:
-    CouchDocument* doc = [database untitledDocument];
-    RESTOperation* op = [doc putProperties:inDocument];
-    [op onCompletion: ^{
-        if (op.error)
-            [self showErrorAlert: @"Couldn't save the new item" forOperation: op];
-        // Re-run the query:
-		[self.dataSource.query start];
-	}];
-    [op start];
+    
+    // Save the document:
+    CBLDocument* doc = [database untitledDocument];
+    NSError* error;
+    if (![doc putProperties: inDocument error: &error]) {
+        [self showErrorAlert: @"Couldn't save new item" forError: error];
+    }
 }
 
 
@@ -276,7 +265,6 @@
     UINavigationController* navController = (UINavigationController*)self.parentViewController;
     ConfigViewController* controller = [[ConfigViewController alloc] init];
     [navController pushViewController: controller animated: YES];
-    [controller release];
 }
 
 
@@ -291,20 +279,28 @@
     [self forgetSync];
 
     NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
-    _pull = [[repls objectAtIndex: 0] retain];
-    _push = [[repls objectAtIndex: 1] retain];
-    [_pull addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
-    [_push addObserver: self forKeyPath: @"completed" options: 0 context: NULL];
+    if (repls) {
+        _pull = [repls objectAtIndex: 0];
+        _push = [repls objectAtIndex: 1];
+        NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
+        [nctr addObserver: self selector: @selector(replicationProgress:)
+                     name: kCBLReplicationChangeNotification object: _pull];
+        [nctr addObserver: self selector: @selector(replicationProgress:)
+                     name: kCBLReplicationChangeNotification object: _push];
+    }
 }
 
 
 - (void) forgetSync {
-    [_pull removeObserver: self forKeyPath: @"completed"];
-    [_pull release];
-    _pull = nil;
-    [_push removeObserver: self forKeyPath: @"completed"];
-    [_push release];
-    _push = nil;
+    NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
+    if (_pull) {
+        [nctr removeObserver: self name: nil object: _pull];
+        _pull = nil;
+    }
+    if (_push) {
+        [nctr removeObserver: self name: nil object: _push];
+        _push = nil;
+    }
 }
 
 
@@ -316,7 +312,7 @@
                                                  style:UIBarButtonItemStylePlain
                                                 target: self 
                                                 action: @selector(configureSync:)];
-        self.navigationItem.rightBarButtonItem = [syncButton autorelease];
+        self.navigationItem.rightBarButtonItem = syncButton;
     }
 }
 
@@ -327,31 +323,25 @@
         if (!progress) {
             progress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
             CGRect frame = progress.frame;
-            frame.size.width = self.view.frame.size.width / 4.0;
+            frame.size.width = self.view.frame.size.width / 4.0f;
             progress.frame = frame;
         }
         UIBarButtonItem* progressItem = [[UIBarButtonItem alloc] initWithCustomView:progress];
         progressItem.enabled = NO;
-        self.navigationItem.rightBarButtonItem = [progressItem autorelease];
+        self.navigationItem.rightBarButtonItem = progressItem;
     }
 }
 
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object 
-                         change:(NSDictionary *)change context:(void *)context
-{
-    if (object == _pull || object == _push) {
+- (void) replicationProgress: (NSNotificationCenter*)n {
+    if (_pull.mode == kCBLReplicationActive || _push.mode == kCBLReplicationActive) {
         unsigned completed = _pull.completed + _push.completed;
         unsigned total = _pull.total + _push.total;
         NSLog(@"SYNC progress: %u / %u", completed, total);
-        if (total > 0 && completed < total) {
-            [self showSyncStatus];
-            [progress setProgress:(completed / (float)total)];
-            database.server.activityPollInterval = 0.5;   // poll often while progress is showing
-        } else {
-            [self showSyncButton];
-            database.server.activityPollInterval = 2.0;   // poll less often at other times
-        }
+        [self showSyncStatus];
+        progress.progress = (completed / (float)MAX(total, 1u));
+    } else {
+        [self showSyncButton];
     }
 }
 
