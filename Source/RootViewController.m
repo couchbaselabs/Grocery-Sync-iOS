@@ -216,7 +216,10 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0)
         return;
-    [dataSource deleteDocuments: self.checkedDocuments];
+    NSError* error;
+    if (![dataSource deleteDocuments: self.checkedDocuments error: &error]) {
+        [self showErrorAlert: @"Failed to delete items" forError: error];
+    }
 }
 
 #pragma mark - UITextField delegate
