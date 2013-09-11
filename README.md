@@ -1,6 +1,6 @@
 ## Grocery Sync for iOS
 
-This is a simple demo app showing how to use the [TouchDB][1] and [CouchCocoa][6] frameworks to embed a nonrelational ("NoSQL") [CouchDB][2]-compatible database in an iOS app and sync it with a database server in "the cloud".
+This is a simple demo app showing how to use the [Couchbase Lite][1] frameworks to embed a nonrelational ("NoSQL"), document-oriented database in an iOS app and sync it with a database server in "the cloud".
 
 Here's the "user story":
 
@@ -10,15 +10,15 @@ Here's the "user story":
 
 The app just presents a simple editable list of textual items with checkboxes, which are stored persistently in a local database, and shared in realtime with all other users who are synced with the same cloud database.
 
-Syncing is not enabled by default. To sync, press the "Configure" button and enter the URL of a Couchbase Sync Gateway instace. For more info about setting up the Sync Gateway, [read the getting started guide](https://github.com/couchbaselabs/mobile)
+Syncing is not enabled by default. To sync, press the "Configure" button and enter the URL of a [Couchbase Sync Gateway](https://github.com/couchbase/sync_gateway) (or Couchbase Cloud, or [Apache CouchDB][2]) database. For more info about setting up the Sync Gateway, [read the getting started guide](https://github.com/couchbase/sync_gateway/wiki/Installing-And-Upgrading)
 
 ## Getting Started
 
-These instructions assume you are familiar with how to make an iPhone app. Please follow them fully and in order the first time you build.
+These instructions assume you are familiar with building and running an iPhone app. Please follow them fully and in order the first time you build.
 
 If you have questions or get stuck or just want to say hi, please visit the [Mobile Couchbase group][4] on Google Groups.
 
-Prerequisite: Xcode 4.2 or later with the SDK for iOS 4 or later.
+Prerequisite: Xcode 4.6 or later with the SDK for iOS 6 or later.
 
 
 ## Building The Demo App
@@ -27,11 +27,10 @@ Prerequisite: Xcode 4.2 or later with the SDK for iOS 4 or later.
 
     git clone git://github.com/couchbaselabs/iOS-Couchbase-Demo.git
 
-### Get the frameworks (CouchCocoa as well as the embedded Couchbase server)
+### Get the Couchbase Lite framework
 
-1. Either [download a compiled build][7] of TouchDB, or [check out][1] and build it yourself (be sure to follow its README.)
-2. Likewise, either [download a compiled build][5] of CouchCocoa, or [check out][6] and build it yourself (be sure to follow its README.)
-2. Copy both `Couchbase.framework` and `CouchCocoa.framework` (the ones for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
+1. [Follow the instructions][5] to download or build Couchbase Lite
+2. Copy `CouchbaseLite.framework` (for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
 
 ### Open the Xcode workspace
 
@@ -47,7 +46,7 @@ That's it! Now that you're set up, you can just use the Run command again after 
 
 ## To add the framework to your existing Xcode project
 
-Please see the documentation for [TouchDB][1] and [CouchCocoa][1].
+Please see the documentation for [Couchbase Lite][6].
 
 
 ## License
@@ -56,12 +55,8 @@ Released under the Apache license, 2.0.
 
 Copyright 2011-2012, Couchbase, Inc.
 
-
-[1]: https://github.com/couchbaselabs/TouchDB-iOS/
+[1]: https://github.com/couchbase/couchbase-lite-ios
 [2]: http://couchdb.apache.org
 [4]: https://groups.google.com/group/mobile-couchbase
-[5]: https://github.com/couchbaselabs/CouchCocoa/downloads
-[6]: https://github.com/couchbaselabs/CouchCocoa/
-[7]: https://github.com/couchbaselabs/TouchDB-iOS/downloads
-[8]: http://iriscouch.com
-[9]: http://cloudant.com
+[5]: https://github.com/couchbase/couchbase-lite-ios/wiki/Guide%3AAdding-Couchbase-Lite-To-Your-App
+[6]: https://github.com/couchbase/couchbase-lite-ios/wiki/Building-Couchbase-Lite#linking-couchbase-lite-into-your-own-app
