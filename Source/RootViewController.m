@@ -294,6 +294,7 @@
     if (repls) {
         _pull = repls[0];
         _push = repls[1];
+        _pull.continuous = _push.continuous = YES;
         // Observe replication progress changes, in both directions:
         NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
         [nctr addObserver: self selector: @selector(replicationProgress:)
@@ -362,6 +363,14 @@
     } else {
         // Sync is idle -- hide the progress bar and show the config button:
         [self showSyncButton];
+    }
+
+    // Check for any change in error status and display new errors:
+    NSError* error = _pull.error ? _pull.error : _push.error;
+    if (error != _syncError) {
+        _syncError = error;
+        if (error)
+            [self showErrorAlert: @"Error syncing" forError: error];
     }
 }
 

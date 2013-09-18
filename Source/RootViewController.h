@@ -29,6 +29,7 @@
     NSURL* remoteSyncURL;
     CBLReplication* _pull;
     CBLReplication* _push;
+    NSError* _syncError;
     
     UITableView *tableView;
     IBOutlet UIProgressView *progress;

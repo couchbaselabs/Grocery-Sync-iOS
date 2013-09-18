@@ -40,6 +40,10 @@ Prerequisite: Xcode 4.6 or later with the SDK for iOS 6 or later.
 
 That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
 
+### Configuring sync
+
+As configured, the app doesn't sync anywhere by default. The user can tap the "Configure" button and enter the URL of a remote database to sync with. To experiment with this, you can use `http://sync.couchbasecloud.com/grocery-sync/`, which is a database we've set up in Couchbase Cloud for this purpose. Or if you set up your own local Sync Gateway, you'd use a URL like `http://mycomputer.local:4984/grocery-sync/` (filling in your computer's hostname or IP address.)
+
 
 ## Adding Couchbase Lite to your existing Xcode project
 

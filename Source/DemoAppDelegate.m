@@ -30,9 +30,10 @@
 
 // The default remote database URL to sync with, if the user hasn't set a different one as a pref.
 // If you define this, the app will sync "out of the box" without the user having to configure
-// anything. Most real apps would do this. We've turned it off here so you can initially explore
-// the app in local mode, and then configure it to sync to a local server if you want.
-//#define kDefaultSyncDbURL @"http://couchbase.iriscouch.com/grocery-sync"
+// anything. Most real apps will do this.
+// If you don't define this, the app will initially operate offline; to make it sync the user will
+// have to go to the config view and enter the URL of a remote database.
+//#define kDefaultSyncDbURL @"http://sync.couchbasecloud.com/grocery-sync/"
 
 
 @implementation DemoAppDelegate
