@@ -16,6 +16,9 @@
 		27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
+		2763D73017EA0E430056AB79 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D72F17EA0E430056AB79 /* Default-568h@2x.png */; };
+		2763D73417EA13030056AB79 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73317EA13030056AB79 /* Default@2x.png */; };
+		2763D73617EA13620056AB79 /* Default@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73517EA13620056AB79 /* Default@2x~ipad.png */; };
 		276A43C913F088B800E5743A /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 276A43C713F088B700E5743A /* ConfigViewController.m */; };
 		276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 276A43C813F088B700E5743A /* ConfigViewController.xib */; };
 		2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783A0D5156D6A8500DC8692 /* CFNetwork.framework */; };
@@ -49,6 +52,9 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		27167F6113C4FA57001CC5B6 /* GrocerySync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrocerySync.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27637C011416E78D001E30CA /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		2763D72F17EA0E430056AB79 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		2763D73317EA13030056AB79 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		2763D73517EA13620056AB79 /* Default@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x~ipad.png"; sourceTree = "<group>"; };
 		276A43C613F088B700E5743A /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
 		276A43C713F088B700E5743A /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		276A43C813F088B700E5743A /* ConfigViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ConfigViewController.xib; path = ../Source/ConfigViewController.xib; sourceTree = "<group>"; };
@@ -66,15 +72,14 @@
 		27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "couchbase-mobile-icon-nameless.png"; sourceTree = "<group>"; };
 		27E27BD214E323E3001DFCBB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		28A0AAE50D9B0CCF005BE974 /* CouchDemo_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CouchDemo_Prefix.pch; path = Source/CouchDemo_Prefix.pch; sourceTree = "<group>"; };
 		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		28C286DF0D94DF7D0034E888 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Source/main.m; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		795A586616C2F5670062B5E5 /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLite.framework; path = Frameworks/CouchbaseLite.framework; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* CouchDemo-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CouchDemo-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* GrocerySync-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GrocerySync-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___checked.png"; sourceTree = "<group>"; };
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
 		CBD32A2313E0293300CF15A9 /* textfield___active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active.png"; sourceTree = "<group>"; };
@@ -114,6 +119,7 @@
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
 				276A43C613F088B700E5743A /* ConfigViewController.h */,
 				276A43C713F088B700E5743A /* ConfigViewController.m */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = Classes;
 			path = Source;
@@ -132,7 +138,6 @@
 			children = (
 				27637C011416E78D001E30CA /* README.md */,
 				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -140,22 +145,16 @@
 			name = CustomTemplate;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				28A0AAE50D9B0CCF005BE974 /* CouchDemo_Prefix.pch */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				CBD32A1813E0293300CF15A9 /* Elements */,
 				CBD6E08313E01ECB001EFA8C /* Default.png */,
+				2763D73317EA13030056AB79 /* Default@2x.png */,
+				2763D72F17EA0E430056AB79 /* Default-568h@2x.png */,
 				CBD32A5313E15E8500CF15A9 /* Default~ipad.png */,
-				8D1107310486CEB800E47090 /* CouchDemo-Info.plist */,
+				2763D73517EA13620056AB79 /* Default@2x~ipad.png */,
+				8D1107310486CEB800E47090 /* GrocerySync-Info.plist */,
 				3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */,
 				279C6595140FEF9A00A0E56D /* icon.png */,
 				279C6597140FEFCF00A0E56D /* icon@2x.png */,
@@ -172,13 +171,13 @@
 			children = (
 				795A586616C2F5670062B5E5 /* CouchbaseLite.framework */,
 				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
-				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				27962306142031E80051455D /* Security.framework */,
 				279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				278E615514BA5A4B00A0B840 /* libsqlite3.dylib */,
 				27E27BD214E323E3001DFCBB /* libz.dylib */,
+				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -229,7 +228,7 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "CouchDemo" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GrocerySync" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -259,6 +258,8 @@
 				27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */,
 				CBD6E08413E01ECB001EFA8C /* Default.png in Resources */,
 				CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */,
+				2763D73617EA13620056AB79 /* Default@2x~ipad.png in Resources */,
+				2763D73017EA0E430056AB79 /* Default-568h@2x.png in Resources */,
 				CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */,
 				CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */,
 				CBD32A3113E0293300CF15A9 /* textfield___inactive.png in Resources */,
@@ -269,6 +270,7 @@
 				27AFCEB913E9FFAE00F00AFB /* item_background~ipad.png in Resources */,
 				27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */,
 				27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */,
+				2763D73417EA13030056AB79 /* Default@2x.png in Resources */,
 				276A43CA13F088B800E5743A /* ConfigViewController.xib in Resources */,
 				27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */,
 				279C6596140FEF9A00A0E56D /* icon.png in Resources */,
@@ -304,9 +306,8 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
-				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -321,9 +322,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Source/CouchDemo_Prefix.pch;
-				INFOPLIST_FILE = "Resources/CouchDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -342,7 +342,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -363,7 +363,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -384,7 +384,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "CouchDemo" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GrocerySync" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

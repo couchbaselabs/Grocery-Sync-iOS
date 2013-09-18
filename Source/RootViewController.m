@@ -1,9 +1,9 @@
 //
 //  RootViewController.m
-//  Couchbase Mobile
+//  Grocery Sync
 //
 //  Created by Jan Lehnardt on 27/11/2010.
-//  Copyright 2011 Couchbase, Inc.
+//  Copyright 2011-2013 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -16,17 +16,12 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-//
 
 #import "RootViewController.h"
 #import "ConfigViewController.h"
 #import "DemoAppDelegate.h"
 
 #import <Couchbaselite/CouchbaseLite.h>
-#import <CouchbaseLite/CBLJSON.h>
-
-//#import <CouchbaseLite/CouchbaseLite.h>
-//#import <CouchbaseLite/CBLDesignDocument_Embedded.h>
 
 
 @interface RootViewController ()
@@ -57,14 +52,14 @@
 
     UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle: @"Clean"
                                                             style:UIBarButtonItemStylePlain
-                                                           target: self 
-                                                           action: @selector(deleteCheckedItems:)];
+                                                           target:self
+                                                           action:@selector(deleteCheckedItems:)];
     self.navigationItem.leftBarButtonItem = deleteButton;
     
     [self showSyncButton];
     
-    [self.tableView setBackgroundView:nil];
-    [self.tableView setBackgroundColor:[UIColor clearColor]];
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor clearColor];
     if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
@@ -73,16 +68,15 @@
 
     // Create a query sorted by descending date, i.e. newest items first:
     NSAssert(database!=nil, @"Not hooked up to database yet");
-//    CBLLiveQuery* query = [[[database designDocumentWithName: @"grocery"]
-//                                                queryViewNamed: @"byDate"] asLiveQuery];
-
     CBLLiveQuery* query = [[[database viewNamed:@"byDate"] query] asLiveQuery];
-    
     query.descending = YES;
-    
+
+    // Plug the query into the CBLUITableSource, which will use it to drive the table view.
+    // (The CBLUITableSource uses KVO to observe the query's .rows property.)
     self.dataSource.query = query;
     self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
 
+    // Configure sync if necessary:
     [self updateSyncURL];
 }
 
@@ -94,24 +88,28 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear: animated];
+
     // Check for changes after returning from the sync config view:
     [self updateSyncURL];
 }
 
 
+// Called at startup time by the app delegate to hook me up to the database.
 - (void)useDatabase:(CBLDatabase*)theDatabase {
     self.database = theDatabase;
-    
+
+    // Define a view with a map function that indexes to-do items by creation date:
     [[theDatabase viewNamed: @"byDate"] setMapBlock: MAPBLOCK({
-        id date = [doc objectForKey: @"created_at"];
-        if (date) emit(date, doc);
+        id date = doc[@"created_at"];
+        if (date)
+            emit(date, doc);
     }) reduceBlock: nil version: @"1.1"];
     
     // and a validation function requiring parseable dates:
     [theDatabase defineValidation: @"created_at" asBlock: VALIDATIONBLOCK({
         if (newRevision.isDeleted)
             return YES;
-        id date = [newRevision.properties objectForKey: @"created_at"];
+        id date = (newRevision.properties)[@"created_at"];
         if (date && ! [CBLJSON dateWithJSONObject: date]) {
             context.errorMessage = [@"invalid date " stringByAppendingString: [date description]];
             return NO;
@@ -122,13 +120,12 @@
 
 
 - (void)showErrorAlert: (NSString*)message forError: (NSError*)error {
-    NSLog(@"%@: error=%@", message, error);
-    [(DemoAppDelegate*)[[UIApplication sharedApplication] delegate]
-     showAlert: message error: error fatal: NO];
+    DemoAppDelegate* delegate = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
+    [delegate showAlert: message error: error fatal: NO];
 }
 
 
-#pragma mark - Couch table source delegate
+#pragma mark - CBLUITableSource delegate
 
 
 // Customize the appearance of table view cells.
@@ -146,14 +143,18 @@
     cell.textLabel.font = [UIFont fontWithName: @"Helvetica" size:18.0];
     cell.textLabel.backgroundColor = [UIColor clearColor];
     
-    // Configure the cell contents. Our view function (see above) copies the document properties
+    // Configure the cell contents. Our view's map function (above) copies the document properties
     // into its value, so we can read them from there without having to load the document.
+    NSDictionary* rowValue = row.value;
+    BOOL checked = [rowValue[@"check"] boolValue];
+    if (checked) {
+        cell.textLabel.textColor = [UIColor grayColor];
+        cell.imageView.image = [UIImage imageNamed:@"list_area___checkbox___checked"];
+    } else {
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.imageView.image = [UIImage imageNamed: @"list_area___checkbox___unchecked"];
+    }
     // cell.textLabel.text is already set, thanks to setting up labelProperty above.
-    NSDictionary* properties = row.value;
-    BOOL checked = [[properties objectForKey:@"check"] boolValue];
-    cell.textLabel.textColor = checked ? [UIColor grayColor] : [UIColor blackColor];
-    cell.imageView.image = [UIImage imageNamed:
-            (checked ? @"list_area___checkbox___checked" : @"list_area___checkbox___unchecked")];
 }
 
 
@@ -166,13 +167,14 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Ask the CBLUITableSource for the corresponding query row, and get its document:
     CBLQueryRow *row = [self.dataSource rowAtIndex:indexPath.row];
-    CBLDocument *doc = [row document];
+    CBLDocument *doc = row.document;
 
     // Toggle the document's 'checked' property:
     NSMutableDictionary *docContent = [doc.properties mutableCopy];
-    BOOL wasChecked = [[docContent valueForKey:@"check"] boolValue];
-    [docContent setObject:[NSNumber numberWithBool:!wasChecked] forKey:@"check"];
+    BOOL wasChecked = [docContent[@"check"] boolValue];
+    docContent[@"check"] = @(!wasChecked);
 
     // Save changes:
     NSError* error;
@@ -185,18 +187,20 @@
 #pragma mark - Editing:
 
 
+// Returns all the items that have been checked-off, as an array of CBLDocuments.
 - (NSArray*)checkedDocuments {
-    // If there were a whole lot of documents, this would be more efficient with a custom query.
+    // (If there were a whole lot of documents, this would be more efficient with a custom query.)
     NSMutableArray* checked = [NSMutableArray array];
     for (CBLQueryRow* row in self.dataSource.rows) {
         CBLDocument* doc = row.document;
-        if ([[doc.properties valueForKey:@"check"] boolValue])
+        if ([doc[@"check"] boolValue])       // you can get properties with [], as in NSDictionaries
             [checked addObject: doc];
     }
     return checked;
 }
 
 
+// Invoked by the "Clean Up" button.
 - (IBAction)deleteCheckedItems:(id)sender {
     NSUInteger numChecked = self.checkedDocuments.count;
     if (numChecked == 0)
@@ -225,32 +229,33 @@
 #pragma mark - UITextField delegate
 
 
+// Highlight the text field when input begins.
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    addItemBackground.image = [UIImage imageNamed:@"textfield___active.png"];
+}
+
+
+// Un-highlight the text field when input ends.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-    [addItemBackground setImage:[UIImage imageNamed:@"textfield___inactive.png"]];
-
+    addItemBackground.image = [UIImage imageNamed:@"textfield___inactive.png"];
 	return YES;
 }
 
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    [addItemBackground setImage:[UIImage imageNamed:@"textfield___active.png"]];
-}
-
-
+// Add a new item when text input ends.
 -(void)textFieldDidEndEditing:(UITextField *)textField {
     // Get the name of the item from the text field:
 	NSString *text = addItemTextField.text;
     if (text.length == 0) {
         return;
     }
-    [addItemTextField setText:nil];
+    addItemTextField.text = nil;
 
     // Create the new document's properties:
-	NSDictionary *inDocument = [NSDictionary dictionaryWithObjectsAndKeys:text, @"text",
-                                [NSNumber numberWithBool:NO], @"check",
-                                [CBLJSON JSONObjectWithDate: [NSDate date]], @"created_at",
-                                nil];
+	NSDictionary *inDocument = @{@"text": text,
+                                 @"check": @NO,
+                                 @"created_at": [CBLJSON JSONObjectWithDate: [NSDate date]]};
     
     // Save the document:
     CBLDocument* doc = [database untitledDocument];
@@ -264,6 +269,7 @@
 #pragma mark - SYNC:
 
 
+// Displays the sync configuration view.
 - (IBAction)configureSync:(id)sender {
     UINavigationController* navController = (UINavigationController*)self.parentViewController;
     ConfigViewController* controller = [[ConfigViewController alloc] init];
@@ -271,20 +277,24 @@
 }
 
 
+// Updates the database's sync URL from the saved pref.
 - (void)updateSyncURL {
     if (!self.database)
         return;
     NSURL* newRemoteURL = nil;
-    NSString *syncpoint = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
-    if (syncpoint.length > 0)
-        newRemoteURL = [NSURL URLWithString:syncpoint];
-    
+    NSString *pref = [[NSUserDefaults standardUserDefaults] objectForKey:@"syncpoint"];
+    if (pref.length > 0)
+        newRemoteURL = [NSURL URLWithString: pref];
+
     [self forgetSync];
 
+    // Tell the database to use this URL for bidirectional sync.
+    // This call returns an array of the pull and push replication objects:
     NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
     if (repls) {
-        _pull = [repls objectAtIndex: 0];
-        _push = [repls objectAtIndex: 1];
+        _pull = repls[0];
+        _push = repls[1];
+        // Observe replication progress changes, in both directions:
         NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
         [nctr addObserver: self selector: @selector(replicationProgress:)
                      name: kCBLReplicationChangeNotification object: _pull];
@@ -294,6 +304,7 @@
 }
 
 
+// Stops observing the current push/pull replications, if any.
 - (void) forgetSync {
     NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
     if (_pull) {
@@ -307,19 +318,21 @@
 }
 
 
+// When replication is idle (or not configured), show a "Sync" button to configure it.
 - (void)showSyncButton {
     if (!showingSyncButton) {
         showingSyncButton = YES;
         UIBarButtonItem* syncButton =
-                [[UIBarButtonItem alloc] initWithTitle: @"Configure"
+                [[UIBarButtonItem alloc] initWithTitle:@"Configure"
                                                  style:UIBarButtonItemStylePlain
-                                                target: self 
-                                                action: @selector(configureSync:)];
+                                                target:self
+                                                action:@selector(configureSync:)];
         self.navigationItem.rightBarButtonItem = syncButton;
     }
 }
 
 
+// When replication is active, show a progress bar.
 - (void)showSyncStatus {
     if (showingSyncButton) {
         showingSyncButton = NO;
@@ -336,14 +349,18 @@
 }
 
 
+// Called in response to replication-change notifications. Updates the progress UI.
 - (void) replicationProgress: (NSNotificationCenter*)n {
     if (_pull.mode == kCBLReplicationActive || _push.mode == kCBLReplicationActive) {
+        // Sync is active -- aggregate the progress of both replications and compute a fraction:
         unsigned completed = _pull.completed + _push.completed;
         unsigned total = _pull.total + _push.total;
         NSLog(@"SYNC progress: %u / %u", completed, total);
         [self showSyncStatus];
+        // Update the progress bar, avoiding divide-by-zero exceptions:
         progress.progress = (completed / (float)MAX(total, 1u));
     } else {
+        // Sync is idle -- hide the progress bar and show the config button:
         [self showSyncButton];
     }
 }

@@ -1,9 +1,9 @@
 //
 //  DemoAppDelegate.h
-//  Couchbase Mobile
+//  Grocery Sync
 //
 //  Created by Jan Lehnardt on 27/11/2010.
-//  Copyright 2011 Couchbase, Inc.
+//  Copyright 2011-2013 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -16,7 +16,6 @@
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 // License for the specific language governing permissions and limitations under
 // the License.
-//
 
 #import <UIKit/UIKit.h>
 @class CBLDatabase, RootViewController;
