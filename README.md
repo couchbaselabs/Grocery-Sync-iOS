@@ -27,15 +27,15 @@ Prerequisite: Xcode 4.6 or later with the SDK for iOS 6 or later.
 ### Get the Couchbase Lite framework
 
 1. [Download][1] Couchbase Lite for iOS.
-2. Copy `CouchbaseLite.framework` (for iOS, not Mac OS!) into the `Frameworks` directory of this repo.
+2. Copy `CouchbaseLite.framework` into the `Frameworks` directory of this repo.
 
 ### Open the Xcode workspace
 
-    open CouchDemo.xcworkspace
+    open GrocerySync.xcodeproj
 
 ### Build and run
 
-1. Select the "CouchDemo" scheme and the appropriate destination (an iOS device or simulator) from the pop-up menu in the Xcode toolbar.
+1. Select the appropriate destination (an iOS device or simulator) from the pop-up menu in the Xcode toolbar.
 2. Click the Run button
 
 That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
