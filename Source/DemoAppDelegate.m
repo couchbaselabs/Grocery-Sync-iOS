@@ -63,8 +63,7 @@
 
     // Initialize Couchbase Lite and find/create my database:
     NSError* error;
-    self.database = [[CBLManager sharedInstance] createDatabaseNamed: kDatabaseName
-                                                               error: &error];
+    self.database = [[CBLManager sharedInstance] databaseNamed: kDatabaseName error: &error];
     if (!self.database)
         [self showAlert: @"Couldn't open database" error: error fatal: YES];
     

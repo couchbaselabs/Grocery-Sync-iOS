@@ -68,7 +68,7 @@
 
     // Create a query sorted by descending date, i.e. newest items first:
     NSAssert(database!=nil, @"Not hooked up to database yet");
-    CBLLiveQuery* query = [[[database viewNamed:@"byDate"] query] asLiveQuery];
+    CBLLiveQuery* query = [[[database viewNamed:@"byDate"] createQuery] asLiveQuery];
     query.descending = YES;
 
     // Plug the query into the CBLUITableSource, which will use it to drive the table view.
@@ -106,15 +106,13 @@
     }) reduceBlock: nil version: @"1.1"];
     
     // and a validation function requiring parseable dates:
-    [theDatabase defineValidation: @"created_at" asBlock: VALIDATIONBLOCK({
-        if (newRevision.isDeleted)
-            return YES;
+    [theDatabase setValidationNamed: @"created_at" asBlock: VALIDATIONBLOCK({
+        if (newRevision.isDeletion)
+            return;
         id date = (newRevision.properties)[@"created_at"];
         if (date && ! [CBLJSON dateWithJSONObject: date]) {
-            context.errorMessage = [@"invalid date " stringByAppendingString: [date description]];
-            return NO;
+            [context rejectWithMessage: [@"invalid date " stringByAppendingString: [date description]]];
         }
-        return YES;
     })];
 }
 
@@ -178,7 +176,7 @@
 
     // Save changes:
     NSError* error;
-    if (![doc.currentRevision putProperties: docContent error: &error]) {
+    if (![doc putProperties: docContent error: &error]) {
         [self showErrorAlert: @"Failed to update item" forError: error];
     }
 }
@@ -221,6 +219,8 @@
     if (buttonIndex == 0)
         return;
     NSError* error;
+    // Tell the CBLUITableSource to delete the documents, instead of doing it directly.
+    // This lets it tell the table-view the rows are going away, so the table display can animate.
     if (![dataSource deleteDocuments: self.checkedDocuments error: &error]) {
         [self showErrorAlert: @"Failed to delete items" forError: error];
     }
@@ -253,14 +253,14 @@
     addItemTextField.text = nil;
 
     // Create the new document's properties:
-	NSDictionary *inDocument = @{@"text": text,
-                                 @"check": @NO,
-                                 @"created_at": [CBLJSON JSONObjectWithDate: [NSDate date]]};
+	NSDictionary *document = @{@"text":       text,
+                               @"check":      @NO,
+                               @"created_at": [CBLJSON JSONObjectWithDate: [NSDate date]]};
     
     // Save the document:
-    CBLDocument* doc = [database untitledDocument];
+    CBLDocument* doc = [database createDocument];
     NSError* error;
-    if (![doc putProperties: inDocument error: &error]) {
+    if (![doc putProperties: document error: &error]) {
         [self showErrorAlert: @"Couldn't save new item" forError: error];
     }
 }
@@ -290,7 +290,7 @@
 
     // Tell the database to use this URL for bidirectional sync.
     // This call returns an array of the pull and push replication objects:
-    NSArray* repls = [self.database replicateWithURL: newRemoteURL exclusively: YES];
+    NSArray* repls = [self.database replicationsWithURL: newRemoteURL exclusively: YES];
     if (repls) {
         _pull = repls[0];
         _push = repls[1];
@@ -301,6 +301,8 @@
                      name: kCBLReplicationChangeNotification object: _pull];
         [nctr addObserver: self selector: @selector(replicationProgress:)
                      name: kCBLReplicationChangeNotification object: _push];
+        [_push start];
+        [_pull start];
     }
 }
 
@@ -352,10 +354,10 @@
 
 // Called in response to replication-change notifications. Updates the progress UI.
 - (void) replicationProgress: (NSNotificationCenter*)n {
-    if (_pull.mode == kCBLReplicationActive || _push.mode == kCBLReplicationActive) {
+    if (_pull.status == kCBLReplicationActive || _push.status == kCBLReplicationActive) {
         // Sync is active -- aggregate the progress of both replications and compute a fraction:
-        unsigned completed = _pull.completed + _push.completed;
-        unsigned total = _pull.total + _push.total;
+        unsigned completed = _pull.completedChangesCount + _push.completedChangesCount;
+        unsigned total = _pull.changesCount+ _push.changesCount;
         NSLog(@"SYNC progress: %u / %u", completed, total);
         [self showSyncStatus];
         // Update the progress bar, avoiding divide-by-zero exceptions:
