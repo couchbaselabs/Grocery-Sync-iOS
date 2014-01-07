@@ -368,7 +368,7 @@
     }
 
     // Check for any change in error status and display new errors:
-    NSError* error = _pull.error ? _pull.error : _push.error;
+    NSError* error = _pull.lastError ? _pull.lastError : _push.lastError;
     if (error != _syncError) {
         _syncError = error;
         if (error)
