@@ -203,9 +203,10 @@
     NSUInteger numChecked = self.checkedDocuments.count;
     if (numChecked == 0)
         return;
-    NSString* message = [NSString stringWithFormat: @"Are you sure you want to remove the %u"
+    NSString* message = [NSString stringWithFormat: @"Are you sure you want to remove the %lu"
                                                      " checked-off item%@?",
-                                                     numChecked, (numChecked==1 ? @"" : @"s")];
+                                                     (unsigned long)numChecked,
+                                                     (numChecked==1 ? @"" : @"s")];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Remove Completed Items?"
                                                     message: message
                                                    delegate: self
@@ -288,12 +289,10 @@
 
     [self forgetSync];
 
-    // Tell the database to use this URL for bidirectional sync.
-    // This call returns an array of the pull and push replication objects:
-    NSArray* repls = [self.database replicationsWithURL: newRemoteURL exclusively: YES];
-    if (repls) {
-        _pull = repls[0];
-        _push = repls[1];
+    if (newRemoteURL) {
+        // Tell the database to use this URL for bidirectional sync.
+        _pull = [self.database createPullReplication: newRemoteURL];
+        _push = [self.database createPushReplication: newRemoteURL];
         _pull.continuous = _push.continuous = YES;
         // Observe replication progress changes, in both directions:
         NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
