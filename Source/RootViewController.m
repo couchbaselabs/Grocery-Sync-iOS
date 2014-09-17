@@ -60,24 +60,24 @@
     
     self.tableView.backgroundView = nil;
     self.tableView.backgroundColor = [UIColor clearColor];
-    if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-    {
+    if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
         [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
     }
 
-    // Create a query sorted by descending date, i.e. newest items first:
-    NSAssert(database!=nil, @"Not hooked up to database yet");
-    CBLLiveQuery* query = [[[database viewNamed:@"byDate"] createQuery] asLiveQuery];
-    query.descending = YES;
+    if (database) {
+        // Create a query sorted by descending date, i.e. newest items first:
+        CBLLiveQuery* query = [[[database viewNamed:@"byDate"] createQuery] asLiveQuery];
+        query.descending = YES;
 
-    // Plug the query into the CBLUITableSource, which will use it to drive the table view.
-    // (The CBLUITableSource uses KVO to observe the query's .rows property.)
-    self.dataSource.query = query;
-    self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
+        // Plug the query into the CBLUITableSource, which will use it to drive the table view.
+        // (The CBLUITableSource uses KVO to observe the query's .rows property.)
+        self.dataSource.query = query;
+        self.dataSource.labelProperty = @"text";    // Document property to display in the cell label
 
-    // Configure sync if necessary:
-    [self updateSyncURL];
+        // Configure sync if necessary:
+        [self updateSyncURL];
+    }
 }
 
 
@@ -169,14 +169,15 @@
     CBLQueryRow *row = [self.dataSource rowAtIndex:indexPath.row];
     CBLDocument *doc = row.document;
 
-    // Toggle the document's 'checked' property:
-    NSMutableDictionary *docContent = [doc.properties mutableCopy];
-    BOOL wasChecked = [docContent[@"check"] boolValue];
-    docContent[@"check"] = @(!wasChecked);
-
-    // Save changes:
     NSError* error;
-    if (![doc putProperties: docContent error: &error]) {
+    CBLSavedRevision* newRev = [doc update:^BOOL(CBLUnsavedRevision *rev) {
+        // Toggle the "check" property of the new revision to be saved:
+        BOOL wasChecked = [rev[@"check"] boolValue];
+        rev[@"check"] = @(!wasChecked);
+        return YES;
+    } error: &error];
+
+    if (!newRev) {
         [self showErrorAlert: @"Failed to update item" forError: error];
     }
 }
@@ -267,7 +268,7 @@
 }
 
 
-#pragma mark - SYNC:
+#pragma mark - SYNC CONFIGURATION:
 
 
 // Displays the sync configuration view.
@@ -318,6 +319,9 @@
         _push = nil;
     }
 }
+
+
+#pragma mark - SYNC PROGRESS:
 
 
 // When replication is idle (or not configured), show a "Sync" button to configure it.

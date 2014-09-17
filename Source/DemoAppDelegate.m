@@ -33,7 +33,7 @@
 // anything. Most real apps will do this.
 // If you don't define this, the app will initially operate offline; to make it sync the user will
 // have to go to the config view and enter the URL of a remote database.
-//#define kDefaultSyncDbURL @"http://sync.couchbasecloud.com/grocery-sync/"
+#define kDefaultSyncDbURL @"http://demo.mobile.couchbase.com/grocery-sync/"
 
 
 @implementation DemoAppDelegate
@@ -46,8 +46,6 @@
 
 // Override point for customization after application launch.
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    NSLog(@"------ application:didFinishLaunchingWithOptions:");
-
 #ifdef kDefaultSyncDbURL
     // Register the default value of the pref for the remote database URL to sync with:
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
