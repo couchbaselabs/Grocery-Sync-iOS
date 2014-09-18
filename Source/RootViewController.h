@@ -24,26 +24,12 @@
 
 
 @interface RootViewController : UIViewController <CBLUITableDelegate, UITextFieldDelegate>
-{
-    CBLDatabase *database;
-    NSURL* remoteSyncURL;
-    CBLReplication* _pull;
-    CBLReplication* _push;
-    NSError* _syncError;
-    
-    UITableView *tableView;
-    IBOutlet UIProgressView *progress;
-    BOOL showingSyncButton;
-    IBOutlet UITextField *addItemTextField;
-    IBOutlet UIImageView *addItemBackground;
-}
 
-@property(nonatomic, strong) IBOutlet UITableView *tableView;
-@property(nonatomic, strong) IBOutlet CBLUITableSource* dataSource;
+- (void)useDatabase:(CBLDatabase*)theDatabase;
 
--(void)useDatabase:(CBLDatabase*)theDatabase;
+- (IBAction)deleteCheckedItems:(id)sender;
 
-- (IBAction)configureSync:(id)sender;
-- (IBAction) deleteCheckedItems:(id)sender;
+- (void)showSyncStatus: (float)status;
+- (void)hideSyncStatus;
 
 @end
