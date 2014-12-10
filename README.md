@@ -12,7 +12,7 @@ Here's the "user story":
 
 The app just presents a simple editable list of textual items with checkboxes, which are stored persistently in a local database, and shared in realtime with all other users who are synced with the same cloud database.
 
-For demo purposes, the app is hardcoded to sync with a specific database on a server run by Couchbase. You can (and should) easily modify it to sync with a database you create on a [Couchbase Sync Gateway][7] (or [Apache CouchDB][2]) server. For more info about setting up the Sync Gateway, [read the getting started guide][8].
+For demo purposes, the app is hardcoded to sync with a specific database on a server run by Couchbase. You can (and should) easily modify it to sync with a database you create on a [Couchbase Sync Gateway][7]. Instructions for that are below.
 
 ## Building & Running The App
 
@@ -43,6 +43,19 @@ Note: If you want the Swift version, run `git checkout swift`.
 2. Click the Run button
 
 That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
+
+## Using A Local Sync Gateway
+
+If you've installed Couchbase Server and the [Couchbase Sync Gateway][7], you can easily configure
+Grocery Sync to sync locally instead of with the remote server.
+
+(For help setting up the Sync Gateway, [read the getting started guide][8].)
+
+1. Create a Couchbase Server bucket named `grocery-sync`.
+2. If Couchbase Server is not running on the same computer as the Sync Gateway, edit the `sync_gateway_config.json` file in this directory and enter the correct server URL.
+3. Start the Sync Gateway using the supplied configuration file: `sync_gateway sync_gateway_config.json`
+4. Edit `DemoAppDelegate.m` and change the value of `kServerDbURL` to have the hostname/address and port of the Sync Gateway. Make sure to specify the public API port (4984) not the admin port (4985).
+5. Build and run Grocery Sync.
 
 ## Adding Couchbase Lite to your existing Xcode project
 
