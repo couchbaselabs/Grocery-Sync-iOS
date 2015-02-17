@@ -3,7 +3,7 @@
 //  Grocery Sync
 //
 //  Created by Jan Lehnardt on 27/11/2010.
-//  Copyright 2011-2013 Couchbase, Inc.
+//  Copyright 2011-2015 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -41,31 +41,6 @@
 #pragma mark - View lifecycle
 
 
-// Called at startup time by the app delegate to hook me up to the database.
-- (void)useDatabase:(CBLDatabase*)theDatabase {
-    database = theDatabase;
-
-    // Define a view with a map function that indexes to-do items by creation date:
-#pragma mark Define view
-    [[theDatabase viewNamed: @"byDate"] setMapBlock: MAPBLOCK({
-        id date = doc[@"created_at"];
-        if (date)
-            emit(date, doc);
-    }) reduceBlock: nil version: @"1.1"];
-    
-    // and a validation function requiring parseable dates:
-#pragma mark Define validation
-    [theDatabase setValidationNamed: @"created_at" asBlock: VALIDATIONBLOCK({
-        if (newRevision.isDeletion)
-            return;
-        id date = (newRevision.properties)[@"created_at"];
-        if (date && ! [CBLJSON dateWithJSONObject: date]) {
-            [context rejectWithMessage: [@"invalid date " stringByAppendingString: [date description]]];
-        }
-    })];
-}
-
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -81,19 +56,45 @@
         [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
         [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
     }
+    // The database is not available yet, so we can't configure anything related to it until
+    // -useDatabase: is called...
+}
 
-    if (database) {
+
+// Called at startup time by the app delegate to hook me up to the database.
+- (void)useDatabase:(CBLDatabase*)theDatabase {
+    database = theDatabase;
+
+    // Define a view with a map function that indexes to-do items by creation date:
+#pragma mark Define view
+    [[theDatabase viewNamed: @"byDate"] setMapBlock: MAPBLOCK({
+        id date = doc[@"created_at"];
+        if (date)
+            emit(date, doc);
+    }) reduceBlock: nil version: @"1.1"];
+
+    // and a validation function requiring parseable dates:
+#pragma mark Define validation
+    [theDatabase setValidationNamed: @"created_at" asBlock: VALIDATIONBLOCK({
+        if (newRevision.isDeletion)
+            return;
+        id date = (newRevision.properties)[@"created_at"];
+        if (date && ! [CBLJSON dateWithJSONObject: date]) {
+            [context rejectWithMessage: [@"invalid date " stringByAppendingString: [date description]]];
+        }
+    })];
+
 #pragma mark Create database query
-        // Create a query sorted by descending date, i.e. newest items first:
-        CBLLiveQuery* query = [[[database viewNamed:@"byDate"] createQuery] asLiveQuery];
-        query.descending = YES;
+    // Create a query sorted by descending date, i.e. newest items first:
+    CBLLiveQuery* query = [[[database viewNamed:@"byDate"] createQuery] asLiveQuery];
+    query.descending = YES;
 
-        // Plug the query into the CBLUITableSource, which will use it to drive the table view.
-        // (The CBLUITableSource uses KVO to observe the query's .rows property.)
+    // Plug the query into the CBLUITableSource, which will use it to drive the table view.
+    // (The CBLUITableSource uses KVO to observe the query's .rows property.)
 #pragma mark Configure table view for query
-        dataSource.query = query;
-        dataSource.labelProperty = @"text";    // Document property to display in the cell label
-    }
+    NSAssert(dataSource, @"dataSource not available (has nib been loaded yet?)");
+    dataSource.query = query;
+    dataSource.labelProperty = @"text";    // Document property to display in the cell label
 }
 
 

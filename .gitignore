@@ -8,3 +8,6 @@ xcuserdata/
 build
 DerivedData
 *.framework
+*.a
+/Frameworks/*.h
+/Frameworks/*.m

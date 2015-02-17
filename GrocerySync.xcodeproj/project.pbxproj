@@ -20,7 +20,6 @@
 		2763D73417EA13030056AB79 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73317EA13030056AB79 /* Default@2x.png */; };
 		2763D73617EA13620056AB79 /* Default@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73517EA13620056AB79 /* Default@2x~ipad.png */; };
 		2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783A0D5156D6A8500DC8692 /* CFNetwork.framework */; };
-		278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615514BA5A4B00A0B840 /* libsqlite3.dylib */; };
 		27962307142031E80051455D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27962306142031E80051455D /* Security.framework */; };
 		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
 		279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6597140FEFCF00A0E56D /* icon@2x.png */; };
@@ -30,6 +29,8 @@
 		27AFCEB913E9FFAE00F00AFB /* item_background~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */; };
 		27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBA13EA08D600F00AFB /* background.jpg */; };
 		27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */; };
+		27C5BAED1A92B35D008C357C /* CBLEncryptionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5BAEC1A92B35D008C357C /* CBLEncryptionController.m */; };
+		27C5BAF31A92BD00008C357C /* libsqlcipher.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27C5BAF21A92BD00008C357C /* libsqlcipher.a */; };
 		27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */ = {isa = PBXBuildFile; fileRef = 27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */; };
 		27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E27BD214E323E3001DFCBB /* libz.dylib */; };
 		795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 795A586616C2F5670062B5E5 /* CouchbaseLite.framework */; };
@@ -64,6 +65,9 @@
 		27AFCEB813E9FFAE00F00AFB /* item_background~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "item_background~ipad.png"; path = "Resources/Elements/item_background~ipad.png"; sourceTree = SOURCE_ROOT; };
 		27AFCEBA13EA08D600F00AFB /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "background~ipad.jpg"; sourceTree = "<group>"; };
+		27C5BAEB1A92B35D008C357C /* CBLEncryptionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBLEncryptionController.h; path = Frameworks/CBLEncryptionController.h; sourceTree = SOURCE_ROOT; };
+		27C5BAEC1A92B35D008C357C /* CBLEncryptionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CBLEncryptionController.m; path = Frameworks/CBLEncryptionController.m; sourceTree = SOURCE_ROOT; };
+		27C5BAF21A92BD00008C357C /* libsqlcipher.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlcipher.a; path = Frameworks/libsqlcipher.a; sourceTree = "<group>"; };
 		27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "couchbase-mobile-icon-nameless.png"; sourceTree = "<group>"; };
 		27E27BD214E323E3001DFCBB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -96,8 +100,8 @@
 				27962307142031E80051455D /* Security.framework in Frameworks */,
 				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
-				278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */,
 				27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */,
+				27C5BAF31A92BD00008C357C /* libsqlcipher.a in Frameworks */,
 				795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -112,6 +116,8 @@
 				1D3623250D0F684500981E51 /* DemoAppDelegate.m */,
 				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
+				27C5BAEB1A92B35D008C357C /* CBLEncryptionController.h */,
+				27C5BAEC1A92B35D008C357C /* CBLEncryptionController.m */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = Classes;
@@ -161,6 +167,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27C5BAF21A92BD00008C357C /* libsqlcipher.a */,
 				795A586616C2F5670062B5E5 /* CouchbaseLite.framework */,
 				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
 				27962306142031E80051455D /* Security.framework */,
@@ -219,6 +226,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0420;
+				TargetAttributes = {
+					27167F1813C4FA57001CC5B6 = {
+						DevelopmentTeam = N2Q372V7W2;
+						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GrocerySync" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -277,6 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27C5BAED1A92B35D008C357C /* CBLEncryptionController.m in Sources */,
 				27167F2513C4FA57001CC5B6 /* main.m in Sources */,
 				27167F2613C4FA57001CC5B6 /* DemoAppDelegate.m in Sources */,
 				27167F2713C4FA57001CC5B6 /* RootViewController.m in Sources */,
@@ -291,15 +309,21 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = NO;
 			};
@@ -310,12 +334,19 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = GrocerySync;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -324,6 +355,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 111;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -343,6 +375,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;

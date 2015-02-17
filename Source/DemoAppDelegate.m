@@ -2,7 +2,7 @@
 //  DemoAppDelegate.m
 //  Grocery Sync
 //
-//  Copyright 2011-2014 Couchbase, Inc.
+//  Copyright 2011-2015 Couchbase, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@
 
 #import "DemoAppDelegate.h"
 #import "RootViewController.h"
+#import "CBLEncryptionController.h"
 
 #import <Couchbaselite/CouchbaseLite.h> // NOTE: If this import fails, make sure you have copied
 // (or symlinked) CouchbaseLite.framework into the "Frameworks" subdirectory, as per the README.
@@ -58,31 +59,42 @@
 	[window makeKeyAndVisible];
 
 #pragma mark Initialize Couchbase Lite and find/create my database:
-    NSError* error;
-    self.database = [[CBLManager sharedInstance] databaseNamed: kDatabaseName error: &error];
-    if (!self.database) {
-        [self showAlert: @"Couldn't open database" error: error fatal: YES];
-        return NO;
-    }
-    
-    // Tell the RootViewController about the database:
-    [self.rootViewController useDatabase: database];
+    // Since the database is encrypted (in this branch) user interaction is required to acquire
+    // the password/key with which to open it. The Couchbase Lite utility CBLEncryptionController
+    // manages this. Opening the database is asynchronous, using a callback block, because of the
+    // user interaction.
+    CBLEncryptionController* enc = [[CBLEncryptionController alloc] initWithDatabaseName: kDatabaseName];
+    enc.parentController = self.rootViewController;
+    [enc openDatabaseAsync: ^(CBLDatabase *db, NSError *error) {
+        // This entire block runs later, after the user's provided the database password.
+        if (!db) {
+            if (error)
+                [self showAlert: @"Couldn't open database" error: error fatal: YES];
+            else
+                exit(0);  // User canceled password entry, so simply quit
+            return;
+        }
+        self.database = db;
+
+        // Tell the RootViewController about the database:
+        [self.rootViewController useDatabase: database];
 
 #ifdef kServerDbURL
 #pragma mark Initialize bidirectional continuous sync:
-    NSURL* serverDbURL = [NSURL URLWithString: kServerDbURL];
-    _pull = [database createPullReplication: serverDbURL];
-    _push = [database createPushReplication: serverDbURL];
-    _pull.continuous = _push.continuous = YES;
-    // Observe replication progress changes, in both directions:
-    NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
-    [nctr addObserver: self selector: @selector(replicationProgress:)
-                 name: kCBLReplicationChangeNotification object: _pull];
-    [nctr addObserver: self selector: @selector(replicationProgress:)
-                 name: kCBLReplicationChangeNotification object: _push];
-    [_push start];
-    [_pull start];
+        NSURL* serverDbURL = [NSURL URLWithString: kServerDbURL];
+        _pull = [database createPullReplication: serverDbURL];
+        _push = [database createPushReplication: serverDbURL];
+        _pull.continuous = _push.continuous = YES;
+        // Observe replication progress changes, in both directions:
+        NSNotificationCenter* nctr = [NSNotificationCenter defaultCenter];
+        [nctr addObserver: self selector: @selector(replicationProgress:)
+                     name: kCBLReplicationChangeNotification object: _pull];
+        [nctr addObserver: self selector: @selector(replicationProgress:)
+                     name: kCBLReplicationChangeNotification object: _push];
+        [_push start];
+        [_pull start];
 #endif
+    }];
 
     return YES;
 }

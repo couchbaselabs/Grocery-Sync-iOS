@@ -2,6 +2,8 @@
 
 This is a simple demo app showing how to use the [Couchbase Lite][1] framework to embed a nonrelational ("NoSQL"), document-oriented database in an iOS app and sync it with a database server in "the cloud".
 
+**"encryption" branch:** This branch includes support for database encryption using Couchbase Lite's [SQLCipher](http://sqlcipher.net) support.
+
 _If you prefer developing in Swift, click [here](https://github.com/couchbaselabs/Grocery-Sync-iOS/tree/swift)!_
 
 Here's the "user story":
@@ -32,6 +34,7 @@ Note: If you want the Swift version, run `git checkout swift`.
 
 1. [Download][1] Couchbase Lite for iOS.
 2. Copy `CouchbaseLite.framework` into the `Frameworks` directory of this repo.
+3. Copy `libsqlcipher.a`, `CBLEncryptionController.m` and `CBLEncryptionController.h` from the download's `Extras` folder into `Frameworks`.
 
 ### Open the Xcode workspace
 
