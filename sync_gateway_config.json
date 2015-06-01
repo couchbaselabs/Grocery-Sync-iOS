@@ -1,0 +1,12 @@
+{
+	"log": ["HTTP+"],
+	"databases": {
+		"grocery-sync": {
+			"server": "http://localhost:8091",
+			"bucket": "grocery-sync",
+			"users": {
+				"GUEST": {"disabled": false, "admin_channels": ["*"] }
+			}
+		}
+	}
+}
