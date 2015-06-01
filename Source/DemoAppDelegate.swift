@@ -13,12 +13,12 @@ import UIKit
 private let kDatabaseName = "grocery-sync"
 
 // The remote database URL to sync with.
-private let kServerDbURL = NSURL(string: "http://demo.mobile.couchbase.com/grocery-sync/")
+private let kServerDbURL = NSURL(string: "http://demo.mobile.couchbase.com/grocery-sync/")!
 
 @UIApplicationMain
 class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
                             
-    @IBOutlet private var window: UIWindow!
+    @IBOutlet var window: UIWindow?
     @IBOutlet private var navigationController: UINavigationController!
 
     private var _push: CBLReplication!
@@ -34,10 +34,10 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
     }
 
     func application(application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: NSDictionary?) -> Bool
+                     didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
     {
-        window.addSubview(navigationController.view)
-        window.makeKeyAndVisible()
+        window!.addSubview(navigationController.view)
+        window!.makeKeyAndVisible()
 
         if database == nil {
             fatalAlert("Unable to initialize Couchbase Lite")
@@ -66,7 +66,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
 
 
     func replicationProgress(n: NSNotification) {
-        let progressBar = (navigationController.topViewController as RootViewController).progressBar
+        let progressBar = (navigationController.topViewController as! RootViewController).progressBar
         if (_pull.status == CBLReplicationStatus.Active || _push.status == CBLReplicationStatus.Active) {
             // Sync is active -- aggregate the progress of both replications and compute a fraction:
             let completed = _pull.completedChangesCount + _push.completedChangesCount

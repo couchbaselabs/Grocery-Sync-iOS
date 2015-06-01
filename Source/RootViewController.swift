@@ -44,7 +44,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         database.setValidationNamed("created_at") {
             (newRevision, context) in
             if !newRevision.isDeletion {
-                if let dateObj: AnyObject = newRevision.properties["created_at"] {
+                if let dateObj: AnyObject = newRevision.properties?["created_at"] {
                     if let date = dateObj as? String {
                         if NSDate.withJSONObject(date) == nil {
                             context.rejectWithMessage("invalid date \(date)")
@@ -102,7 +102,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     //MARK: - Table UI
 
 
-    private let kBGColor : UIColor = {return UIColor(patternImage: UIImage(named:"item_background"))}()
+    private let kBGColor : UIColor = {return UIColor(patternImage: UIImage(named:"item_background")!)}()
 
 
     // Customize the appearance of table view cells.
@@ -120,8 +120,8 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         
         // Configure the cell contents. Our view's map function (above) copies the document properties
         // into its value, so we can read them from there without having to load the document.
-        let rowValue = row.value as NSDictionary
-        let checked = (rowValue["check"] as? Bool) ?? false
+        let rowValue = row.value as? NSDictionary
+        let checked = (rowValue?["check"] as? Bool) ?? false
         if checked {
             cell.textLabel!.textColor = UIColor.grayColor()
             cell.imageView!.image = UIImage(named: "list_area___checkbox___checked")
@@ -140,18 +140,19 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         // Ask the CBLUITableSource for the corresponding query row, and get its document:
-        let row = self.dataSource.rowAtIndex(UInt(indexPath.row))
-        var error: NSError?
-        let newRev = row.document.update(&error) {
-            (rev: CBLUnsavedRevision!) -> Bool in
-            // Toggle the document's 'checked' property:
-            let wasChecked = (rev["check"] as? Bool) ?? false
-            rev["check"] = !wasChecked
-            return true
-        }
+        if let row = self.dataSource.rowAtIndex(UInt(indexPath.row)) {
+            var error: NSError?
+            let newRev = row.document?.update(&error) {
+                (rev: CBLUnsavedRevision!) -> Bool in
+                // Toggle the document's 'checked' property:
+                let wasChecked = (rev["check"] as? Bool) ?? false
+                rev["check"] = !wasChecked
+                return true
+            }
 
-        if newRev == nil {
-            self.appDelegate.showAlert("Failed to update item", forError: error)
+            if newRev == nil {
+                self.appDelegate.showAlert("Failed to update item", forError: error)
+            }
         }
     }
 
@@ -159,10 +160,14 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Returns all the items that have been checked-off, as an array of CBLDocuments.
     var checkedDocuments :[CBLDocument] {
         // (If there were a whole lot of documents, this would be more efficient with a custom query.)
-        return self.dataSource.rows.filter {
-            let row = $0 as CBLQueryRow
-            return (row.value["check"] as? Bool) ?? false
-        }.map { ($0 as CBLQueryRow).document }
+        let rows = self.dataSource.rows as! [CBLQueryRow]
+        return rows.filter {
+            if let value = $0.value as? NSDictionary,
+                check = value["check"] as? Bool {
+                    return check
+            }
+            return false
+        }.map { $0.document! }
     }
 
 
@@ -186,7 +191,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     }
 
 
-    func alertView(alertView: UIAlertView?, didDismissWithButtonIndex buttonIndex: Int) {
+    func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int) {
         if buttonIndex == 0 {
             return
         }
@@ -225,9 +230,10 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         }
         addItemTextField.text = nil
 
-        let properties = ["text": text,
-                          "check": false,
-                          "created_at": CBLJSON.JSONObjectWithDate(NSDate())]
+        let properties: [NSObject : AnyObject] = [
+            "text": text,
+            "check": false,
+            "created_at": CBLJSON.JSONObjectWithDate(NSDate())]
 
         // Save the document:
         let doc = database.createDocument()
@@ -240,7 +246,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     // Returns the singleton DemoAppDelegate object.
     var appDelegate : DemoAppDelegate {
-        return UIApplication.sharedApplication().delegate as DemoAppDelegate
+        return UIApplication.sharedApplication().delegate as! DemoAppDelegate
     }
 
 }
