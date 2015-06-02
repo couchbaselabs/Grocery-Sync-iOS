@@ -44,7 +44,7 @@ public class DatabaseSharer {
         println("DatabaseSharer: Service name is '\(serviceName)'")
 
         // Watch for database changes:
-        dbObserver = NSNotificationCenter.defaultCenter().addObserverForName(kCBLDatabaseChangeNotification, object: db, queue: nil) { notification in
+        dbObserver = db.observe(notificationName: kCBLDatabaseChangeNotification) { [unowned self] notification in
             self.dbChanged(notification)
         }
     }
@@ -83,13 +83,11 @@ public class DatabaseSharer {
 
     deinit {
         listener.stop()
-        if let o = dbObserver {
-            NSNotificationCenter.defaultCenter().removeObserver(o)
-        }
+        dbObserver?.stop()
     }
 
     private let db: CBLDatabase
     private let listener: CBLListener
-    private var dbObserver: NSObjectProtocol?
+    private var dbObserver: Observer?
 
 }

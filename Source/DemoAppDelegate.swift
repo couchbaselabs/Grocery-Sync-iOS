@@ -18,11 +18,12 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
     @IBOutlet var window: UIWindow?
     @IBOutlet private var navigationController: UINavigationController!
 
-    let database: CBLDatabase!
-    let peerSyncMgr: PeerSyncManager!
+    var database: CBLDatabase!
+    var peerSyncMgr: PeerSyncManager!
 
-
-    override init() {
+    func application(application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
+    {
         var db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
         if db != nil {
             if NSUserDefaults.standardUserDefaults().boolForKey("ResetPeerSyncDB") {
@@ -31,21 +32,17 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
                 db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
             }
         }
+        if db == nil {
+            fatalAlert("Unable to initialize Couchbase Lite")
+            return false
+        }
         database = db
-        peerSyncMgr = (db != nil) ? PeerSyncManager(database: db!) : nil
-    }
+        peerSyncMgr = PeerSyncManager(database: database)
 
-    func application(application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
-    {
         window!.addSubview(navigationController.view)
         window!.rootViewController = navigationController
         window!.makeKeyAndVisible()
 
-        if database == nil {
-            fatalAlert("Unable to initialize Couchbase Lite")
-            return false
-        }
         return true
     }
 

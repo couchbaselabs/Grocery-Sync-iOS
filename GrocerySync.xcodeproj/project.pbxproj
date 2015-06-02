@@ -149,14 +149,14 @@
 			isa = PBXGroup;
 			children = (
 				271DE8481B1D01A000741623 /* FollowViewController.swift */,
+				271DE84D1B1D01A000741623 /* PeerSyncManager.swift */,
 				271DE8461B1D01A000741623 /* DatabaseSharer.swift */,
-				271DE8491B1D01A000741623 /* Observer.swift */,
 				271DE84A1B1D01A000741623 /* PairingManager.swift */,
+				271DE84E1B1D01A000741623 /* SyncedDB.swift */,
+				271DE84C1B1D01A000741623 /* PeerBrowser.swift */,
 				271DE84B1B1D01A000741623 /* Peer.swift */,
 				271DE85B1B1D0FB800741623 /* PeerSet.swift */,
-				271DE84C1B1D01A000741623 /* PeerBrowser.swift */,
-				271DE84D1B1D01A000741623 /* PeerSyncManager.swift */,
-				271DE84E1B1D01A000741623 /* SyncedDB.swift */,
+				271DE8491B1D01A000741623 /* Observer.swift */,
 			);
 			name = PeerSync;
 			path = Source/PeerSync;

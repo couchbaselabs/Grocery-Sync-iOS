@@ -10,7 +10,7 @@ import Foundation
 
 
 /** Syncs with a remote database on a peer, pulling docs from it whenever it changes. */
-public class SyncedDB {
+public class SyncedDB : Printable {
 
     public weak var mgr: PairingManager?
     public let peer: OnlinePeer
@@ -25,21 +25,25 @@ public class SyncedDB {
         self.db = database
         self.latestSequenceSeen = peer.latestSequence
 
-        onlineObs = peer.observe("online") {
+        onlineObs = peer.observe(keyPath: "online") { [unowned self] in
             if !self.peer.online {
-                println("SyncedDB: Removed \(peer)")
+                println("\(self): Went offline")
+                self.stop()
                 self.mgr?.syncedDBWentOffline(self)
             }
         }
-        txtObs = peer.observe("txtRecord") {
+        txtObs = peer.observe(keyPath: "txtRecord") { [unowned self] in
             if let seq = peer.txtRecord["seq"]?.toInt() {
                 self.gotLatestSequence(UInt64(seq))
             }
         }
-        println("SyncedDB: Added \(peer)")
+        println("\(self): Added \(peer); latest seq=\(latestSequenceSeen)")
     }
 
+    public var description: String { return "SyncedDB[\(peer.nickname)]" }
+
     private func gotLatestSequence(seq: UInt64) {
+        println("\(self): Got latest seq=\(seq)")
         if seq > latestSequenceSeen {
             latestSequenceSeen = seq
             triggerPull()
@@ -47,6 +51,7 @@ public class SyncedDB {
     }
 
     func stop() {
+        println("\(self): Stopping")
         if let pull = currentPull {
             currentPull = nil
             pullObs?.stop()
@@ -54,6 +59,8 @@ public class SyncedDB {
         }
         pulling = false
         pullAgain = false
+        onlineObs?.stop()
+        txtObs?.stop()
     }
 
     //// Replication:
@@ -67,7 +74,7 @@ public class SyncedDB {
             return
         }
 
-        println("SyncedDB: Resolving \(peer)")
+        println("\(self): Resolving address")
         pulling = true
         peer.resolve() {
             switch $0 {
@@ -76,28 +83,29 @@ public class SyncedDB {
                 self.sequenceBeingSynced = self.latestSequenceSeen
                 let url = self.makeURL(hostName)
                 let pull = self.db.createPullReplication(url)!
-                println("SyncedDB: Pulling from <\(url)>")
+                println("\(self): Pulling from <\(url)>")
                 self.currentPull = pull
-                self.pullObs = pull.observe("status") {
+                self.pullObs = pull.observe(keyPath: "status") { [unowned self] in
                     self.pullStatusChanged()
                 }
                 pull.start()
             case .Error(let error):
                 // Hostname resolution failed:
-                println("SyncedDB: Resolve failed: \(error.localizedDescription)")
+                println("\(self): Resolve failed: \(error.localizedDescription)")
                 self.pulling = false
                 self.pullAgain = false
             }
         }
     }
 
+    // Called when replication status property changes
     private func pullStatusChanged() {
         switch currentPull!.status {
         case .Stopped:
             if let error = currentPull!.lastError {
-                println("SyncedDB: Replication stopped with error \(error.localizedDescription)")
+                println("\(self): Replication stopped with error \(error.localizedDescription)")
             } else {
-                println("SyncedDB: Replication finished")
+                println("\(self): Replication finished")
                 peer.latestSequence = sequenceBeingSynced
                 mgr?.syncedDBUpdatedLatestSequence(self)
             }

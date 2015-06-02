@@ -10,7 +10,7 @@ import Foundation
 
 
 /** A set of Peers, uniqued by UUID */
-public struct PeerSet : SequenceType, Equatable {
+public struct PeerSet : SequenceType, Equatable, Printable {
 
     public init() { }
 
@@ -58,6 +58,11 @@ public struct PeerSet : SequenceType, Equatable {
     public typealias Generator = MapSequenceGenerator<DictionaryGenerator<String, Peer>, Peer>
     public func generate() -> Generator {
         return byUUID.values.generate()
+    }
+
+    // Printable protocol:
+    public var description: String {
+        return "PeerSet\(peers)"
     }
 }
 

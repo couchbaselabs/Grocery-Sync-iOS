@@ -8,6 +8,9 @@
 
 import UIKit
 
+/** A view controller that manages "following" (pulling from) peers on the LAN.
+    Create an instance with init, then push it onto your navigation controller.
+    It will pop itself when the user presses the Save or Cancel button. */
 class FollowViewController: UITableViewController {
 
     var peerSyncMgr: PeerSyncManager! = nil
@@ -25,7 +28,7 @@ class FollowViewController: UITableViewController {
         self.peerSyncMgr = peerSyncMgr
     }
 
-    // shouln't be necessary, but UIKit tries to call it during the super.init call above...
+    // Shouldn't be necessary, but UIKit tries to call it during the super.init call above...
     override init!(nibName nibNameOrNil: String!, bundle nibBundleOrNil: NSBundle!) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -41,7 +44,7 @@ class FollowViewController: UITableViewController {
 
         pairings = peerSyncMgr.pairing.pairings
         self.updatePeers()
-        obsPeer = peerSyncMgr.peerBrowser.observe("peers") {
+        obsPeer = peerSyncMgr.peerBrowser.observe(keyPath: "peers") { [unowned self] in
             self.updatePeers()
             self.tableView.reloadData()
         }

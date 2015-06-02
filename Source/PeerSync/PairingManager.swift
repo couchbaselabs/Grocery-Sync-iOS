@@ -21,7 +21,8 @@ public class PairingManager {
         self.peerBrowser = peerBrowser
         readPairings()
 
-        observer = NSNotificationCenter.defaultCenter().addObserverForName(PeerBrowser.AddedPeerNotification, object: peerBrowser, queue: nil) { n in
+        observer = peerBrowser.observe(notificationName: PeerBrowser.AddedPeerNotification) {
+            [unowned self] n in
             if let peer = n.userInfo?["peer"] as? OnlinePeer {
                 self.peerWentOnline(peer)
             }
@@ -31,10 +32,12 @@ public class PairingManager {
     // Maps paired peer UUIDs to latest synced sequences
     public var pairings = PeerSet() {
         didSet {
+            var changed = false
             for peer in oldValue.itemsNotIn(pairings) {
                 // Remove obsolete peer:
                 println("PairingManager: Removing paired \(peer)")
                 activeSyncedDBs.removeValueForKey(peer.UUID)?.stop()
+                changed = true
             }
             for peer in pairings.itemsNotIn(oldValue) {
                 // Register new peer:
@@ -43,9 +46,12 @@ public class PairingManager {
                     if onlinePeer.online {
                         peerWentOnline(onlinePeer)
                     }
+                    changed = true
                 }
             }
-            savePairings()
+            if changed {
+                savePairings()
+            }
         }
     }
 
@@ -91,8 +97,8 @@ public class PairingManager {
     private func peerWentOnline(peer :OnlinePeer) {
         if let curPeer = pairings[peer.UUID] {
             println("*** Paired \(peer) went online ***")
-            pairings += peer  // replace with online Peer instance
             peer.latestSequence = curPeer.latestSequence
+            pairings += peer  // replace with online Peer instance
             activeSyncedDBs[peer.UUID] = SyncedDB(mgr: self, peer: peer, database: database)
         }
     }
@@ -121,6 +127,7 @@ public class PairingManager {
                 }
         }
         pairings = p
+        println("PairingManager: Read pairings: \(pairings)")
     }
 
     private func savePairings() {
@@ -137,9 +144,10 @@ public class PairingManager {
         if !database.putLocalDocument(pairDoc, withID: "pairings", error: &error) {
             println("PairingManager: Couldn't save pairings to db: \(error)")
         }
+        println("PairingManager: Saved pairings: \(pairDict)")
     }
 
     private let database: CBLDatabase
     private let peerBrowser: PeerBrowser
-    private var observer: NSObjectProtocol! = nil
+    private var observer: Observer! = nil
 }
