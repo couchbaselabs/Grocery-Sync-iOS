@@ -68,7 +68,13 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
             action: "deleteCheckedItems:")
         self.navigationItem.leftBarButtonItem = deleteButton
 
+        // Initialize the "Follow" button:
+        let followButton = UIBarButtonItem(title: "Follow", style: .Plain, target: self, action: "openFollow:")
+        followButton.enabled = true
+        self.navigationItem.rightBarButtonItem = followButton
+
         // Initialize the sync progress bar:
+        /*
         progressBar = UIProgressView(progressViewStyle: .Bar)
         var frame = progressBar.frame
         frame.size.width = self.view.frame.size.width / 4
@@ -76,6 +82,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         let progressItem = UIBarButtonItem(customView: progressBar)
         progressItem.enabled = false
         self.navigationItem.rightBarButtonItem = progressItem
+        */
 
         // Customize the table view style:
         self.tableView.backgroundView = nil
@@ -241,6 +248,16 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         if doc.putProperties(properties, error: &error) == nil {
             self.appDelegate.showAlert("Couldn't save new item", forError: error)
         }
+    }
+
+
+    //MARK: - Follow controller
+
+
+    func openFollow(sender: AnyObject) {
+        println("FOLLOW")
+        var ctrlr = FollowViewController(peerSyncMgr: appDelegate.peerSyncMgr)
+        self.navigationController!.pushViewController(ctrlr, animated: true)
     }
 
 

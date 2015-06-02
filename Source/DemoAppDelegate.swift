@@ -12,82 +12,72 @@ import UIKit
 // (Note that database names cannot contain uppercase letters.)
 private let kDatabaseName = "grocery-sync"
 
-// The remote database URL to sync with.
-private let kServerDbURL = NSURL(string: "http://demo.mobile.couchbase.com/grocery-sync/")!
-
 @UIApplicationMain
 class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
                             
     @IBOutlet var window: UIWindow?
     @IBOutlet private var navigationController: UINavigationController!
 
-    private var _push: CBLReplication!
-    private var _pull: CBLReplication!
-    private var _syncError: NSError?
-
-
     let database: CBLDatabase!
+    let peerSyncMgr: PeerSyncManager!
 
 
     override init() {
-        database = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+        var db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+        if db != nil {
+            if NSUserDefaults.standardUserDefaults().boolForKey("ResetPeerSyncDB") {
+                println("PeerSyncManager: *** DELETING DATABASE (ResetPeerSyncDB enabled) ***")
+                db!.deleteDatabase(nil)
+                db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+            }
+        }
+        database = db
+        peerSyncMgr = (db != nil) ? PeerSyncManager(database: db!) : nil
     }
 
     func application(application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
     {
         window!.addSubview(navigationController.view)
+        window!.rootViewController = navigationController
         window!.makeKeyAndVisible()
 
         if database == nil {
             fatalAlert("Unable to initialize Couchbase Lite")
             return false
         }
-
-        // Initialize replication:
-        _push = setupReplication(database.createPushReplication(kServerDbURL))
-        _pull = setupReplication(database.createPullReplication(kServerDbURL))
-        _push.start()
-        _pull.start()
         return true
     }
 
     
-    func setupReplication(replication: CBLReplication!) -> CBLReplication! {
-        if replication != nil {
-            replication.continuous = true
-            NSNotificationCenter.defaultCenter().addObserver(self,
-                selector: "replicationProgress:",
-                name: kCBLReplicationChangeNotification,
-                object: replication)
-        }
-        return replication
-    }
-
-
-    func replicationProgress(n: NSNotification) {
-        let progressBar = (navigationController.topViewController as! RootViewController).progressBar
-        if (_pull.status == CBLReplicationStatus.Active || _push.status == CBLReplicationStatus.Active) {
-            // Sync is active -- aggregate the progress of both replications and compute a fraction:
-            let completed = _pull.completedChangesCount + _push.completedChangesCount
-            let total = _pull.changesCount + _push.changesCount
-            NSLog("SYNC progress: %u / %u", completed, total)
-            // Update the progress bar, avoiding divide-by-zero exceptions:
-            progressBar?.progress = Float(completed) / Float(max(total, 1))
-            progressBar?.hidden = false
-        } else {
-            // Sync is idle -- hide the progress bar:
-            progressBar?.hidden = true
-        }
-
-        // Check for any change in error status and display new errors:
-        let error = _pull.lastError ?? _push.lastError
-        if (error != _syncError) {
-            _syncError = error
-            if error != nil {
-                self.showAlert("Error syncing", forError: error)
+    func applicationDidBecomeActive(application: UIApplication) {
+        if !peerSyncMgr.started {
+            if peerSyncMgr.nickname == nil {
+                // Can't start yet: ask for nickname first
+                askForNickname()
+            } else {
+                peerSyncMgr.start()
             }
         }
+    }
+
+    /** If user doesn't have a nickname yet (i.e. 1st launch) prompt for one */
+    func askForNickname() {
+        let alert = UIAlertController(title: "What's your nickname?", message: "Choose a public nickname that will identify you to others on the LAN.", preferredStyle: .Alert)
+        var nicknameField: UITextField!
+        alert.addTextFieldWithConfigurationHandler() { textField in
+            nicknameField = textField
+            textField.placeholder = "nickname"
+        }
+        alert.addAction(UIAlertAction(title: "Quit", style: .Cancel) { action in
+            exit(0)
+            })
+        alert.addAction(UIAlertAction(title: "OK", style: .Default) { action in
+            // OK, NOW we can start:
+            self.peerSyncMgr.nickname = nicknameField.text
+            self.peerSyncMgr.start()
+            })
+        navigationController.presentViewController(alert, animated: true, completion: nil)
     }
 
 

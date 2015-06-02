@@ -1,0 +1,95 @@
+//
+//  DatabaseSharer.swift
+//  PeerSync
+//
+//  Created by Jens Alfke on 5/18/15.
+//  Copyright (c) 2015 Couchbase. All rights reserved.
+//
+
+import Foundation
+
+
+/** Runs a CBLListener to share a database, and publishes it via Bonjour, including a TXT record
+    that contains the latest sequence number so that clients can detect when the db changes. */
+public class DatabaseSharer {
+
+    public static let kDefaultPort: UInt16 = 59844
+
+    /** Bonjour service type for publishing a database */
+    public static let kServiceType = "_peersync._tcp"
+
+    /** The UUID I publish as */
+    public let peerUUID: String
+
+    public init?(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort, error outError: NSErrorPointer) {
+        // Get or create a persistent UUID:
+        if let uuid = NSUserDefaults.standardUserDefaults().stringForKey("PeerUUID") {
+            peerUUID = uuid
+        } else {
+            peerUUID = NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+            NSUserDefaults.standardUserDefaults().setObject(peerUUID, forKey: "PeerUUID")
+        }
+
+        // Create the CBL listener:
+        db = database
+        listener = CBLListener(manager: db.manager, port: port)
+        //listener.readOnly = true //WORKAROUND: This prevents CBL 1.1 clients from storing checkpoints (#726)
+        let serviceName = OnlinePeer.createServiceName(nickname, UUID: peerUUID)
+        listener.setBonjourName(serviceName, type: DatabaseSharer.kServiceType)
+        //listener.readOnly = true
+        /* WORKAROUND: This doesn't work with CBL 1.1 (clients reject the cert as invalid: #724)
+        if !listener.setAnonymousSSLIdentityWithLabel("peersync", error: outError) {
+            return nil
+        }*/
+        println("DatabaseSharer: Service name is '\(serviceName)'")
+
+        // Watch for database changes:
+        dbObserver = NSNotificationCenter.defaultCenter().addObserverForName(kCBLDatabaseChangeNotification, object: db, queue: nil) { notification in
+            self.dbChanged(notification)
+        }
+    }
+
+    public func start() -> NSError? {
+        var error: NSError?
+        if listener.start(&error) {
+            println("DatabaseSharer: Sharing database...");
+            self.updateTXT()
+            return nil
+        } else {
+            println("DatabaseSharer: Couldn't share database: \(error)")
+            return error
+        }
+    }
+
+    public func stop() {
+        listener.stop()
+        println("DatabaseSharer: ...Stopped sharing database");
+    }
+
+    private func dbChanged(notification: NSNotification) {
+        for change in notification.userInfo?["changes"] as! [CBLDatabaseChange] {
+            if change.source == nil { // ignore changes made by pull replications
+                self.updateTXT()
+                break
+            }
+        }
+    }
+
+    private func updateTXT() {
+        let latestSequence = db.lastSequenceNumber
+        println("DatabaseSharer: Publishing seq=\(latestSequence)")
+        listener.TXTRecordDictionary = ["seq": "\(latestSequence)"]
+    }
+
+    deinit {
+        listener.stop()
+        if let o = dbObserver {
+            NSNotificationCenter.defaultCenter().removeObserver(o)
+        }
+    }
+
+    private let db: CBLDatabase
+    private let listener: CBLListener
+    private var dbObserver: NSObjectProtocol?
+
+}

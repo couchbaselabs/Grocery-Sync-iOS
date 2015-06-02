@@ -13,6 +13,16 @@
 		27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */; };
+		271DE8501B1D01A000741623 /* DatabaseSharer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE8461B1D01A000741623 /* DatabaseSharer.swift */; };
+		271DE8521B1D01A000741623 /* FollowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE8481B1D01A000741623 /* FollowViewController.swift */; };
+		271DE8531B1D01A000741623 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE8491B1D01A000741623 /* Observer.swift */; };
+		271DE8541B1D01A000741623 /* PairingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE84A1B1D01A000741623 /* PairingManager.swift */; };
+		271DE8551B1D01A000741623 /* Peer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE84B1B1D01A000741623 /* Peer.swift */; };
+		271DE8561B1D01A000741623 /* PeerBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE84C1B1D01A000741623 /* PeerBrowser.swift */; };
+		271DE8571B1D01A000741623 /* PeerSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE84D1B1D01A000741623 /* PeerSyncManager.swift */; };
+		271DE8581B1D01A000741623 /* SyncedDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE84E1B1D01A000741623 /* SyncedDB.swift */; };
+		271DE85A1B1D048000741623 /* CouchbaseLiteListener.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271DE8591B1D048000741623 /* CouchbaseLiteListener.framework */; };
+		271DE85C1B1D0FB800741623 /* PeerSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271DE85B1B1D0FB800741623 /* PeerSet.swift */; };
 		2727D25919CB5B2600701121 /* DemoAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2727D25619CB5B2600701121 /* DemoAppDelegate.swift */; };
 		2727D25A19CB5B2600701121 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2727D25719CB5B2600701121 /* RootViewController.swift */; };
 		2727D25B19CB5B2600701121 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2727D25819CB5B2600701121 /* Utilities.swift */; };
@@ -47,6 +57,16 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		27167F6113C4FA57001CC5B6 /* GrocerySync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrocerySync.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		271DE8461B1D01A000741623 /* DatabaseSharer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseSharer.swift; sourceTree = "<group>"; };
+		271DE8481B1D01A000741623 /* FollowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowViewController.swift; sourceTree = "<group>"; };
+		271DE8491B1D01A000741623 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
+		271DE84A1B1D01A000741623 /* PairingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairingManager.swift; sourceTree = "<group>"; };
+		271DE84B1B1D01A000741623 /* Peer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Peer.swift; sourceTree = "<group>"; };
+		271DE84C1B1D01A000741623 /* PeerBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerBrowser.swift; sourceTree = "<group>"; };
+		271DE84D1B1D01A000741623 /* PeerSyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerSyncManager.swift; sourceTree = "<group>"; };
+		271DE84E1B1D01A000741623 /* SyncedDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedDB.swift; sourceTree = "<group>"; };
+		271DE8591B1D048000741623 /* CouchbaseLiteListener.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLiteListener.framework; path = Frameworks/CouchbaseLiteListener.framework; sourceTree = "<group>"; };
+		271DE85B1B1D0FB800741623 /* PeerSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerSet.swift; sourceTree = "<group>"; };
 		2727D25519CB5B2500701121 /* GrocerySync-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GrocerySync-Bridging-Header.h"; sourceTree = "<group>"; };
 		2727D25619CB5B2600701121 /* DemoAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoAppDelegate.swift; sourceTree = "<group>"; };
 		2727D25719CB5B2600701121 /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -95,6 +115,7 @@
 				27962307142031E80051455D /* Security.framework in Frameworks */,
 				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
+				271DE85A1B1D048000741623 /* CouchbaseLiteListener.framework in Frameworks */,
 				278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */,
 				27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */,
 				795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */,
@@ -124,11 +145,29 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		271DE8441B1D01A000741623 /* PeerSync */ = {
+			isa = PBXGroup;
+			children = (
+				271DE8481B1D01A000741623 /* FollowViewController.swift */,
+				271DE8461B1D01A000741623 /* DatabaseSharer.swift */,
+				271DE8491B1D01A000741623 /* Observer.swift */,
+				271DE84A1B1D01A000741623 /* PairingManager.swift */,
+				271DE84B1B1D01A000741623 /* Peer.swift */,
+				271DE85B1B1D0FB800741623 /* PeerSet.swift */,
+				271DE84C1B1D01A000741623 /* PeerBrowser.swift */,
+				271DE84D1B1D01A000741623 /* PeerSyncManager.swift */,
+				271DE84E1B1D01A000741623 /* SyncedDB.swift */,
+			);
+			name = PeerSync;
+			path = Source/PeerSync;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
 				27637C011416E78D001E30CA /* README.md */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				271DE8441B1D01A000741623 /* PeerSync */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -160,6 +199,7 @@
 			isa = PBXGroup;
 			children = (
 				795A586616C2F5670062B5E5 /* CouchbaseLite.framework */,
+				271DE8591B1D048000741623 /* CouchbaseLiteListener.framework */,
 				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
 				27962306142031E80051455D /* Security.framework */,
 				279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */,
@@ -275,9 +315,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				271DE8531B1D01A000741623 /* Observer.swift in Sources */,
+				271DE8541B1D01A000741623 /* PairingManager.swift in Sources */,
 				2727D25B19CB5B2600701121 /* Utilities.swift in Sources */,
+				271DE8571B1D01A000741623 /* PeerSyncManager.swift in Sources */,
+				271DE85C1B1D0FB800741623 /* PeerSet.swift in Sources */,
+				271DE8581B1D01A000741623 /* SyncedDB.swift in Sources */,
+				271DE8501B1D01A000741623 /* DatabaseSharer.swift in Sources */,
 				2727D25A19CB5B2600701121 /* RootViewController.swift in Sources */,
+				271DE8561B1D01A000741623 /* PeerBrowser.swift in Sources */,
+				271DE8521B1D01A000741623 /* FollowViewController.swift in Sources */,
 				2727D25919CB5B2600701121 /* DemoAppDelegate.swift in Sources */,
+				271DE8551B1D01A000741623 /* Peer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,7 +341,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
@@ -313,7 +362,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
