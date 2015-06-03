@@ -9,7 +9,8 @@
 import Foundation
 
 
-/** Top-level manager for PeerSync app. */
+/** Top-level manager for PeerSync. Your app should instantiate one of these for each CBLDatabase
+    for which it wants to enable P2P sync.*/
 public class PeerSyncManager {
 
     public let database: CBLDatabase!
@@ -30,6 +31,8 @@ public class PeerSyncManager {
 
     private var nick: String?
 
+    /** The visible name the app will publish, which will be visible to other users browsing peers.
+        You should probably let the user pick this. The value is saved persistently. */
     public var nickname: String? {
         get {
             return nick
@@ -49,6 +52,7 @@ public class PeerSyncManager {
         }
     }
 
+    /** The set of Peers that are paired (being followed / synced from) but not online. */
     public var offlinePairedPeers: PeerSet {
         var paired = pairing.pairings
         for peer in peerBrowser.peers {
@@ -57,6 +61,7 @@ public class PeerSyncManager {
         return paired
     }
 
+    /** Starts actively sharing and syncing. */
     public func start() -> NSError? {
         println("PeerSyncManager: ---- START ----")
         assert(nickname != nil, "No nickname set")
@@ -75,6 +80,8 @@ public class PeerSyncManager {
         return nil
     }
 
+    /** Pauses sharing/syncing. On iOS you should call this when the app is suspended, and then
+        call start() again when the app reactivates. */
     public func stop() {
         println("PeerSyncManager: ---- STOP ----")
         sharer?.stop()

@@ -29,7 +29,7 @@ public class PairingManager {
         }
     }
 
-    // Maps paired peer UUIDs to latest synced sequences
+    /** Set of Peers that I will pull from. */
     public var pairings = PeerSet() {
         didSet {
             var changed = false
@@ -52,43 +52,6 @@ public class PairingManager {
             if changed {
                 savePairings()
             }
-        }
-    }
-
-    public var pairedUUIDs: Set<String> {
-        return pairings.UUIDs
-    }
-
-    public func isPaired(peer: Peer) -> Bool {
-        return pairings.contains(peer)
-    }
-
-    public func setPaired(peer: Peer, paired: Bool) {
-        if paired {
-            addPairedPeer(peer)
-        } else {
-            removePairedPeer(peer)
-        }
-    }
-
-    public func addPairedPeer(peer: Peer) {
-        if !pairings.contains(peer) {
-            println("PairingManager: Adding paired \(peer)")
-            pairings += peer
-            savePairings()
-            if let onlinePeer = peer as? OnlinePeer {
-                if onlinePeer.online {
-                    peerWentOnline(onlinePeer)
-                }
-            }
-        }
-    }
-
-    public func removePairedPeer(peer: Peer) {
-        if pairings.remove(peer) {
-            println("PairingManager: Removing paired \(peer)")
-            savePairings()
-            activeSyncedDBs.removeValueForKey(peer.UUID)?.stop()
         }
     }
 

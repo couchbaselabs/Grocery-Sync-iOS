@@ -49,6 +49,7 @@ public class DatabaseSharer {
         }
     }
 
+    /** Starts sharing. */
     public func start() -> NSError? {
         var error: NSError?
         if listener.start(&error) {
@@ -61,6 +62,7 @@ public class DatabaseSharer {
         }
     }
 
+    /** Pauses sharing. */
     public func stop() {
         listener.stop()
         println("DatabaseSharer: ...Stopped sharing database");
