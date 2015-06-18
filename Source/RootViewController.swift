@@ -149,12 +149,18 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         // Ask the CBLUITableSource for the corresponding query row, and get its document:
         if let row = self.dataSource.rowAtIndex(UInt(indexPath.row)) {
             var error: NSError?
-            let newRev = row.document?.update(&error) {
-                (rev: CBLUnsavedRevision!) -> Bool in
-                // Toggle the document's 'checked' property:
-                let wasChecked = (rev["check"] as? Bool) ?? false
-                rev["check"] = !wasChecked
-                return true
+            let newRev: CBLSavedRevision?
+            do {
+                newRev = try row.document?.update {
+                                (rev: CBLUnsavedRevision!) -> Bool in
+                                // Toggle the document's 'checked' property:
+                                let wasChecked = (rev["check"] as? Bool) ?? false
+                                rev["check"] = !wasChecked
+                                return true
+                            }
+            } catch var error1 as NSError {
+                error = error1
+                newRev = nil
             }
 
             if newRev == nil {
@@ -205,7 +211,10 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         // Tell the CBLUITableSource to delete the documents, instead of doing it directly.
         // This lets it tell the table-view the rows are going away, so the table display can animate.
         var error: NSError?
-        if !dataSource.deleteDocuments(self.checkedDocuments, error: &error) {
+        do {
+            try dataSource.deleteDocuments(self.checkedDocuments)
+        } catch var error1 as NSError {
+            error = error1
             self.appDelegate.showAlert("Failed to delete items", forError: error)
         }
     }
@@ -245,7 +254,10 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         // Save the document:
         let doc = database.createDocument()
         var error: NSError?
-        if doc.putProperties(properties, error: &error) == nil {
+        do {
+            try doc.putProperties(properties)
+        } catch var error1 as NSError {
+            error = error1
             self.appDelegate.showAlert("Couldn't save new item", forError: error)
         }
     }
@@ -255,8 +267,8 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
 
     func openFollow(sender: AnyObject) {
-        println("FOLLOW")
-        var ctrlr = FollowViewController(peerSyncMgr: appDelegate.peerSyncMgr)
+        print("FOLLOW")
+        let ctrlr = FollowViewController(peerSyncMgr: appDelegate.peerSyncMgr)
         self.navigationController!.pushViewController(ctrlr, animated: true)
     }
 

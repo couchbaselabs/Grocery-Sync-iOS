@@ -31,7 +31,7 @@ public class Observer : NSObject {
         stop()
     }
 
-    override public func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+    override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         onChange!()
     }
 
@@ -59,14 +59,14 @@ public extension NSObject {
     /** Convenience method to observe the receiver's properties via KVO.
         The returned Observer needs to be kept around for as long as you need to observe,
         and should be stopped when you're done. */
-    public func observe(#keyPath: String, options: NSKeyValueObservingOptions = nil, onChange: ()->()) -> Observer {
+    public func observe(keyPath keyPath: String, options: NSKeyValueObservingOptions = nil, onChange: ()->()) -> Observer {
         return Observer(source: self, keyPath: keyPath, options: options, onChange: onChange)
     }
 
     /** Convenience method to observe NSNotifications posted by the receiver. 
         The returned Observer needs to be kept around for as long as you need to observe,
         and should be stopped when you're done. */
-    public func observe(#notificationName: String?, queue: NSOperationQueue? = nil, onNotification: NSNotification->()) -> Observer {
+    public func observe(notificationName notificationName: String?, queue: NSOperationQueue? = nil, onNotification: NSNotification->()) -> Observer {
         return Observer(source: self, notificationName: notificationName, queue: queue, onNotification: onNotification)
     }
 

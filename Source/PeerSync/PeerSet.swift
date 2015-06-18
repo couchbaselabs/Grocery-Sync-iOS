@@ -10,7 +10,7 @@ import Foundation
 
 
 /** A set of Peers, uniqued by UUID */
-public struct PeerSet : SequenceType, Equatable, Printable {
+public struct PeerSet : SequenceType, Equatable, CustomStringConvertible {
 
     public init() { }
 
@@ -48,8 +48,8 @@ public struct PeerSet : SequenceType, Equatable, Printable {
         return s
     }
 
-    public func itemsNotIn(set: PeerSet) -> SequenceOf<Peer> {
-        return SequenceOf<Peer>( byUUID.values.filter {!set.contains($0)} )
+    public func itemsNotIn(set: PeerSet) -> AnySequence<Peer> {
+        return AnySequence<Peer>( byUUID.values.filter {!set.contains($0)} )
     }
 
     private var byUUID = [String:Peer]()

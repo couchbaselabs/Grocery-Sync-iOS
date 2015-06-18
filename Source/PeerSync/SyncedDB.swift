@@ -10,7 +10,7 @@ import Foundation
 
 
 /** Syncs with a remote database on a peer, pulling docs from it whenever it changes. */
-public class SyncedDB : Printable {
+public class SyncedDB : CustomStringConvertible {
 
     public weak var mgr: PairingManager?
     public let peer: OnlinePeer
@@ -27,23 +27,23 @@ public class SyncedDB : Printable {
 
         onlineObs = peer.observe(keyPath: "online") { [unowned self] in
             if !self.peer.online {
-                println("\(self): Went offline")
+                print("\(self): Went offline")
                 self.stop()
                 self.mgr?.syncedDBWentOffline(self)
             }
         }
         txtObs = peer.observe(keyPath: "txtRecord") { [unowned self] in
-            if let seq = peer.txtRecord["seq"]?.toInt() {
+            if let seq = Int((peer.txtRecord["seq"]?)?) {
                 self.gotLatestSequence(UInt64(seq))
             }
         }
-        println("\(self): Added \(peer); latest seq=\(latestSequenceSeen)")
+        print("\(self): Added \(peer); latest seq=\(latestSequenceSeen)")
     }
 
     public var description: String { return "SyncedDB[\(peer.nickname)]" }
 
     private func gotLatestSequence(seq: UInt64) {
-        println("\(self): Got latest seq=\(seq)")
+        print("\(self): Got latest seq=\(seq)")
         if seq > latestSequenceSeen {
             latestSequenceSeen = seq
             triggerPull()
@@ -51,7 +51,7 @@ public class SyncedDB : Printable {
     }
 
     func stop() {
-        println("\(self): Stopping")
+        print("\(self): Stopping")
         if let pull = currentPull {
             currentPull = nil
             pullObs?.stop()
@@ -74,7 +74,7 @@ public class SyncedDB : Printable {
             return
         }
 
-        println("\(self): Resolving address")
+        print("\(self): Resolving address")
         pulling = true
         peer.resolve() {
             switch $0 {
@@ -83,7 +83,7 @@ public class SyncedDB : Printable {
                 self.sequenceBeingSynced = self.latestSequenceSeen
                 let url = self.makeURL(hostName)
                 let pull = self.db.createPullReplication(url)!
-                println("\(self): Pulling from <\(url)>")
+                print("\(self): Pulling from <\(url)>")
                 self.currentPull = pull
                 self.pullObs = pull.observe(keyPath: "status") { [unowned self] in
                     self.pullStatusChanged()
@@ -91,7 +91,7 @@ public class SyncedDB : Printable {
                 pull.start()
             case .Error(let error):
                 // Hostname resolution failed:
-                println("\(self): Resolve failed: \(error.localizedDescription)")
+                print("\(self): Resolve failed: \(error.localizedDescription)")
                 self.pulling = false
                 self.pullAgain = false
             }
@@ -103,9 +103,9 @@ public class SyncedDB : Printable {
         switch currentPull!.status {
         case .Stopped:
             if let error = currentPull!.lastError {
-                println("\(self): Replication stopped with error \(error.localizedDescription)")
+                print("\(self): Replication stopped with error \(error.localizedDescription)")
             } else {
-                println("\(self): Replication finished")
+                print("\(self): Replication finished")
                 peer.latestSequence = sequenceBeingSynced
                 mgr?.syncedDBUpdatedLatestSequence(self)
             }
@@ -123,7 +123,7 @@ public class SyncedDB : Printable {
 
     // Subroutine to construct the peer's database's URL:
     private func makeURL(hostName: String) -> NSURL {
-        var components = NSURLComponents()
+        let components = NSURLComponents()
         components.scheme = "http" //WORKAROUND: Use "https" once it's working on the listener side
         components.host = hostName
         components.port = peer.port

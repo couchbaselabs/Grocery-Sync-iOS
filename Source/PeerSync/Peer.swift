@@ -120,12 +120,12 @@ public class OnlinePeer : Peer, NSNetServiceDelegate {
         }
     }
 
-    static let serviceNameRegex = NSRegularExpression(pattern: "^(.+?)\\s*\\[(\\w+)\\]",
-        options: NSRegularExpressionOptions(0), error: nil)!
+    static let serviceNameRegex = try! NSRegularExpression(pattern: "^(.+?)\\s*\\[(\\w+)\\]",
+        options: NSRegularExpressionOptions(rawValue: 0))
 
     // Parses a service name into a nickname and a UUID
     class func parseServiceName(name: NSString) -> (String, String) {
-        if let match = serviceNameRegex.firstMatchInString(name as String, options: nil, range: NSMakeRange(0, name.length)) {
+        if let match = serviceNameRegex.firstMatchInString(name as String, options: [], range: NSMakeRange(0, name.length)) {
             let nickname = name.substringWithRange(match.rangeAtIndex(1))
             let UUID = name.substringWithRange(match.rangeAtIndex(2))
             return (nickname, UUID)
@@ -145,7 +145,7 @@ public class OnlinePeer : Peer, NSNetServiceDelegate {
         self.hostName = hostName  // Triggers KVO
     }
 
-    public func netService(sender: NSNetService, didNotResolve errorDict: [NSObject : AnyObject]) {
+    public func netService(sender: NSNetService, didNotResolve errorDict: [String: NSNumber]) {
         finishedResolving(ResolveResult.Error(makeError(errorDict)))
     }
 
@@ -161,8 +161,8 @@ public class OnlinePeer : Peer, NSNetServiceDelegate {
     public func netService(sender: NSNetService, didUpdateTXTRecordData data: NSData) {
         var txt = [String:String]()
         for (key, value) in NSNetService.dictionaryFromTXTRecordData(data) {
-            let value = NSString(data: (value as! NSData), encoding: NSUTF8StringEncoding)
-            txt[key as! String] = (value as! String)
+            let value = NSString(data: (value as NSData), encoding: NSUTF8StringEncoding)
+            txt[key as String] = (value as! String)
         }
         self.txtRecord = txt
     }

@@ -21,7 +21,7 @@ public class DatabaseSharer {
     /** The UUID I publish as */
     public let peerUUID: String
 
-    public init?(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort, error outError: NSErrorPointer) {
+    public init(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort) throws {
         // Get or create a persistent UUID:
         if let uuid = NSUserDefaults.standardUserDefaults().stringForKey("PeerUUID") {
             peerUUID = uuid
@@ -41,7 +41,7 @@ public class DatabaseSharer {
         if !listener.setAnonymousSSLIdentityWithLabel("peersync", error: outError) {
             return nil
         }*/
-        println("DatabaseSharer: Service name is '\(serviceName)'")
+        print("DatabaseSharer: Service name is '\(serviceName)'")
 
         // Watch for database changes:
         dbObserver = db.observe(notificationName: kCBLDatabaseChangeNotification) { [unowned self] notification in
@@ -52,12 +52,14 @@ public class DatabaseSharer {
     /** Starts sharing. */
     public func start() -> NSError? {
         var error: NSError?
-        if listener.start(&error) {
-            println("DatabaseSharer: Sharing database...");
+        do {
+            try listener.start()
+            print("DatabaseSharer: Sharing database...");
             self.updateTXT()
             return nil
-        } else {
-            println("DatabaseSharer: Couldn't share database: \(error)")
+        } catch var error1 as NSError {
+            error = error1
+            print("DatabaseSharer: Couldn't share database: \(error)")
             return error
         }
     }
@@ -65,7 +67,7 @@ public class DatabaseSharer {
     /** Pauses sharing. */
     public func stop() {
         listener.stop()
-        println("DatabaseSharer: ...Stopped sharing database");
+        print("DatabaseSharer: ...Stopped sharing database");
     }
 
     private func dbChanged(notification: NSNotification) {
@@ -79,7 +81,7 @@ public class DatabaseSharer {
 
     private func updateTXT() {
         let latestSequence = db.lastSequenceNumber
-        println("DatabaseSharer: Publishing seq=\(latestSequence)")
+        print("DatabaseSharer: Publishing seq=\(latestSequence)")
         listener.TXTRecordDictionary = ["seq": "\(latestSequence)"]
     }
 

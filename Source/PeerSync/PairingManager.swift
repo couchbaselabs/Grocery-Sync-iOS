@@ -35,13 +35,13 @@ public class PairingManager {
             var changed = false
             for peer in oldValue.itemsNotIn(pairings) {
                 // Remove obsolete peer:
-                println("PairingManager: Removing paired \(peer)")
+                print("PairingManager: Removing paired \(peer)")
                 activeSyncedDBs.removeValueForKey(peer.UUID)?.stop()
                 changed = true
             }
             for peer in pairings.itemsNotIn(oldValue) {
                 // Register new peer:
-                println("PairingManager: Adding paired \(peer)")
+                print("PairingManager: Adding paired \(peer)")
                 if let onlinePeer = peer as? OnlinePeer {
                     if onlinePeer.online {
                         peerWentOnline(onlinePeer)
@@ -59,7 +59,7 @@ public class PairingManager {
 
     private func peerWentOnline(peer :OnlinePeer) {
         if let curPeer = pairings[peer.UUID] {
-            println("*** Paired \(peer) went online ***")
+            print("*** Paired \(peer) went online ***")
             peer.latestSequence = curPeer.latestSequence
             pairings += peer  // replace with online Peer instance
             activeSyncedDBs[peer.UUID] = SyncedDB(mgr: self, peer: peer, database: database)
@@ -90,7 +90,7 @@ public class PairingManager {
                 }
         }
         pairings = p
-        println("PairingManager: Read pairings: \(pairings)")
+        print("PairingManager: Read pairings: \(pairings)")
     }
 
     private func savePairings() {
@@ -104,10 +104,13 @@ public class PairingManager {
         var pairDoc = database.existingLocalDocumentWithID("pairings") ?? [:]
         pairDoc["UUIDs"] = pairDict
         var error: NSError?
-        if !database.putLocalDocument(pairDoc, withID: "pairings", error: &error) {
-            println("PairingManager: Couldn't save pairings to db: \(error)")
+        do {
+            try database.putLocalDocument(pairDoc, withID: "pairings")
+        } catch var error1 as NSError {
+            error = error1
+            print("PairingManager: Couldn't save pairings to db: \(error)")
         }
-        println("PairingManager: Saved pairings: \(pairDict)")
+        print("PairingManager: Saved pairings: \(pairDict)")
     }
 
     private let database: CBLDatabase

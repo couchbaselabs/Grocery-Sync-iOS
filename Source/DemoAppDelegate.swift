@@ -24,12 +24,24 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
     func application(application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool
     {
-        var db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+        var db: CBLDatabase?
+        do {
+            db = try CBLManager.sharedInstance().databaseNamed(kDatabaseName)
+        } catch _ {
+            db = nil
+        }
         if db != nil {
             if NSUserDefaults.standardUserDefaults().boolForKey("ResetPeerSyncDB") {
-                println("PeerSyncManager: *** DELETING DATABASE (ResetPeerSyncDB enabled) ***")
-                db!.deleteDatabase(nil)
-                db = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+                print("PeerSyncManager: *** DELETING DATABASE (ResetPeerSyncDB enabled) ***")
+                do {
+                    try db!.deleteDatabase()
+                } catch _ {
+                }
+                do {
+                    db = try CBLManager.sharedInstance().databaseNamed(kDatabaseName)
+                } catch _ {
+                    db = nil
+                }
             }
         }
         if db == nil {
@@ -91,7 +103,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
         alert.show()
     }
 
-    func fatalAlert(var message: String) {
+    func fatalAlert(message: String) {
         NSLog("ALERT: %@", message)
         let alert = UIAlertView(
             title: "Fatal Error",

@@ -48,14 +48,14 @@ public class PeerBrowser : NSObject, NSNetServiceBrowserDelegate {
 
     // NSNetServiceBrowserDelegate protocol:
 
-    public func netServiceBrowser(sender: NSNetServiceBrowser, didNotSearch errorDict: [NSObject : AnyObject]) {
+    public func netServiceBrowser(sender: NSNetServiceBrowser, didNotSearch errorDict: [String: NSNumber]) {
         self.error = makeError(errorDict)
     }
 
     public func netServiceBrowser(sender: NSNetServiceBrowser, didFindService service: NSNetService, moreComing: Bool) {
         if let peer = OnlinePeer(service: service) {
             if peer.UUID != ignoredUUID {
-                println("Browser found \(service)");
+                print("Browser found \(service)");
                 peerMap[service.name] = peer
                 peer.online = true
                 if !moreComing {
@@ -68,7 +68,7 @@ public class PeerBrowser : NSObject, NSNetServiceBrowserDelegate {
 
     public func netServiceBrowser(sender: NSNetServiceBrowser, didRemoveService service: NSNetService, moreComing: Bool) {
         if let peer = OnlinePeer(service: service) {
-            println("Browser removing \(service)");
+            print("Browser removing \(service)");
             if let peer = peerMap.removeValueForKey(service.name) {
                 peer.online = false
             }

@@ -18,8 +18,8 @@ extension CBLView {
 
 extension CBLDocument {
     // Just reorders the parameters to take advantage of Swift's trailing-block syntax.
-    func update(error: NSErrorPointer, block: ((CBLUnsavedRevision!) -> Bool)) -> CBLSavedRevision? {
-        return update(block, error: error)
+    func update(block: ((CBLUnsavedRevision!) -> Bool)) throws -> CBLSavedRevision {
+        return try update(block)
     }
 }
 

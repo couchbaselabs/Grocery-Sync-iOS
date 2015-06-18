@@ -29,11 +29,11 @@ class FollowViewController: UITableViewController {
     }
 
     // Shouldn't be necessary, but UIKit tries to call it during the super.init call above...
-    override init!(nibName nibNameOrNil: String!, bundle nibBundleOrNil: NSBundle!) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
-    required init!(coder aDecoder: NSCoder!) {
+    required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -57,18 +57,18 @@ class FollowViewController: UITableViewController {
     }
 
     private func updatePeers() {
-        self.peers = sorted(peerSyncMgr.peerBrowser.peers, {$0.nickname < $1.nickname})
-        self.offlinePeers = sorted(peerSyncMgr.offlinePairedPeers, {$0.nickname < $1.nickname})
+        self.peers = peerSyncMgr.peerBrowser.peers.sort({$0.nickname < $1.nickname})
+        self.offlinePeers = peerSyncMgr.offlinePairedPeers.sort({$0.nickname < $1.nickname})
     }
 
 
     func cancel(sender: AnyObject) {
-        println("CANCEL")
+        print("CANCEL")
         self.navigationController!.popViewControllerAnimated(true)
     }
 
     func save(sender: AnyObject) {
-        println("SAVE")
+        print("SAVE")
         peerSyncMgr.pairing.pairings = pairings
         self.navigationController!.popViewControllerAnimated(true)
     }
@@ -100,7 +100,7 @@ class FollowViewController: UITableViewController {
         let peer = peerAtPath(indexPath)
         let paired = pairings[peer.UUID] != nil
 
-        var cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
         cell.textLabel!.text = peer.nickname
         let fontSize = cell.textLabel!.font.pointSize
         cell.textLabel!.font = paired ? UIFont.boldSystemFontOfSize(fontSize) : UIFont.systemFontOfSize(fontSize)
