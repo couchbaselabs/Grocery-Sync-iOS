@@ -67,7 +67,7 @@ public class PeerBrowser : NSObject, NSNetServiceBrowserDelegate {
     }
 
     public func netServiceBrowser(sender: NSNetServiceBrowser, didRemoveService service: NSNetService, moreComing: Bool) {
-        if let peer = OnlinePeer(service: service) {
+        if OnlinePeer(service: service) != nil {
             print("Browser removing \(service)");
             if let peer = peerMap.removeValueForKey(service.name) {
                 peer.online = false

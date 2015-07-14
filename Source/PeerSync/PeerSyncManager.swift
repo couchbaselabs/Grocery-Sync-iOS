@@ -42,12 +42,10 @@ public class PeerSyncManager {
                 nick = newNick
                 var doc = database.existingLocalDocumentWithID("identity") ?? [:]
                 doc["nickname"] = newNick
-                var error: NSError?
                 do {
                     try database.putLocalDocument(doc, withID: "identity")
                     print("PeerSyncManager: Saved new nickname '\(newNick)'")
-                } catch var error1 as NSError {
-                    error = error1
+                } catch let error as NSError {
                     print("PeerSyncManager: Couldn't save identity to db: \(error)")
                 }
             }
@@ -64,27 +62,14 @@ public class PeerSyncManager {
     }
 
     /** Starts actively sharing and syncing. */
-    public func start() -> NSError? {
+    public func start() throws {
         print("PeerSyncManager: ---- START ----")
         assert(nickname != nil, "No nickname set")
-        var err: NSError?
-        do {
-            sharer = try DatabaseSharer(database: database, nickname: nickname!, port: port)
-        } catch var error as NSError {
-            err = error
-            sharer = nil
-        }
-        if sharer == nil {
-            return err
-        }
-        if let error = sharer?.start() {
-            sharer = nil
-            return nil
-        }
-
+        let newSharer = try DatabaseSharer(database: database, nickname: nickname!, port: port)
+        try newSharer.start()
+        sharer = newSharer
         peerBrowser.ignoredUUID = sharer?.peerUUID
         peerBrowser.start()
-        return nil
     }
 
     /** Pauses sharing/syncing. On iOS you should call this when the app is suspended, and then

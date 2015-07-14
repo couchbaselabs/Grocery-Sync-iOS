@@ -25,7 +25,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     
     func useDatabase(database: CBLDatabase!) -> Bool {
-        if database == nil {
+        guard database != nil else {
             return false
         }
         self.database = database
@@ -33,24 +33,18 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         // Define a view with a map function that indexes to-do items by creation date:
         database.viewNamed("byDate").setMapBlock("2") {
             (doc, emit) in
-            if let dateObj: AnyObject = doc["created_at"] {
-                if let date = dateObj as? String {
-                    emit(date, doc)
-                }
+            if let date = doc["created_at"] as? String {
+                emit(date, doc)
             }
         }
 
         // ...and a validation function requiring parseable dates:
         database.setValidationNamed("created_at") {
             (newRevision, context) in
-            if !newRevision.isDeletion {
-                if let dateObj: AnyObject = newRevision.properties?["created_at"] {
-                    if let date = dateObj as? String {
-                        if NSDate.withJSONObject(date) == nil {
-                            context.rejectWithMessage("invalid date \(date)")
-                        }
-                    }
-                }
+            if !newRevision.isDeletion,
+                let date = newRevision.properties?["created_at"] as? String
+                where NSDate.withJSONObject(date) == nil {
+                    context.rejectWithMessage("invalid date \(date)")
             }
         }
         return true
@@ -147,25 +141,19 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         // Ask the CBLUITableSource for the corresponding query row, and get its document:
-        if let row = self.dataSource.rowAtIndex(UInt(indexPath.row)) {
-            var error: NSError?
-            let newRev: CBLSavedRevision?
-            do {
-                newRev = try row.document?.update {
-                                (rev: CBLUnsavedRevision!) -> Bool in
-                                // Toggle the document's 'checked' property:
-                                let wasChecked = (rev["check"] as? Bool) ?? false
-                                rev["check"] = !wasChecked
-                                return true
-                            }
-            } catch var error1 as NSError {
-                error = error1
-                newRev = nil
+        guard let row = self.dataSource.rowAtIndex(UInt(indexPath.row)) else {
+            return
+        }
+        do {
+            try row.document?.update {
+                (rev: CBLUnsavedRevision!) -> Bool in
+                // Toggle the document's 'checked' property:
+                let wasChecked = (rev["check"] as? Bool) ?? false
+                rev["check"] = !wasChecked
+                return true
             }
-
-            if newRev == nil {
-                self.appDelegate.showAlert("Failed to update item", forError: error)
-            }
+        } catch let error as NSError {
+            self.appDelegate.showAlert("Failed to update item", forError: error)
         }
     }
 
@@ -173,8 +161,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Returns all the items that have been checked-off, as an array of CBLDocuments.
     var checkedDocuments :[CBLDocument] {
         // (If there were a whole lot of documents, this would be more efficient with a custom query.)
-        let rows = self.dataSource.rows as! [CBLQueryRow]
-        return rows.filter {
+        return self.dataSource.rows!.filter {
             if let value = $0.value as? NSDictionary,
                 check = value["check"] as? Bool {
                     return check
@@ -187,7 +174,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Invoked by the "Clean Up" button.
     func deleteCheckedItems() {
         let numChecked = self.checkedDocuments.count
-        if numChecked == 0 {
+        guard numChecked > 0 else {
             return
         }
 
@@ -210,11 +197,9 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         }
         // Tell the CBLUITableSource to delete the documents, instead of doing it directly.
         // This lets it tell the table-view the rows are going away, so the table display can animate.
-        var error: NSError?
         do {
             try dataSource.deleteDocuments(self.checkedDocuments)
-        } catch var error1 as NSError {
-            error = error1
+        } catch let error as NSError {
             self.appDelegate.showAlert("Failed to delete items", forError: error)
         }
     }
@@ -240,24 +225,20 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Add a new item when text input ends.
     func textFieldDidEndEditing(textField: UITextField!) {
         // Get the name of the item from the text field:
-        let text = addItemTextField.text
-        if text.isEmpty {
+        guard let text = addItemTextField.text where !text.isEmpty else {
             return
         }
-        addItemTextField.text = nil
 
-        let properties: [NSObject : AnyObject] = [
+        let properties: [String : AnyObject] = [
             "text": text,
             "check": false,
             "created_at": CBLJSON.JSONObjectWithDate(NSDate())]
 
         // Save the document:
-        let doc = database.createDocument()
-        var error: NSError?
         do {
-            try doc.putProperties(properties)
-        } catch var error1 as NSError {
-            error = error1
+            try database.createDocument().putProperties(properties)
+            addItemTextField.text = nil
+        } catch let error as NSError {
             self.appDelegate.showAlert("Couldn't save new item", forError: error)
         }
     }
@@ -267,7 +248,6 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
 
     func openFollow(sender: AnyObject) {
-        print("FOLLOW")
         let ctrlr = FollowViewController(peerSyncMgr: appDelegate.peerSyncMgr)
         self.navigationController!.pushViewController(ctrlr, animated: true)
     }

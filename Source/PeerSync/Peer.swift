@@ -21,7 +21,7 @@ public enum ResolveResult {
 
 
 
-public class Peer : NSObject, Equatable {
+public class Peer : NSObject {
 
     /** Unique ID of this peer */
     public let UUID: String

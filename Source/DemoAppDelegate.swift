@@ -27,25 +27,13 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
         var db: CBLDatabase?
         do {
             db = try CBLManager.sharedInstance().databaseNamed(kDatabaseName)
-        } catch _ {
-            db = nil
-        }
-        if db != nil {
             if NSUserDefaults.standardUserDefaults().boolForKey("ResetPeerSyncDB") {
                 print("PeerSyncManager: *** DELETING DATABASE (ResetPeerSyncDB enabled) ***")
-                do {
-                    try db!.deleteDatabase()
-                } catch _ {
-                }
-                do {
-                    db = try CBLManager.sharedInstance().databaseNamed(kDatabaseName)
-                } catch _ {
-                    db = nil
-                }
+                try db!.deleteDatabase()
+                db = try CBLManager.sharedInstance().databaseNamed(kDatabaseName)
             }
-        }
-        if db == nil {
-            fatalAlert("Unable to initialize Couchbase Lite")
+        } catch let error as NSError {
+            fatalAlert("Unable to initialize Couchbase Lite: \(error.localizedDescription)")
             return false
         }
         database = db
@@ -60,18 +48,26 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
 
     
     func applicationDidBecomeActive(application: UIApplication) {
+        func start() {
+            do {
+                try peerSyncMgr.start()
+            } catch let error as NSError {
+                showAlert("Couldn't start peerSyncMgr", forError: error)
+            }
+        }
+
         if !peerSyncMgr.started {
             if peerSyncMgr.nickname == nil {
                 // Can't start yet: ask for nickname first
-                askForNickname()
+                askForNicknameThen(start)
             } else {
-                peerSyncMgr.start()
+                start()
             }
         }
     }
 
     /** If user doesn't have a nickname yet (i.e. 1st launch) prompt for one */
-    func askForNickname() {
+    func askForNicknameThen(afterwards: ()->()) {
         let alert = UIAlertController(title: "What's your nickname?", message: "Choose a public nickname that will identify you to others on the LAN.", preferredStyle: .Alert)
         var nicknameField: UITextField!
         alert.addTextFieldWithConfigurationHandler() { textField in
@@ -84,7 +80,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
         alert.addAction(UIAlertAction(title: "OK", style: .Default) { action in
             // OK, NOW we can start:
             self.peerSyncMgr.nickname = nicknameField.text
-            self.peerSyncMgr.start()
+            afterwards()
             })
         navigationController.presentViewController(alert, animated: true, completion: nil)
     }

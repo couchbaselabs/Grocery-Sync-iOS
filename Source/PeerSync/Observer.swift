@@ -13,7 +13,7 @@ import Foundation
     and doesn't have to extend NSObject. */
 public class Observer : NSObject {
 
-    public init(source: NSObject, keyPath: String, options: NSKeyValueObservingOptions = nil, onChange: ()->()) {
+    public init(source: NSObject, keyPath: String, options: NSKeyValueObservingOptions = [], onChange: ()->()) {
         self.source = source
         self.keyPath = keyPath
         self.onChange = onChange
@@ -31,7 +31,7 @@ public class Observer : NSObject {
         stop()
     }
 
-    override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         onChange!()
     }
 
@@ -59,7 +59,7 @@ public extension NSObject {
     /** Convenience method to observe the receiver's properties via KVO.
         The returned Observer needs to be kept around for as long as you need to observe,
         and should be stopped when you're done. */
-    public func observe(keyPath keyPath: String, options: NSKeyValueObservingOptions = nil, onChange: ()->()) -> Observer {
+    public func observe(keyPath keyPath: String, options: NSKeyValueObservingOptions = [], onChange: ()->()) -> Observer {
         return Observer(source: self, keyPath: keyPath, options: options, onChange: onChange)
     }
 

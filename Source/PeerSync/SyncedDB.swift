@@ -33,8 +33,8 @@ public class SyncedDB : CustomStringConvertible {
             }
         }
         txtObs = peer.observe(keyPath: "txtRecord") { [unowned self] in
-            if let seq = Int((peer.txtRecord["seq"]?)?) {
-                self.gotLatestSequence(UInt64(seq))
+            if let seq = peer.txtRecord["seq"], seqNum = UInt64(seq) {
+                self.gotLatestSequence(seqNum)
             }
         }
         print("\(self): Added \(peer); latest seq=\(latestSequenceSeen)")
@@ -82,7 +82,7 @@ public class SyncedDB : CustomStringConvertible {
                 // Got the hostname, now start the replication:
                 self.sequenceBeingSynced = self.latestSequenceSeen
                 let url = self.makeURL(hostName)
-                let pull = self.db.createPullReplication(url)!
+                let pull = self.db.createPullReplication(url)
                 print("\(self): Pulling from <\(url)>")
                 self.currentPull = pull
                 self.pullObs = pull.observe(keyPath: "status") { [unowned self] in

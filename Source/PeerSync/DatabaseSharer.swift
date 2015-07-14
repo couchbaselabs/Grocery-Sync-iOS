@@ -50,18 +50,10 @@ public class DatabaseSharer {
     }
 
     /** Starts sharing. */
-    public func start() -> NSError? {
-        var error: NSError?
-        do {
-            try listener.start()
-            print("DatabaseSharer: Sharing database...");
-            self.updateTXT()
-            return nil
-        } catch var error1 as NSError {
-            error = error1
-            print("DatabaseSharer: Couldn't share database: \(error)")
-            return error
-        }
+    public func start() throws {
+        try listener.start()
+        print("DatabaseSharer: Sharing database...");
+        self.updateTXT()
     }
 
     /** Pauses sharing. */

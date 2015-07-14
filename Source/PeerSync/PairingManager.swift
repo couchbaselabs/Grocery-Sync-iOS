@@ -103,11 +103,9 @@ public class PairingManager {
 
         var pairDoc = database.existingLocalDocumentWithID("pairings") ?? [:]
         pairDoc["UUIDs"] = pairDict
-        var error: NSError?
         do {
             try database.putLocalDocument(pairDoc, withID: "pairings")
-        } catch var error1 as NSError {
-            error = error1
+        } catch let error as NSError {
             print("PairingManager: Couldn't save pairings to db: \(error)")
         }
         print("PairingManager: Saved pairings: \(pairDict)")
