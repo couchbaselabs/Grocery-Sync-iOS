@@ -81,7 +81,8 @@ public class SyncedDB : CustomStringConvertible {
             case .HostName(let hostName):
                 // Got the hostname, now start the replication:
                 self.sequenceBeingSynced = self.latestSequenceSeen
-                let url = self.makeURL(hostName)
+                let ssl = (self.peer.txtRecord["SSL"] != nil)
+                let url = self.makeURL(hostName, SSL: ssl)
                 let pull = self.db.createPullReplication(url)
                 print("\(self): Pulling from <\(url)>")
                 self.currentPull = pull
@@ -122,9 +123,9 @@ public class SyncedDB : CustomStringConvertible {
     }
 
     // Subroutine to construct the peer's database's URL:
-    private func makeURL(hostName: String) -> NSURL {
+    private func makeURL(hostName: String, SSL ssl: Bool) -> NSURL {
         let components = NSURLComponents()
-        components.scheme = "http" //WORKAROUND: Use "https" once it's working on the listener side
+        components.scheme = (ssl ? "https" : "http")
         components.host = hostName
         components.port = peer.port
         components.path = "/" + db.name

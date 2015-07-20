@@ -21,7 +21,9 @@ public class DatabaseSharer {
     /** The UUID I publish as */
     public let peerUUID: String
 
-    public init(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort) throws {
+    private let ssl : Bool
+
+    public init(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort, ssl: Bool = true) throws {
         // Get or create a persistent UUID:
         if let uuid = NSUserDefaults.standardUserDefaults().stringForKey("PeerUUID") {
             peerUUID = uuid
@@ -36,12 +38,17 @@ public class DatabaseSharer {
         //listener.readOnly = true //WORKAROUND: This prevents CBL 1.1 clients from storing checkpoints (#726)
         let serviceName = OnlinePeer.createServiceName(nickname, UUID: peerUUID)
         listener.setBonjourName(serviceName, type: DatabaseSharer.kServiceType)
-        //listener.readOnly = true
-        /* WORKAROUND: This doesn't work with CBL 1.1 (clients reject the cert as invalid: #724)
-        if !listener.setAnonymousSSLIdentityWithLabel("peersync", error: outError) {
-            return nil
-        }*/
+
+        self.ssl = ssl
+        if (ssl) {
+            do {
+                try listener.setAnonymousSSLIdentityWithLabel("peersync")
+            } catch {
+                assert(false, "Unable to get SSL identity");
+            }
+        }
         print("DatabaseSharer: Service name is '\(serviceName)'")
+        print("DatabaseSharer: Sharing at <\(listener.URL)>")
 
         // Watch for database changes:
         dbObserver = db.observe(notificationName: kCBLDatabaseChangeNotification) { [unowned self] notification in
@@ -74,7 +81,11 @@ public class DatabaseSharer {
     private func updateTXT() {
         let latestSequence = db.lastSequenceNumber
         print("DatabaseSharer: Publishing seq=\(latestSequence)")
-        listener.TXTRecordDictionary = ["seq": "\(latestSequence)"]
+        var txt = ["seq": "\(latestSequence)"]
+        if ssl {
+            txt["SSL"] = ""
+        }
+        listener.TXTRecordDictionary = txt
     }
 
     deinit {

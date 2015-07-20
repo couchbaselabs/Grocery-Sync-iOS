@@ -63,7 +63,7 @@ public class PeerSyncManager {
 
     /** Starts actively sharing and syncing. */
     public func start() throws {
-        print("PeerSyncManager: ---- START ----")
+        print("PeerSyncManager: ---- START ---- (Couchbase Lite \(CBLVersion()))")
         assert(nickname != nil, "No nickname set")
         let newSharer = try DatabaseSharer(database: database, nickname: nickname!, port: port)
         try newSharer.start()
