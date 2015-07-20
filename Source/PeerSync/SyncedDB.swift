@@ -84,7 +84,11 @@ public class SyncedDB : CustomStringConvertible {
                 let ssl = (self.peer.txtRecord["SSL"] != nil)
                 let url = self.makeURL(hostName, SSL: ssl)
                 let pull = self.db.createPullReplication(url)
-                print("\(self): Pulling from <\(url)>")
+                if ssl {
+                    // Peer's UUID is the SHA-1 digest of its SSL cert, so pin to that:
+                    pull.customProperties = ["pinnedCert": self.peer.UUID]
+                }
+                print("\(self): Pulling from <\(url)> for UUID \(self.peer.UUID)")
                 self.currentPull = pull
                 self.pullObs = pull.observe(keyPath: "status") { [unowned self] in
                     self.pullStatusChanged()

@@ -25,19 +25,11 @@ public class DatabaseSharer {
 
     public init(database: CBLDatabase, nickname: String, port: UInt16 = kDefaultPort, ssl: Bool = true) throws {
         // Get or create a persistent UUID:
-        if let uuid = NSUserDefaults.standardUserDefaults().stringForKey("PeerUUID") {
-            peerUUID = uuid
-        } else {
-            peerUUID = NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
-            NSUserDefaults.standardUserDefaults().setObject(peerUUID, forKey: "PeerUUID")
-        }
 
         // Create the CBL listener:
         db = database
         listener = CBLListener(manager: db.manager, port: port)
         //listener.readOnly = true //WORKAROUND: This prevents CBL 1.1 clients from storing checkpoints (#726)
-        let serviceName = OnlinePeer.createServiceName(nickname, UUID: peerUUID)
-        listener.setBonjourName(serviceName, type: DatabaseSharer.kServiceType)
 
         self.ssl = ssl
         if (ssl) {
@@ -47,7 +39,23 @@ public class DatabaseSharer {
                 assert(false, "Unable to get SSL identity");
             }
         }
-        print("DatabaseSharer: Service name is '\(serviceName)'")
+
+        if let certDigest = listener.SSLIdentityDigest {
+            // Use SHA-1 digest of my SSL cert as my UUID:
+            peerUUID = dataToHex(certDigest)
+        } else if let uuid = NSUserDefaults.standardUserDefaults().stringForKey("PeerUUID") {
+            peerUUID = uuid
+        } else {
+            // If not using SSL, just make up a persistent UUID:
+            peerUUID = NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+            NSUserDefaults.standardUserDefaults().setObject(peerUUID, forKey: "PeerUUID")
+        }
+
+        let serviceName = OnlinePeer.createServiceName(nickname, UUID: peerUUID)
+        listener.setBonjourName(serviceName, type: DatabaseSharer.kServiceType)
+
+        print("DatabaseSharer: My UUID is '\(peerUUID)'")
+        print("DatabaseSharer: Bonjour name is '\(serviceName)'")
         print("DatabaseSharer: Sharing at <\(listener.URL)>")
 
         // Watch for database changes:
@@ -97,4 +105,18 @@ public class DatabaseSharer {
     private let listener: CBLListener
     private var dbObserver: Observer?
 
+}
+
+
+private let digits: [UnicodeScalar] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+
+private func dataToHex(data: NSData) -> String {
+    let bytes = UnsafeBufferPointer<UInt8>(start: UnsafePointer<UInt8>(data.bytes), count: data.length)
+    var hex = ""
+    hex.reserveCapacity(2*bytes.count)
+    for byte: UInt8 in bytes {
+        hex.append(digits[Int(byte) / 16])
+        hex.append(digits[Int(byte) % 16])
+    }
+    return hex
 }
