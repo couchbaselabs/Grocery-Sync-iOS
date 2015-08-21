@@ -25,7 +25,7 @@ public class PeerBrowser : NSObject, NSNetServiceBrowserDelegate {
     /** Initialize, given a service type to browse for. */
     public init(serviceType: String) {
         self.serviceType = serviceType
-        self.browser = NSNetServiceBrowser.new()
+        self.browser = NSNetServiceBrowser()
         super.init()
         browser.includesPeerToPeer = true
         browser.delegate = self
