@@ -83,7 +83,7 @@ public class SyncedDB : CustomStringConvertible {
                 self.sequenceBeingSynced = self.latestSequenceSeen
                 let ssl = (self.peer.txtRecord["SSL"] != nil)
                 let url = self.makeURL(hostName, SSL: ssl)
-                let pull = self.db.createPullReplication(url)
+                let pull = self.db.createPullReplication(url)!
                 if ssl {
                     // Peer's UUID is the SHA-1 digest of its SSL cert, so pin to that:
                     pull.customProperties = ["pinnedCert": self.peer.UUID]

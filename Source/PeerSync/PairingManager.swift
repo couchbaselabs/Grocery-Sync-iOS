@@ -105,10 +105,10 @@ public class PairingManager {
         pairDoc["UUIDs"] = pairDict
         do {
             try database.putLocalDocument(pairDoc, withID: "pairings")
+            print("PairingManager: Saved pairings: \(pairDict)")
         } catch let error as NSError {
             print("PairingManager: Couldn't save pairings to db: \(error)")
         }
-        print("PairingManager: Saved pairings: \(pairDict)")
     }
 
     private let database: CBLDatabase

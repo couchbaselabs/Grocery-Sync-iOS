@@ -55,7 +55,7 @@ public struct PeerSet : SequenceType, Equatable, CustomStringConvertible {
     private var byUUID = [String:Peer]()
 
     // SequenceType protocol:
-    public typealias Generator = MapGenerator<DictionaryGenerator<String, Peer>, Peer>
+    public typealias Generator = LazyMapGenerator<DictionaryGenerator<String, Peer>, Peer>
     public func generate() -> Generator {
         return byUUID.values.generate()
     }

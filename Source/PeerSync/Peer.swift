@@ -71,7 +71,7 @@ public class OnlinePeer : Peer, NSNetServiceDelegate {
         // First access to .hostName will return nil but starts the async name resolution:
         self.resolve(nil)
         return nil
-        }()
+    }()
 
     /** Asynchronously resolve the service to find its host name. The callback will be invoked
     when the hostname is resolved or an error occurs. */
@@ -125,12 +125,12 @@ public class OnlinePeer : Peer, NSNetServiceDelegate {
 
     // Parses a service name into a nickname and a UUID
     class func parseServiceName(name: NSString) -> (String, String) {
-        if let match = serviceNameRegex.firstMatchInString(name as String, options: [], range: NSMakeRange(0, name.length)) {
-            let nickname = name.substringWithRange(match.rangeAtIndex(1))
-            let UUID = name.substringWithRange(match.rangeAtIndex(2))
-            return (nickname, UUID)
+        guard let match = serviceNameRegex.firstMatchInString(name as String, options: [], range: NSMakeRange(0, name.length)) else {
+            return ("","")
         }
-        return ("","")
+        let nickname = name.substringWithRange(match.rangeAtIndex(1))
+        let UUID = name.substringWithRange(match.rangeAtIndex(2))
+        return (nickname, UUID)
     }
 
     class func createServiceName(nickname: String, UUID: String) -> String {

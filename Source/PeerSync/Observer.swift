@@ -22,6 +22,8 @@ public class Observer : NSObject {
     }
 
     public init(source: NSObject?, notificationName: String?, queue: NSOperationQueue? = nil, onNotification: NSNotification->()) {
+        self.keyPath = nil
+        self.onChange = nil
         self.noteObserver = NSNotificationCenter.defaultCenter().addObserverForName(notificationName, object: source, queue: queue) { n in
             onNotification(n)
         }
@@ -48,8 +50,8 @@ public class Observer : NSObject {
     }
 
     private var source: NSObject?
-    private var keyPath: String?
-    private var onChange: (()->())?
+    private let keyPath: String?
+    private let onChange: (()->())?
     private var noteObserver: NSObjectProtocol?
 }
 

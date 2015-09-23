@@ -32,7 +32,7 @@ public class DatabaseSharer {
         //listener.readOnly = true //WORKAROUND: This prevents CBL 1.1 clients from storing checkpoints (#726)
 
         self.ssl = ssl
-        if (ssl) {
+        if ssl {
             do {
                 try listener.setAnonymousSSLIdentityWithLabel("peersync")
             } catch {
