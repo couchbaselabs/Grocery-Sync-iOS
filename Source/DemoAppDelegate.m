@@ -66,6 +66,7 @@
     }
     
     // Tell the RootViewController about the database:
+    window.rootViewController = navigationController;
     [self.rootViewController useDatabase: database];
 
 #ifdef kServerDbURL
