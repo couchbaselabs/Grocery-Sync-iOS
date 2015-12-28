@@ -16,13 +16,6 @@ extension CBLView {
     }
 }
 
-extension CBLDocument {
-    // Just reorders the parameters to take advantage of Swift's trailing-block syntax.
-    func update(error: NSErrorPointer, block: ((CBLUnsavedRevision!) -> Bool)) -> CBLSavedRevision? {
-        return update(block, error: error)
-    }
-}
-
 extension NSDate {
     class func withJSONObject(jsonObj: AnyObject) -> NSDate? {
         return CBLJSON.dateWithJSONObject(jsonObj)

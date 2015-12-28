@@ -25,32 +25,24 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     
     func useDatabase(database: CBLDatabase!) -> Bool {
-        if database == nil {
-            return false
-        }
+        guard database != nil else {return false}
         self.database = database
 
         // Define a view with a map function that indexes to-do items by creation date:
         database.viewNamed("byDate").setMapBlock("2") {
             (doc, emit) in
-            if let dateObj: AnyObject = doc["created_at"] {
-                if let date = dateObj as? String {
-                    emit(date, doc)
-                }
+            if let date = doc["created_at"] as? String {
+                emit(date, doc)
             }
         }
 
         // ...and a validation function requiring parseable dates:
         database.setValidationNamed("created_at") {
             (newRevision, context) in
-            if !newRevision.isDeletion {
-                if let dateObj: AnyObject = newRevision.properties?["created_at"] {
-                    if let date = dateObj as? String {
-                        if NSDate.withJSONObject(date) == nil {
-                            context.rejectWithMessage("invalid date \(date)")
-                        }
-                    }
-                }
+            if !newRevision.isDeletion,
+                let date = newRevision.properties?["created_at"] as? String
+                where NSDate.withJSONObject(date) == nil {
+                    context.rejectWithMessage("invalid date \(date)")
             }
         }
         return true
@@ -102,7 +94,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     //MARK: - Table UI
 
 
-    private let kBGColor : UIColor = {return UIColor(patternImage: UIImage(named:"item_background")!)}()
+    private let kBGColor = {UIColor(patternImage: UIImage(named:"item_background")!)}()
 
 
     // Customize the appearance of table view cells.
@@ -111,23 +103,26 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         willUseCell cell: UITableViewCell!,
         forRow row: CBLQueryRow!)
     {
+        guard let textLabel = cell.textLabel,
+              let imageView = cell.imageView else {return}
+
         // Set the cell background and font:
         cell.backgroundColor = kBGColor
         cell.selectionStyle = .Gray
 
-        cell.textLabel!.font = UIFont(name: "Helvetica", size: 18.0)
-        cell.textLabel!.backgroundColor = UIColor.clearColor()
+        textLabel.font = UIFont(name: "Helvetica", size: 18.0)
+        textLabel.backgroundColor = UIColor.clearColor()
         
         // Configure the cell contents. Our view's map function (above) copies the document properties
         // into its value, so we can read them from there without having to load the document.
         let rowValue = row.value as? NSDictionary
         let checked = (rowValue?["check"] as? Bool) ?? false
         if checked {
-            cell.textLabel!.textColor = UIColor.grayColor()
-            cell.imageView!.image = UIImage(named: "list_area___checkbox___checked")
+            textLabel.textColor = UIColor.grayColor()
+            imageView.image = UIImage(named: "list_area___checkbox___checked")
         } else {
-            cell.textLabel!.textColor = UIColor.blackColor()
-            cell.imageView!.image = UIImage(named: "list_area___checkbox___unchecked")
+            textLabel.textColor = UIColor.blackColor()
+            imageView.image = UIImage(named: "list_area___checkbox___unchecked")
         }
         // cell.textLabel.text is already set, thanks to setting up labelProperty above.
     }
@@ -140,19 +135,18 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         // Ask the CBLUITableSource for the corresponding query row, and get its document:
-        if let row = self.dataSource.rowAtIndex(UInt(indexPath.row)) {
-            var error: NSError?
-            let newRev = row.document?.update(&error) {
-                (rev: CBLUnsavedRevision!) -> Bool in
+        guard let row = self.dataSource.rowAtIndex(UInt(indexPath.row)),
+            doc = row.document
+            else {return}
+        do {
+            try doc.update {  (rev: CBLUnsavedRevision) -> Bool in
                 // Toggle the document's 'checked' property:
                 let wasChecked = (rev["check"] as? Bool) ?? false
                 rev["check"] = !wasChecked
                 return true
             }
-
-            if newRev == nil {
-                self.appDelegate.showAlert("Failed to update item", forError: error)
-            }
+        } catch let error as NSError {
+            self.appDelegate.showAlert("Failed to update item", forError: error)
         }
     }
 
@@ -162,21 +156,18 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         // (If there were a whole lot of documents, this would be more efficient with a custom query.)
         let rows = self.dataSource.rows as! [CBLQueryRow]
         return rows.filter {
-            if let value = $0.value as? NSDictionary,
-                check = value["check"] as? Bool {
-                    return check
-            }
-            return false
-        }.map { $0.document! }
+            guard let value = $0.value as? NSDictionary,
+                let check = value["check"] as? Bool
+                else {return false}
+            return check
+            }.map { $0.document! }
     }
 
 
     // Invoked by the "Clean Up" button.
     func deleteCheckedItems() {
         let numChecked = self.checkedDocuments.count
-        if numChecked == 0 {
-            return
-        }
+        guard numChecked > 0 else {return}
 
         let itemWord = numChecked==1 ? "item" : "items"
         let message = "Are you sure you want to remove the \(numChecked) checked-off \(itemWord)?"
@@ -192,13 +183,13 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
 
     func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int) {
-        if buttonIndex == 0 {
-            return
-        }
+        guard buttonIndex > 0 else {return}
+
         // Tell the CBLUITableSource to delete the documents, instead of doing it directly.
         // This lets it tell the table-view the rows are going away, so the table display can animate.
-        var error: NSError?
-        if !dataSource.deleteDocuments(self.checkedDocuments, error: &error) {
+        do {
+            try dataSource.deleteDocuments(self.checkedDocuments)
+        } catch let error as NSError {
             self.appDelegate.showAlert("Failed to delete items", forError: error)
         }
     }
@@ -224,8 +215,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Add a new item when text input ends.
     func textFieldDidEndEditing(textField: UITextField!) {
         // Get the name of the item from the text field:
-        let text = addItemTextField.text
-        if text.isEmpty {
+        guard let text = addItemTextField.text where !text.isEmpty else {
             return
         }
         addItemTextField.text = nil
@@ -237,8 +227,9 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
 
         // Save the document:
         let doc = database.createDocument()
-        var error: NSError?
-        if doc.putProperties(properties, error: &error) == nil {
+        do {
+            try doc.putProperties(properties)
+        } catch let error as NSError {
             self.appDelegate.showAlert("Couldn't save new item", forError: error)
         }
     }

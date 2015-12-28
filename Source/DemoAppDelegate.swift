@@ -14,6 +14,11 @@ private let kDatabaseName = "grocery-sync"
 
 // The remote database URL to sync with.
 private let kServerDbURL = NSURL(string: "http://demo.mobile.couchbase.com/grocery-sync/")!
+// This demo app has an NSAppTransportSecurity key in its Info.plist that allows non-SSL connections
+// to the demo.mobile.couchbase.com domain, since that domain does not yet have a working SSL
+// server. This is only for demo purposes! In a real application you should always secure your
+// Sync Gateway or other sync server with SSL.
+
 
 @UIApplicationMain
 class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
@@ -30,7 +35,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
 
 
     override init() {
-        database = CBLManager.sharedInstance().databaseNamed(kDatabaseName, error: nil)
+        database = try? CBLManager.sharedInstance().databaseNamed(kDatabaseName)
     }
 
     func application(application: UIApplication,
@@ -39,7 +44,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
         window!.addSubview(navigationController.view)
         window!.makeKeyAndVisible()
 
-        if database == nil {
+        guard database != nil else {
             fatalAlert("Unable to initialize Couchbase Lite")
             return false
         }
@@ -104,7 +109,7 @@ class DemoAppDelegate: UIResponder, UIApplicationDelegate, UIAlertViewDelegate {
         alert.show()
     }
 
-    func fatalAlert(var message: String) {
+    func fatalAlert(message: String) {
         NSLog("ALERT: %@", message)
         let alert = UIAlertView(
             title: "Fatal Error",
