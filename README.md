@@ -1,8 +1,8 @@
-## Grocery Sync for iOS (Swift version)
+## Grocery Sync for iOS (Swift 2 version)
 
 This is a simple demo app showing how to use the [Couchbase Lite][1] framework to embed a nonrelational ("NoSQL"), document-oriented database in an iOS app and sync it with a database server in "the cloud".
 
-_If you prefer developing in Swift, click [here](https://github.com/couchbaselabs/Grocery-Sync-iOS/tree/swift)!_
+_If you prefer developing in Objective-C, click [here](https://github.com/couchbaselabs/Grocery-Sync-iOS/tree/master)!_
 
 Here's the "user story":
 
@@ -20,7 +20,7 @@ These instructions assume you are familiar with building and running an iOS app.
 
 If you have questions or get stuck or just want to say hi, please visit the [Mobile-Couchbase group][4] on Google Groups.
 
-Prerequisite: Xcode 6.0 or later with an iOS SDK.
+Prerequisite: Xcode 7.0 or later with an iOS SDK.
 
 ### Get the main repository
 
