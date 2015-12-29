@@ -154,7 +154,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
     // Returns all the items that have been checked-off, as an array of CBLDocuments.
     var checkedDocuments :[CBLDocument] {
         // (If there were a whole lot of documents, this would be more efficient with a custom query.)
-        let rows = self.dataSource.rows as! [CBLQueryRow]
+        let rows = self.dataSource.rows!
         return rows.filter {
             guard let value = $0.value as? NSDictionary,
                 let check = value["check"] as? Bool
@@ -220,7 +220,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
         }
         addItemTextField.text = nil
 
-        let properties: [NSObject : AnyObject] = [
+        let properties: [String : AnyObject] = [
             "text": text,
             "check": false,
             "created_at": CBLJSON.JSONObjectWithDate(NSDate())]
