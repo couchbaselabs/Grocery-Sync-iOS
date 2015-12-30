@@ -57,7 +57,7 @@ class RootViewController: UIViewController, UIAlertViewDelegate {
             title:  "Clean",
             style:  .Plain,
             target: self,
-            action: "deleteCheckedItems:")
+            action: "deleteCheckedItems")
         self.navigationItem.leftBarButtonItem = deleteButton
 
         // Initialize the sync progress bar:
