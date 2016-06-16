@@ -1,12 +1,53 @@
 {
-	"log": ["HTTP+"],
-	"databases": {
-		"grocery-sync": {
-			"server": "http://localhost:8091",
-			"bucket": "grocery-sync",
-			"users": {
-				"GUEST": {"disabled": false, "admin_channels": ["*"] }
-			}
-		}
-	}
+  "log": ["*"],
+  "databases": {
+    "grocery-sync": {
+      "server": "walrus:.",
+      "users": {
+        "GUEST": {"disabled": true}
+      },
+      "unsupported": {
+        "oidc_test_provider": {
+          "enabled": true
+        }  
+      },
+      "oidc": {
+        "providers": {
+            "SgwTest": {
+                "issuer":"http://localhost:4984/grocery-sync/_oidc_testing",
+                "client_id":"sync_gateway",
+                "validation_key":"R75hfd9lasdwertwerutecw8",
+                "callback_url":"http://localhost:4984/grocery-sync/_oidc_callback",
+                "register":true
+            },
+            "GoogleAuthFlow": {
+                "issuer":"https://accounts.google.com",
+                "client_id":"31919031332-8ea1795ckkphb7hmg6i4ul0blcpq8oq5.apps.googleusercontent.com",
+                "validation_key":"OCIbokd6-SE8LMZE_vQsq8F5",
+                "callback_url":"http://localhost:4984/grocery-sync/_oidc_callback",
+                "register":true
+            },
+            "GoogleSignIn": {
+                "issuer":"https://accounts.google.com",
+                "client_id":"31919031332-sjiopc9dnh217somhc94b3s1kt7oe2mu.apps.googleusercontent.com",
+                "validation_key":"OCIbokd6-SE8LMZE_vQsq8F5",
+                "callback_url":"http://localhost:4984/grocery-sync/_oidc_callback",
+                "register":true
+            }
+        },
+        "default_provider": "GoogleAuthFlow"
+      },
+      "sync": `
+        function(doc, oldDoc) {
+          var username = doc.owner;
+          if (!username)
+            throw({forbidden : "item must have an owner"})
+          
+          var channelName = "ch-" + username;
+          access (username, channelName)
+          channel(channelName);
+        }
+      `
+    }
+  }
 }

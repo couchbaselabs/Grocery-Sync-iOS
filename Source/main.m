@@ -22,7 +22,7 @@
 
 int main(int argc, char *argv[]) {
     @autoreleasepool {
-		int retVal = UIApplicationMain(argc, argv, nil, nil);
+		int retVal = UIApplicationMain(argc, argv, nil, @"DemoAppDelegate");
     return retVal;
     }
 }
