@@ -30,8 +30,6 @@
             "GoogleSignIn": {
                 "issuer":"https://accounts.google.com",
                 "client_id":"31919031332-sjiopc9dnh217somhc94b3s1kt7oe2mu.apps.googleusercontent.com",
-                "validation_key":"OCIbokd6-SE8LMZE_vQsq8F5",
-                "callback_url":"http://localhost:4984/grocery-sync/_oidc_callback",
                 "register":true
             }
         },
