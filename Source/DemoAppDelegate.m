@@ -36,9 +36,11 @@
 // The remote database URL to sync with. This is preconfigured with a sample database we maintain.
 // In your own apps you will of course want to set this to a database you run, on your own Sync
 // Gateway instance.
-#define kServerDbURL @"http://localhost:4984/grocery-sync"
+#define kServerDbURL @"http://us-west.testfest.couchbasemobile.com:4984/grocery-sync/"
 
 #define kUserLocalDocID @"user"
+
+#define kLoggingEnabled NO
 
 typedef void (^ReplicatorSetup)(CBLReplication *repl);
 
@@ -58,6 +60,9 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if (kLoggingEnabled)
+        [self enableLogging];
+
     if (![self initializeDatabase])
         return NO;
 
@@ -92,6 +97,11 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
         return NO;
     }
     return YES;
+}
+
+- (void)enableLogging {
+    [CBLManager enableLogging:@"Sync"];
+    [CBLManager enableLogging:@"SyncVerbose"];
 }
 
 #pragma mark - Replication
@@ -156,8 +166,10 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
     NSError* error = _pull.lastError ? _pull.lastError : _push.lastError;
     if (error != _syncError) {
         _syncError = error;
-        if (error)
+        if (error) {
+            NSLog(@"Sync Error : %@", error);
             [self showAlert:@"Sync Error" error:error fatal:NO];
+        }
     }
 }
 
