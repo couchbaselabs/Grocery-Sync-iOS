@@ -183,7 +183,7 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
     NSError* error = _pull.lastError ? _pull.lastError : _push.lastError;
     if (error != self.syncError) {
         self.syncError = error;
-        if (error) {
+        if (error && error.code != NSURLErrorUserCancelledAuthentication) {
             NSLog(@"Sync Error : %@", error);
             [self showAlert:@"Sync Error" error:error fatal:NO];
         }
