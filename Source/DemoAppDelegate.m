@@ -40,9 +40,11 @@
 
 #define kUserLocalDocID @"user"
 
-#define kLoggingEnabled NO
+#define kLoggingEnabled YES
 
 typedef void (^ReplicatorSetup)(CBLReplication *repl);
+
+typedef void (^ReplicatorChangeAction)(CBLReplication *repl);
 
 typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
                                       NSString * __nullable username,
@@ -50,14 +52,15 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 
 @interface DemoAppDelegate () <LoginViewControllerDelegate>
 
+@property (nonatomic) CBLReplication *pull;
+@property (nonatomic) CBLReplication *push;
+@property (nonatomic) NSError *syncError;
+@property (nonatomic) ReplicatorChangeAction replicationChangeAction;
+@property (nonatomic) LoginViewController *loginViewController;
+
 @end
 
-@implementation DemoAppDelegate {
-    CBLReplication *_pull;
-    CBLReplication *_push;
-    LoginViewController *_loginViewController;
-    NSError *_syncError;
-}
+@implementation DemoAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if (kLoggingEnabled)
@@ -111,44 +114,55 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 }
 
 - (void)startPull:(ReplicatorSetup)setup {
-    _pull = [self.database createPullReplication:[self serverDbURL]];
-    _pull.continuous = YES;
+    self.pull = [self.database createPullReplication:[self serverDbURL]];
+    self.pull.continuous = YES;
 
-    setup(_pull);
+    setup(self.pull);
 
     // Observe replication progress changes, in both directions:
     NSNotificationCenter *nctr = [NSNotificationCenter defaultCenter];
     [nctr addObserver:self selector:@selector(replicationProgress:)
-                 name:kCBLReplicationChangeNotification object:_pull];
-    [_pull start];
+                 name:kCBLReplicationChangeNotification object:self.pull];
+    [self.pull start];
 }
 
 - (void)startPush:(ReplicatorSetup)setup {
-    _push = [self.database createPushReplication:[self serverDbURL]];
-    _push.continuous = YES;
+    self.push = [self.database createPushReplication:[self serverDbURL]];
+    self.push.continuous = YES;
     
-    setup(_push);
+    setup(self.push);
     
     // Observe replication progress changes, in both directions:
     NSNotificationCenter *nctr = [NSNotificationCenter defaultCenter];
     [nctr addObserver:self selector:@selector(replicationProgress:)
-                 name:kCBLReplicationChangeNotification object:_push];
-    [_push start];
+                 name:kCBLReplicationChangeNotification object:self.push];
+    [self.push start];
 }
 
-- (void)stopReplication {
+- (void)stopReplicationAndClearCredentials:(BOOL)clearCredentials {
+    self.replicationChangeAction = nil;
+
     NSNotificationCenter *nctr = [NSNotificationCenter defaultCenter];
-    if (_pull) {
-        [_pull stop];
-        [_pull removeObserver:self forKeyPath:@"status"];
-        [nctr removeObserver:self name:kCBLReplicationChangeNotification object:_pull];
-        _pull = nil;
+    if (self.pull) {
+        [self.pull stop];
+        [nctr removeObserver:self name:kCBLReplicationChangeNotification object:self.pull];
+        NSError *error;
+        if (clearCredentials) {
+            if (![self.pull clearAuthenticationStores:&error])
+                NSLog(@"Error when clearing credentials: %@", error);
+        }
+        self.pull = nil;
     }
 
-    if (_push) {
-        [_push stop];
-        [nctr removeObserver:self name:kCBLReplicationChangeNotification object:_push];
-        _push = nil;
+    if (self.push) {
+        [self.push stop];
+        [nctr removeObserver:self name:kCBLReplicationChangeNotification object:self.push];
+        NSError *error;
+        if (clearCredentials) {
+            if (![self.push clearAuthenticationStores:&error])
+                NSLog(@"Error when clearing credentials: %@", error);
+        }
+        self.push = nil;
     }
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
@@ -156,16 +170,19 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 
 // Called in response to replication-change notifications. Updates the progress UI.
 #pragma mark Observe sync progress
-- (void)replicationProgress:(NSNotificationCenter *)n {
-    if (_pull.status == kCBLReplicationActive || _push.status == kCBLReplicationActive)
+- (void)replicationProgress:(NSNotification *)n {
+    if (self.pull.status == kCBLReplicationActive || self.push.status == kCBLReplicationActive)
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     else
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
+    if (self.replicationChangeAction)
+        self.replicationChangeAction(n.object);
+
     // Check for any change in error status and display new errors:
     NSError* error = _pull.lastError ? _pull.lastError : _push.lastError;
-    if (error != _syncError) {
-        _syncError = error;
+    if (error != self.syncError) {
+        self.syncError = error;
         if (error) {
             NSLog(@"Sync Error : %@", error);
             [self showAlert:@"Sync Error" error:error fatal:NO];
@@ -196,45 +213,39 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 
 - (void)didLogout:(LoginViewController*)controller {
     self.username = nil;
-    [self stopReplication];
+    [self stopReplicationAndClearCredentials:YES];
 }
 
 #pragma mark - LoginViewControllerDelegate : Auth Code Flow
 
 - (void)didAuthCodeSignIn:(LoginViewController *)controller {
-    [self stopReplication];
+    [self stopReplicationAndClearCredentials:NO];
     [self startPull:^(CBLReplication *repl) {
         repl.authenticator =
             [CBLAuthenticator OpenIDConnectAuthenticator:[OpenIDController loginCallback]];
-        [repl addObserver:self forKeyPath:@"status" options:0 context:nil];
+
+        id strongSelf = self;
+        self.replicationChangeAction = ^(CBLReplication *repl) {
+            if (repl == self.pull) {
+                [strongSelf checkAuthCodeSignInComplete];
+            }
+        };
     }];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context {
-    if ([keyPath isEqualToString:@"status"]) {
-        CBLReplication *pull = (CBLReplication *)object;
-        NSString *username = [pull.authenticator username];
-        if (!self.username && username && [self isReplicatorStarted:pull]) {
-            [pull removeObserver:self forKeyPath:@"status"];
-            if ([self loginWithUsername:username]) {
-                if (pull == _pull) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self startPush:^(CBLReplication *repl) {
-                            repl.authenticator = [CBLAuthenticator OpenIDConnectAuthenticator:
-                                                  [OpenIDController loginCallback]];
-                        }];
-                        [self completeLogin];
-                    });
-                } else {
-                    // When switching the user, the database and _pull replicator are
-                    // reset so we need to restart the authenticating process again.
-                    // The authenticating process from here should happen silently.
-                    [self didAuthCodeSignIn:nil];
-                }
-            }
+- (void) checkAuthCodeSignInComplete {
+    if (!self.username && _pull.username && [self isReplicatorStarted:_pull]) {
+        self.replicationChangeAction = nil;
+        BOOL needRestartRepl;
+        if ([self loginWithUsername:self.pull.username needRestartReplication:&needRestartRepl]) {
+            if (!needRestartRepl) {
+                [self startPush:^(CBLReplication *repl) {
+                    repl.authenticator = [CBLAuthenticator OpenIDConnectAuthenticator:
+                                          [OpenIDController loginCallback]];
+                }];
+                [self completeLogin];
+            } else
+                [self didAuthCodeSignIn:nil];
         }
     }
 }
@@ -298,7 +309,7 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 }
 
 - (BOOL)loginWithUsername:(NSString *)username withSessionCookies:(NSArray *)sessionCookies {
-    if ([self loginWithUsername:username]) {
+    if ([self loginWithUsername:username needRestartReplication:nil]) {
         [self startPull:^(CBLReplication *pull){
             for (NSHTTPCookie *cookie in sessionCookies) {
                 [pull setCookieNamed:cookie.name
@@ -308,7 +319,6 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
                               secure:cookie.isSecure];
             }
         }];
-        
         [self startPush:^(CBLReplication *push){
             for (NSHTTPCookie *cookie in sessionCookies) {
                 [push setCookieNamed:cookie.name
@@ -318,18 +328,21 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
                               secure:cookie.isSecure];
             }
         }];
+        return YES;
     }
-    return YES;
+    return NO;
 }
 
 #pragma mark - Login user to the app
 
-- (BOOL)loginWithUsername:(NSString *)username {
+- (BOOL)loginWithUsername:(NSString *)username needRestartReplication:(BOOL *)needRestartReplication {
+    BOOL isSwitchingUser;
     NSDictionary *user = [self.database existingLocalDocumentWithID:kUserLocalDocID];
     if (self.database && user && ![user[@"username"] isEqualToString:username]) {
-        [self stopReplication];
+        [self stopReplicationAndClearCredentials:NO];
         [self.database deleteDatabase:nil];
         self.database = nil;
+        isSwitchingUser = YES;
     }
     
     NSError *error;
@@ -340,6 +353,9 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
     
     [self.database putLocalDocument:@{@"username":username} withID:kUserLocalDocID error:&error];
     self.username = username;
+
+    if (needRestartReplication)
+        *needRestartReplication = isSwitchingUser;
     
     return YES;
 }
@@ -347,10 +363,13 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 #pragma mark - Complete login : show the app
 
 - (void)completeLogin {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        LoginViewController *controller = (LoginViewController *)self.window.rootViewController;
-        [controller start];
-    });
+    [self.loginViewController start];
+}
+
+#pragma mark - Logout
+
+- (void)logout {
+    [self.loginViewController logout];
 }
 
 @end

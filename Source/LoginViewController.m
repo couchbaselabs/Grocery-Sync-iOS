@@ -64,8 +64,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
 - (void)logout {
     [[GIDSignIn sharedInstance] signOut];
+    [[GIDSignIn sharedInstance] disconnect];
     if ([self.delegate respondsToSelector:@selector(didLogout:)])
         [self.delegate didLogout:self];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Auth Code Flow
@@ -86,7 +88,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 
 - (void)signIn:(GIDSignIn *)signIn didDisconnectWithUser:(GIDGoogleUser *)user withError:(NSError *)error {
-    NSLog(@"Google SignIn : user disconnected.");
+    NSLog(@"Google SignIn : User disconnected.");
 }
 
 @end

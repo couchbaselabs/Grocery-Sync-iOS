@@ -93,7 +93,6 @@
     }
 }
 
-
 - (void)showErrorAlert: (NSString*)message forError: (NSError*)error {
     DemoAppDelegate* delegate = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
     [delegate showAlert: message error: error fatal: NO];
@@ -250,6 +249,13 @@
     if (![doc putProperties: document error: &error]) {
         [self showErrorAlert: @"Couldn't save new item" forError: error];
     }
+}
+
+#pragma mark - logout
+
+- (IBAction)logoutAction:(id)sender {
+    DemoAppDelegate* app = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
+    [app logout];
 }
 
 @end
