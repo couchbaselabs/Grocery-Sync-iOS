@@ -151,7 +151,7 @@
     CBLSavedRevision* newRev = [doc update:^BOOL(CBLUnsavedRevision *rev) {
         // Toggle the "check" property of the new revision to be saved:
         BOOL wasChecked = [rev[@"check"] boolValue];
-        rev[@"check"] = @(!wasChecked);
+        rev[@"check"] = wasChecked ? @NO : @YES;
         return YES;
     } error: &error];
 
