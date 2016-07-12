@@ -39,10 +39,11 @@
         function(doc, oldDoc) {
           var username = doc.owner;
           if (!username)
-            throw({forbidden : "item must have an owner"})
-          
+            username = oldDoc.owner;
+          if (!username)
+            throw({forbidden : "item must have an owner"});
           var channelName = "ch-" + username;
-          access (username, channelName)
+          access(username, channelName);
           channel(channelName);
         }
       `
