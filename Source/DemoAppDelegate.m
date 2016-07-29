@@ -336,7 +336,7 @@ typedef void (^SessionAuthCompletion)(NSArray  * __nullable sessionCookies,
 #pragma mark - Login user to the app
 
 - (BOOL)loginWithUsername:(NSString *)username needRestartReplication:(BOOL *)needRestartReplication {
-    BOOL isSwitchingUser;
+    BOOL isSwitchingUser = NO;
     NSDictionary *user = [self.database existingLocalDocumentWithID:kUserLocalDocID];
     if (self.database && user && ![user[@"username"] isEqualToString:username]) {
         [self stopReplicationAndClearCredentials:NO];
