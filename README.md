@@ -44,6 +44,25 @@ Note: If you want the Swift version, run `git checkout swift`.
 
 That's it! Now that you're set up, you can just use the Run command again after making changes to the demo code.
 
+## Install Sync Gateway
+
+1. Download and install Sync Gateway (see the [installation page](http://developer.couchbase.com/documentation/mobile/current/installation/sync-gateway/index.html) for details).
+2. Start Sync Gateway with the configuration file in the root of this project.
+
+		```bash
+		~/Downloads/couchbase-sync-gateway/bin/sync_gateway sync-gateway-config.json
+		```
+
+3. Open **DemoAppDelegate.m** and update the `kServerDbURL` constant to point to your Sync Gateway instance.
+
+		```objective-c
+		#define kServerDbURL @"http://localhost:4984/grocery-sync/"
+		```
+
+4. Build and run the app.
+5. Add items and they should be visible on the Sync Gateway Admin UI at [http://localhost:4985/_admin/]
+(http://localhost:4985/_admin/).
+
 ## Using A Local Sync Gateway
 
 If you've installed Couchbase Server and the [Couchbase Sync Gateway][7], you can easily configure
