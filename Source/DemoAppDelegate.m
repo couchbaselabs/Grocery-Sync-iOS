@@ -36,7 +36,7 @@
 // The remote database URL to sync with. This is preconfigured with a sample database we maintain.
 // In your own apps you will of course want to set this to a database you run, on your own Sync
 // Gateway instance.
-#define kServerDbURL @"http://us-west.testfest.couchbasemobile.com:4984/grocery-sync/"
+#define kServerDbURL @"http://localhost:4984/grocery-sync/"
 
 #define kUserLocalDocID @"user"
 
