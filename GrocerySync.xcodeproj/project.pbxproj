@@ -33,6 +33,7 @@
 		27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */ = {isa = PBXBuildFile; fileRef = 27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */; };
 		27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E27BD214E323E3001DFCBB /* libz.dylib */; };
 		795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 795A586616C2F5670062B5E5 /* CouchbaseLite.framework */; };
+		BE8B065D1E3F46E20083413D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BE8B065C1E3F46E20083413D /* libc++.tbd */; };
 		CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */; };
 		CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */; };
 		CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2313E0293300CF15A9 /* textfield___active.png */; };
@@ -75,6 +76,7 @@
 		3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		795A586616C2F5670062B5E5 /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLite.framework; path = Frameworks/CouchbaseLite.framework; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* GrocerySync-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GrocerySync-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		BE8B065C1E3F46E20083413D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___checked.png"; sourceTree = "<group>"; };
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
 		CBD32A2313E0293300CF15A9 /* textfield___active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active.png"; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE8B065D1E3F46E20083413D /* libc++.tbd in Frameworks */,
 				2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */,
 				27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */,
 				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
@@ -161,6 +164,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE8B065C1E3F46E20083413D /* libc++.tbd */,
 				795A586616C2F5670062B5E5 /* CouchbaseLite.framework */,
 				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
 				27962306142031E80051455D /* Security.framework */,
