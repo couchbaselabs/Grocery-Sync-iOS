@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27167F1A13C4FA57001CC5B6 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
-		27167F1B13C4FA57001CC5B6 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F335F01007B36200424DE2 /* RootViewController.xib */; };
 		27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */; };
 		27167F2513C4FA57001CC5B6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		27167F2613C4FA57001CC5B6 /* DemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* DemoAppDelegate.m */; };
@@ -20,7 +18,6 @@
 		2763D73417EA13030056AB79 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73317EA13030056AB79 /* Default@2x.png */; };
 		2763D73617EA13620056AB79 /* Default@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2763D73517EA13620056AB79 /* Default@2x~ipad.png */; };
 		2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783A0D5156D6A8500DC8692 /* CFNetwork.framework */; };
-		278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 278E615514BA5A4B00A0B840 /* libsqlite3.dylib */; };
 		27962307142031E80051455D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27962306142031E80051455D /* Security.framework */; };
 		279C6596140FEF9A00A0E56D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6595140FEF9A00A0E56D /* icon.png */; };
 		279C6598140FEFCF00A0E56D /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 279C6597140FEFCF00A0E56D /* icon@2x.png */; };
@@ -31,8 +28,27 @@
 		27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBA13EA08D600F00AFB /* background.jpg */; };
 		27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */; };
 		27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */ = {isa = PBXBuildFile; fileRef = 27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */; };
-		27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E27BD214E323E3001DFCBB /* libz.dylib */; };
-		795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 795A586616C2F5670062B5E5 /* CouchbaseLite.framework */; };
+		932D2F001D11DB0E004E8860 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 932D2EFF1D11DB0E004E8860 /* Storyboard.storyboard */; };
+		932D2F241D120044004E8860 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F1C1D120044004E8860 /* GoogleAppUtilities.framework */; };
+		932D2F251D120044004E8860 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F1D1D120044004E8860 /* GoogleAuthUtilities.framework */; };
+		932D2F261D120044004E8860 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F1E1D120044004E8860 /* GoogleNetworkingUtilities.framework */; };
+		932D2F271D120044004E8860 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 932D2F1F1D120044004E8860 /* GoogleService-Info.plist */; };
+		932D2F281D120044004E8860 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 932D2F201D120044004E8860 /* GoogleSignIn.bundle */; };
+		932D2F291D120044004E8860 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F211D120044004E8860 /* GoogleSignIn.framework */; };
+		932D2F2A1D120044004E8860 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F221D120044004E8860 /* GoogleSymbolUtilities.framework */; };
+		932D2F2B1D120044004E8860 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F231D120044004E8860 /* GoogleUtilities.framework */; };
+		932D2F2D1D120052004E8860 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F2C1D120052004E8860 /* SafariServices.framework */; };
+		932D2F2F1D120057004E8860 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F2E1D120057004E8860 /* AddressBook.framework */; };
+		932D2F321D1200BC004E8860 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 932D2F311D1200BC004E8860 /* LoginViewController.m */; };
+		932D2F341D1203EC004E8860 /* CouchbaseLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F331D1203EC004E8860 /* CouchbaseLite.framework */; };
+		932D2F361D120404004E8860 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F351D120404004E8860 /* libc++.tbd */; };
+		932D2F381D120416004E8860 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F371D120416004E8860 /* libsqlite3.tbd */; };
+		932D2F3A1D120423004E8860 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F391D120423004E8860 /* libz.tbd */; };
+		932D2F3C1D12049A004E8860 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932D2F3B1D12049A004E8860 /* CoreText.framework */; };
+		93736C111D126A480071BE36 /* OpenIDController+UIKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 93736C0D1D126A480071BE36 /* OpenIDController+UIKit.m */; };
+		93736C121D126A480071BE36 /* OpenIDController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93736C0F1D126A480071BE36 /* OpenIDController.m */; };
+		93736C141D126A730071BE36 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93736C131D126A730071BE36 /* WebKit.framework */; };
+		93736C181D135BDB0071BE36 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93736C171D135BDB0071BE36 /* Launch Screen.storyboard */; };
 		CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */; };
 		CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */; };
 		CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD32A2313E0293300CF15A9 /* textfield___active.png */; };
@@ -54,7 +70,6 @@
 		2763D73317EA13030056AB79 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2763D73517EA13620056AB79 /* Default@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x~ipad.png"; sourceTree = "<group>"; };
 		2783A0D5156D6A8500DC8692 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		278E615514BA5A4B00A0B840 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		27962306142031E80051455D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		279C6595140FEF9A00A0E56D /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		279C6597140FEFCF00A0E56D /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
@@ -65,16 +80,36 @@
 		27AFCEBA13EA08D600F00AFB /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		27AFCEBB13EA08D700F00AFB /* background~ipad.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "background~ipad.jpg"; sourceTree = "<group>"; };
 		27CDDE4C13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "couchbase-mobile-icon-nameless.png"; sourceTree = "<group>"; };
-		27E27BD214E323E3001DFCBB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		28C286DF0D94DF7D0034E888 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
 		28C286E00D94DF7D0034E888 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
-		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3DEAED5712A2EB7400EEBD22 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
-		795A586616C2F5670062B5E5 /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLite.framework; path = Frameworks/CouchbaseLite.framework; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* GrocerySync-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GrocerySync-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		932D2EFF1D11DB0E004E8860 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
+		932D2F1C1D120044004E8860 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppUtilities.framework; sourceTree = "<group>"; };
+		932D2F1D1D120044004E8860 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAuthUtilities.framework; sourceTree = "<group>"; };
+		932D2F1E1D120044004E8860 /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleNetworkingUtilities.framework; sourceTree = "<group>"; };
+		932D2F1F1D120044004E8860 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		932D2F201D120044004E8860 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleSignIn.bundle; sourceTree = "<group>"; };
+		932D2F211D120044004E8860 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleSignIn.framework; sourceTree = "<group>"; };
+		932D2F221D120044004E8860 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
+		932D2F231D120044004E8860 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleUtilities.framework; sourceTree = "<group>"; };
+		932D2F2C1D120052004E8860 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		932D2F2E1D120057004E8860 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		932D2F301D1200BC004E8860 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		932D2F311D1200BC004E8860 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		932D2F331D1203EC004E8860 /* CouchbaseLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLite.framework; path = Frameworks/CouchbaseLite.framework; sourceTree = "<group>"; };
+		932D2F351D120404004E8860 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		932D2F371D120416004E8860 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		932D2F391D120423004E8860 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		932D2F3B1D12049A004E8860 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		93736C0C1D126A480071BE36 /* OpenIDController+UIKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OpenIDController+UIKit.h"; sourceTree = "<group>"; };
+		93736C0D1D126A480071BE36 /* OpenIDController+UIKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OpenIDController+UIKit.m"; sourceTree = "<group>"; };
+		93736C0E1D126A480071BE36 /* OpenIDController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenIDController.h; sourceTree = "<group>"; };
+		93736C0F1D126A480071BE36 /* OpenIDController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenIDController.m; sourceTree = "<group>"; };
+		93736C131D126A730071BE36 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		93736C171D135BDB0071BE36 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CBD32A2013E0293300CF15A9 /* list_area___checkbox___checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___checked.png"; sourceTree = "<group>"; };
 		CBD32A2113E0293300CF15A9 /* list_area___checkbox___unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_area___checkbox___unchecked.png"; sourceTree = "<group>"; };
 		CBD32A2313E0293300CF15A9 /* textfield___active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textfield___active.png"; sourceTree = "<group>"; };
@@ -90,15 +125,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93736C141D126A730071BE36 /* WebKit.framework in Frameworks */,
+				932D2F3C1D12049A004E8860 /* CoreText.framework in Frameworks */,
+				932D2F3A1D120423004E8860 /* libz.tbd in Frameworks */,
+				932D2F381D120416004E8860 /* libsqlite3.tbd in Frameworks */,
+				932D2F361D120404004E8860 /* libc++.tbd in Frameworks */,
+				932D2F2F1D120057004E8860 /* AddressBook.framework in Frameworks */,
+				932D2F2D1D120052004E8860 /* SafariServices.framework in Frameworks */,
+				932D2F341D1203EC004E8860 /* CouchbaseLite.framework in Frameworks */,
 				2783A0D6156D6A8500DC8692 /* CFNetwork.framework in Frameworks */,
 				27167F5A13C4FA57001CC5B6 /* CoreGraphics.framework in Frameworks */,
 				27167F5813C4FA57001CC5B6 /* Foundation.framework in Frameworks */,
+				932D2F2B1D120044004E8860 /* GoogleUtilities.framework in Frameworks */,
+				932D2F291D120044004E8860 /* GoogleSignIn.framework in Frameworks */,
+				932D2F251D120044004E8860 /* GoogleAuthUtilities.framework in Frameworks */,
+				932D2F261D120044004E8860 /* GoogleNetworkingUtilities.framework in Frameworks */,
 				27962307142031E80051455D /* Security.framework in Frameworks */,
 				279C7E2214F2CF6E0004A1E8 /* SystemConfiguration.framework in Frameworks */,
 				27167F5913C4FA57001CC5B6 /* UIKit.framework in Frameworks */,
-				278E615614BA5A4B00A0B840 /* libsqlite3.dylib in Frameworks */,
-				27E27BD314E323E3001DFCBB /* libz.dylib in Frameworks */,
-				795A586716C2F5670062B5E5 /* CouchbaseLite.framework in Frameworks */,
+				932D2F241D120044004E8860 /* GoogleAppUtilities.framework in Frameworks */,
+				932D2F2A1D120044004E8860 /* GoogleSymbolUtilities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +158,8 @@
 				1D3623250D0F684500981E51 /* DemoAppDelegate.m */,
 				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
+				932D2F301D1200BC004E8860 /* LoginViewController.h */,
+				932D2F311D1200BC004E8860 /* LoginViewController.m */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = Classes;
@@ -152,8 +200,8 @@
 				279C6595140FEF9A00A0E56D /* icon.png */,
 				279C6597140FEFCF00A0E56D /* icon@2x.png */,
 				279C6599140FF07000A0E56D /* icon~ipad.png */,
-				28F335F01007B36200424DE2 /* RootViewController.xib */,
-				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
+				93736C171D135BDB0071BE36 /* Launch Screen.storyboard */,
+				932D2EFF1D11DB0E004E8860 /* Storyboard.storyboard */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -161,17 +209,51 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				795A586616C2F5670062B5E5 /* CouchbaseLite.framework */,
+				932D2F1B1D120044004E8860 /* Google */,
+				93736C091D126A480071BE36 /* OpenIDConnectUI */,
+				93736C131D126A730071BE36 /* WebKit.framework */,
+				932D2F3B1D12049A004E8860 /* CoreText.framework */,
+				932D2F391D120423004E8860 /* libz.tbd */,
+				932D2F371D120416004E8860 /* libsqlite3.tbd */,
+				932D2F351D120404004E8860 /* libc++.tbd */,
+				932D2F331D1203EC004E8860 /* CouchbaseLite.framework */,
+				932D2F2E1D120057004E8860 /* AddressBook.framework */,
+				932D2F2C1D120052004E8860 /* SafariServices.framework */,
 				2783A0D5156D6A8500DC8692 /* CFNetwork.framework */,
 				27962306142031E80051455D /* Security.framework */,
 				279C7E2114F2CF6E0004A1E8 /* SystemConfiguration.framework */,
-				278E615514BA5A4B00A0B840 /* libsqlite3.dylib */,
-				27E27BD214E323E3001DFCBB /* libz.dylib */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		932D2F1B1D120044004E8860 /* Google */ = {
+			isa = PBXGroup;
+			children = (
+				932D2F1F1D120044004E8860 /* GoogleService-Info.plist */,
+				932D2F201D120044004E8860 /* GoogleSignIn.bundle */,
+				932D2F1C1D120044004E8860 /* GoogleAppUtilities.framework */,
+				932D2F1D1D120044004E8860 /* GoogleAuthUtilities.framework */,
+				932D2F1E1D120044004E8860 /* GoogleNetworkingUtilities.framework */,
+				932D2F211D120044004E8860 /* GoogleSignIn.framework */,
+				932D2F221D120044004E8860 /* GoogleSymbolUtilities.framework */,
+				932D2F231D120044004E8860 /* GoogleUtilities.framework */,
+			);
+			path = Google;
+			sourceTree = "<group>";
+		};
+		93736C091D126A480071BE36 /* OpenIDConnectUI */ = {
+			isa = PBXGroup;
+			children = (
+				93736C0C1D126A480071BE36 /* OpenIDController+UIKit.h */,
+				93736C0D1D126A480071BE36 /* OpenIDController+UIKit.m */,
+				93736C0E1D126A480071BE36 /* OpenIDController.h */,
+				93736C0F1D126A480071BE36 /* OpenIDController.m */,
+			);
+			name = OpenIDConnectUI;
+			path = Frameworks/Extras/OpenIDConnectUI;
 			sourceTree = "<group>";
 		};
 		CBD32A1813E0293300CF15A9 /* Elements */ = {
@@ -218,7 +300,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0730;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GrocerySync" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -245,23 +327,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27167F1A13C4FA57001CC5B6 /* MainWindow.xib in Resources */,
-				27167F1B13C4FA57001CC5B6 /* RootViewController.xib in Resources */,
 				27167F1D13C4FA57001CC5B6 /* Entitlements.plist in Resources */,
 				CBD6E08413E01ECB001EFA8C /* Default.png in Resources */,
 				CBD32A2D13E0293300CF15A9 /* list_area___checkbox___checked.png in Resources */,
+				932D2F001D11DB0E004E8860 /* Storyboard.storyboard in Resources */,
 				2763D73617EA13620056AB79 /* Default@2x~ipad.png in Resources */,
 				2763D73017EA0E430056AB79 /* Default-568h@2x.png in Resources */,
 				CBD32A2E13E0293300CF15A9 /* list_area___checkbox___unchecked.png in Resources */,
 				CBD32A3013E0293300CF15A9 /* textfield___active.png in Resources */,
 				CBD32A3113E0293300CF15A9 /* textfield___inactive.png in Resources */,
+				932D2F281D120044004E8860 /* GoogleSignIn.bundle in Resources */,
 				CBD32A5413E15E8500CF15A9 /* Default~ipad.png in Resources */,
 				CBD32A5713E15ED000CF15A9 /* textfield___active~ipad.png in Resources */,
 				CBD32A5813E15ED000CF15A9 /* textfield___inactive~ipad.png in Resources */,
 				27AFCEB613E9FBC300F00AFB /* item_background.png in Resources */,
 				27AFCEB913E9FFAE00F00AFB /* item_background~ipad.png in Resources */,
 				27AFCEBC13EA08D700F00AFB /* background.jpg in Resources */,
+				932D2F271D120044004E8860 /* GoogleService-Info.plist in Resources */,
 				27AFCEBD13EA08D700F00AFB /* background~ipad.jpg in Resources */,
+				93736C181D135BDB0071BE36 /* Launch Screen.storyboard in Resources */,
 				2763D73417EA13030056AB79 /* Default@2x.png in Resources */,
 				27CDDE4D13F1D7ED002C5079 /* couchbase-mobile-icon-nameless.png in Resources */,
 				279C6596140FEF9A00A0E56D /* icon.png in Resources */,
@@ -277,9 +361,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				932D2F321D1200BC004E8860 /* LoginViewController.m in Sources */,
 				27167F2513C4FA57001CC5B6 /* main.m in Sources */,
 				27167F2613C4FA57001CC5B6 /* DemoAppDelegate.m in Sources */,
+				93736C121D126A480071BE36 /* OpenIDController.m in Sources */,
 				27167F2713C4FA57001CC5B6 /* RootViewController.m in Sources */,
+				93736C111D126A480071BE36 /* OpenIDController+UIKit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,15 +377,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/Frameworks\"",
+					"$(PROJECT_DIR)/Google",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.couchbase.GrocerySync;
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = NO;
@@ -309,12 +402,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SRCROOT)/Frameworks\"",
+					"$(PROJECT_DIR)/Google",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = "Resources/GrocerySync-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.couchbase.GrocerySync;
 				PRODUCT_NAME = GrocerySync;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -324,15 +423,30 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 111;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -343,15 +457,28 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = Resources/Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 111;
 				DEPLOYMENT_POSTPROCESSING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";

@@ -1,4 +1,4 @@
-## Grocery Sync for iOS (Objective-C version)
+## Grocery Sync with OIDC for iOS (Objective-C version)
 
 This is a simple demo app showing how to use the [Couchbase Lite][1] framework to embed a nonrelational ("NoSQL"), document-oriented database in an iOS app and sync it with a database server in "the cloud".
 
@@ -32,6 +32,7 @@ Note: If you want the Swift version, run `git checkout swift`.
 
 1. [Download][1] Couchbase Lite for iOS.
 2. Copy `CouchbaseLite.framework` into the `Frameworks` directory of this repo.
+3. Copy `Extras/OpenIDConnectUI` into the `Frameworks/Extras` directory of this repo.
 
 ### Open the Xcode workspace
 

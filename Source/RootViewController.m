@@ -29,12 +29,10 @@
 @implementation RootViewController
 {
     CBLDatabase *database;
-
+    
     IBOutlet UITableView *tableView;
     IBOutlet CBLUITableSource* dataSource;
-    IBOutlet UIProgressView *progress;
     IBOutlet UITextField *addItemTextField;
-    IBOutlet UIImageView *addItemBackground;
 }
 
 
@@ -69,6 +67,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    DemoAppDelegate* app = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
+    [self useDatabase:app.database];
+    
     UIBarButtonItem* deleteButton = [[UIBarButtonItem alloc] initWithTitle: @"Clean"
                                                             style:UIBarButtonItemStylePlain
                                                            target:self
@@ -77,11 +78,7 @@
 
     tableView.backgroundView = nil;
     tableView.backgroundColor = [UIColor clearColor];
-    if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [addItemBackground setFrame:CGRectMake(45, 8, 680, 44)];
-        [addItemTextField setFrame:CGRectMake(56, 8, 665, 43)];
-    }
-
+    
     if (database) {
 #pragma mark Create database query
         // Create a query sorted by descending date, i.e. newest items first:
@@ -95,7 +92,6 @@
         dataSource.labelProperty = @"text";    // Document property to display in the cell label
     }
 }
-
 
 - (void)showErrorAlert: (NSString*)message forError: (NSError*)error {
     DemoAppDelegate* delegate = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
@@ -155,7 +151,7 @@
     CBLSavedRevision* newRev = [doc update:^BOOL(CBLUnsavedRevision *rev) {
         // Toggle the "check" property of the new revision to be saved:
         BOOL wasChecked = [rev[@"check"] boolValue];
-        rev[@"check"] = @(!wasChecked);
+        rev[@"check"] = wasChecked ? @NO : @YES;
         return YES;
     } error: &error];
 
@@ -218,14 +214,12 @@
 
 // Highlight the text field when input begins.
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    addItemBackground.image = [UIImage imageNamed:@"textfield___active.png"];
-}
 
+}
 
 // Un-highlight the text field when input ends.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-    addItemBackground.image = [UIImage imageNamed:@"textfield___inactive.png"];
 	return YES;
 }
 
@@ -240,9 +234,13 @@
     addItemTextField.text = nil;
 
 #pragma mark Create a new document
+    DemoAppDelegate* app = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
+    NSString *username = app.username;
+
     // Create the new document's properties:
 	NSDictionary *document = @{@"text":       text,
                                @"check":      @NO,
+                               @"owner":      username,
                                @"created_at": [CBLJSON JSONObjectWithDate: [NSDate date]]};
     
     // Save the document:
@@ -253,30 +251,11 @@
     }
 }
 
+#pragma mark - logout
 
-#pragma mark - Sync Progress Display:
-
-
-// When replication is active, show a progress bar.
-- (void)showSyncStatus: (float)status {
-    if (progress == nil) {
-        progress = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
-        CGRect frame = progress.frame;
-        frame.size.width = self.view.frame.size.width / 4.0f;
-        progress.frame = frame;
-        UIBarButtonItem* progressItem = [[UIBarButtonItem alloc] initWithCustomView:progress];
-        progressItem.enabled = NO;
-        self.navigationItem.rightBarButtonItem = progressItem;
-    }
-    progress.progress = status;
+- (IBAction)logoutAction:(id)sender {
+    DemoAppDelegate* app = (DemoAppDelegate*)[[UIApplication sharedApplication] delegate];
+    [app logout];
 }
-
-
-// When replication is idle (or not configured), hide the progress bar.
-- (void)hideSyncStatus {
-    self.navigationItem.rightBarButtonItem = nil;
-    progress = nil;
-}
-
 
 @end

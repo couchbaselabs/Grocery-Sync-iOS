@@ -20,16 +20,7 @@
 #import <UIKit/UIKit.h>
 #import <Couchbaselite/CBLUITableSource.h> // NOTE: If this import fails, make sure you have copied
 // (or symlinked) CouchbaseLite.framework into the "Frameworks" subdirectory, as per the README.
-@class CBLDatabase, CBLReplication;
-
 
 @interface RootViewController : UIViewController <CBLUITableDelegate, UITextFieldDelegate>
-
-- (void)useDatabase:(CBLDatabase*)theDatabase;
-
-- (IBAction)deleteCheckedItems:(id)sender;
-
-- (void)showSyncStatus: (float)status;
-- (void)hideSyncStatus;
 
 @end
