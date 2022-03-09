@@ -1,3 +1,5 @@
+⚠️ This repo is obsolete.  This application is built against a version of Couchbase Lite that reached end of life years ago.
+
 ## Grocery Sync for iOS (Objective-C version)
 
 This is a simple demo app showing how to use the [Couchbase Lite][1] framework to embed a nonrelational ("NoSQL"), document-oriented database in an iOS app and sync it with a database server in "the cloud".
